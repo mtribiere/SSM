@@ -1,0 +1,136 @@
+###### TOUTES LES DEFINITIONS ABNF A IMPLEMENTER######
+
+###### Définitions principales du message HTTP ######
+HTTP-message = request-line * ( header-field CRLF ) CRLF [ message-body ] 
+	request-line = method SP origin-form SP HTTP-version CRLF 
+		method = token 
+		origin-form = absolute-path [ "?" query ]
+			absolute-path = 1* ( "/" segment )  
+		HTTP-version = HTTP-name "/" DIGIT "." DIGIT
+			HTTP-name = %x48.54.54.50 
+	header-field = Connection-header / Content-Length-header / Content-Type-header / Cookie-header / Transfer-Encoding-header / Expect-header / Host-header / Accept-header / Accept-Charset-header / Accept-Encoding-header / Accept-Language-header / Referer-header / User-Agent-header / ( field-name ":" OWS field-value OWS ) 
+		Connection-header = "Connection" ":" OWS Connection OWS
+			Connection = * ( "," OWS ) connection-option * ( OWS "," [ OWS connection-option ] ) 
+				connection-option = token 
+		Content-Length-header = "Content-Length" ":" OWS Content-Length OWS
+			Content-Length = 1* DIGIT
+		Content-Type-header = "Content-Type" ":" OWS media-type OWS
+			media-type = type "/" subtype * ( OWS ";" OWS parameter )
+		Cookie-header = "Cookie:" OWS cookie-string OWS 
+			cookie-string = cookie-pair * ( ";" SP cookie-pair ) 
+				cookie-pair = cookie-name "=" cookie-value 
+					cookie-name = token
+					cookie-value = ( DQUOTE * cookie-octet DQUOTE ) / * cookie-octet 
+						cookie-octet = %x21 / %x23-2B / %x2D-3A / %x3C-5B / %x5D-7E 
+		Transfer-Encoding-header = "Transfer-Encoding" ":" OWS Transfer-Encoding OWS
+			Transfer-Encoding = * ( "," OWS ) transfer-coding * ( OWS "," [ OWS transfer-coding ] ) 
+				transfer-coding = "chunked" / "compress" / "deflate" / "gzip" / transfer-extension 
+					transfer-extension = token * ( OWS ";" OWS transfer-parameter ) 
+						transfer-parameter = token BWS "=" BWS ( token / quoted-string ) 
+		Expect-header = "Expect" ":" OWS Expect OWS 
+			Expect = "100-continue"
+		Host-header = "Host" ":" OWS Host OWS 
+			Host = host [ ":" port ]  
+		Accept-header = "Accept" ":" OWS Accept OWS 
+			Accept = [ ( "," / ( media-range [ accept-params ] ) ) * ( OWS "," [ OWS ( media-range [ accept-params ] ) ] ) ] 
+				media-range = ( "*/*" / ( type "/" subtype ) / ( type "/*" ) ) * ( OWS ";" OWS parameter ) 
+				accept-params = weight * accept-ext 
+					 
+					accept-ext = OWS ";" OWS token [ "=" ( token / quoted-string ) ] 
+		Accept-Charset-header = "Accept-Charset" ":" OWS Accept-Charset OWS 
+			Accept-Charset = * ( "," OWS ) ( ( charset / "*" ) [ weight ] ) * ( OWS "," [ OWS ( ( charset / "*" ) [ weight ] ) ] ) 
+				charset = token 
+		Accept-Encoding-header = "Accept-Encoding" ":" OWS Accept-Encoding OWS 
+			Accept-Encoding = [ ( "," / ( codings [ weight ] ) ) * ( OWS "," [ OWS ( codings [ weight ] ) ] ) ] 
+				codings = content-coding / "identity" / "*"
+					content-coding = token 
+		Accept-Language-header = "Accept-Language" ":" OWS Accept-Language OWS 
+			Accept-Language = * ( "," OWS ) ( language-range [ weight ] ) * ( OWS "," [ OWS ( language-range [ weight ] ) ] ) 
+				language-range = ( 1*8 ALPHA * ( "-" 1*8 alphanum ) ) / "*" 
+		Referer-header = "Referer" ":" OWS Referer OWS 
+			Referer = absolute-URI / partial-URI 
+				absolute-URI = scheme ":" hier-part [ "?" query ] 
+					scheme = ALPHA * ( ALPHA / DIGIT / "+" / "-" / "." ) 	
+					hier-part = "//" authority path-abempty / path-absolute / path-rootless / path-empty 
+						authority = [ userinfo "@" ] host [ ":" port ] 
+							userinfo = * ( unreserved / pct-encoded / sub-delims / ":" ) 
+				partial-URI = relative-part [ "?" query ] 
+					relative-part = "//" authority path-abempty / path-absolute / path-noscheme / path-empty
+		User-Agent-header = "User-Agent" ":" OWS User-Agent OWS 
+			User-Agent = product * ( RWS ( product / comment ) )
+				product = token [ "/" product-version ]
+					product-version = token   
+				comment = "(" * ( ctext / quoted-pair / comment ) ")" 
+					ctext = HTAB / SP / %x21-27 / %x2A-5B / %x5D-7E / obs-text 
+		field-name = token
+		field-value = * ( field-content / obs-fold ) 
+			field-content = field-vchar [ 1* ( SP / HTAB ) field-vchar ] 
+				field-vchar = VCHAR / obs-text 
+			obs-fold = CRLF 1* ( SP / HTAB ) 
+
+###### Définitions que l'on retrouve dans plusieurs définitions #######
+token = 1* tchar
+tchar = "!" / "#" / "$" / "%" / "&" / "'" / "*" / "+" / "-" / "." / "^" / "_" / "`" / "|" / "~" / DIGIT / ALPHA 			
+
+pchar = unreserved / pct-encoded / sub-delims / ":" / "@"
+unreserved = ALPHA / DIGIT / "-" / "." / "_" / "~" 
+pct-encoded = "%" HEXDIG HEXDIG 
+sub-delims = "!" / "$" / "&" / "'" / "(" / ")" / "*" / "+" / "," / ";" / "="
+
+
+
+type = token 
+subtype = token 
+
+parameter = token "=" ( token / quoted-string )
+quoted-string = DQUOTE * ( qdtext / quoted-pair ) DQUOTE
+qdtext = HTAB / SP / "!" / %x23-5B / %x5D-7E / obs-text
+quoted-pair = "\" ( HTAB / SP / VCHAR / obs-text ) 
+obs-text = %x80-FF 
+
+host = IP-literal / IPv4address / reg-name
+	IPv4address = dec-octet "." dec-octet "." dec-octet "." dec-octet
+		dec-octet = "25" %x30-35 / "2" %x30-34 DIGIT / "1" 2 DIGIT / %x31-39 DIGIT / DIGIT
+	IP-literal = "[" ( IPv6address / IPvFuture ) "]" 
+		IPv6address = 6 ( h16 ":" ) ls32 / "::" 5 ( h16 ":" ) ls32 / [ h16 ] "::" 4 ( h16 ":" ) ls32 / [ h16 *1 ( ":" h16 ) ] "::" 3 ( h16 ":" ) ls32 / [ h16 *2 ( ":" h16 ) ] "::" 2 ( h16 ":" ) ls32 / [ h16 *3 ( ":" h16 ) ] "::" h16 ":" ls32 / [ h16 *4 ( ":" h16 ) ] "::" ls32 / [ h16 *5 ( ":" h16 ) ] "::" h16 / [ h16 *6 ( ":" h16 ) ] "::" 
+			h16 = 1*4 HEXDIG
+			ls32 = ( h16 ":" h16 ) / IPv4address	  
+		IPvFuture = "v" 1* HEXDIG "." 1* ( unreserved / sub-delims / ":" ) 
+	reg-name = * ( unreserved / pct-encoded / sub-delims ) 
+port = * DIGIT
+
+weight = OWS ";" OWS "q=" qvalue 
+	qvalue = ( "0" [ "." *3 DIGIT ] ) / ( "1" [ "." *3 "0" ] )
+
+alphanum = ALPHA / DIGIT 
+query = * ( pchar / "/" / "?" )
+
+path-abempty = * ( "/" segment ) 
+	path-absolute = "/" [ segment-nz * ( "/" segment ) ]
+	path-rootless = segment-nz * ( "/" segment ) 
+	path-empty = "" 
+	path-noscheme = segment-nz-nc * ( "/" segment ) 
+		segment = * pchar
+		segment-nz = 1* pchar 
+		segment-nz-nc = 1* ( unreserved / pct-encoded / sub-delims / "@" )
+
+###### Définitions de base de l'ABNF ######
+
+ALPHA = %x41-5A / %x61-7A
+BIT = "0"/"1"
+CHAR = %x01-7F
+CR = %x0D
+LF = %x0A
+CRLF = CR LF
+CTL = %x00-1F / %x7F
+DIGIT = %x30-39
+DQUOTE = %x22
+HEXDIG = DIGIT/"A"/.../"F"
+HTAB = %x09
+LWSP = *(WSP / CRLF WSP)
+OCTET = %x00-FF
+SP = %x20
+VCHAR = %x21-7E
+OWS = *( SP / HTAB )
+RWS = 1*( SP / HTAB )
+BWS = OWS
