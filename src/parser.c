@@ -16,6 +16,10 @@ int regexTest(const char* string, const char* regex, const int size)
 }
 
 int DIGIT(const char* s) {return regexTest(s, "[0-9]", 1);}
+int ALPHA(const char *s) {return regexTest(s,"[A-Za-z]",1);}
+int BIT(const char *s)   {return regexTest(s,"[01]",1);}
+int HEXDIG(const char *s){return regexTest(s,"[0-9A-Za-z]",1);}
+
 
 int etoile(int (*fonction)(const char* s), const char* s, int mini, int maxi)
 //Prend en argument une fonction booléenne sur un caractere, une chaine de caractère et un nombre minimal et maximal d'occurence

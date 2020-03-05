@@ -24,7 +24,7 @@ int main(int argc, char *argv[])
 		if(message[i] == '\n') printf("\n");
 	}
 
-	/*
+	
     printf("Exactement 3 digits : %s,%d,%d\t:\t%d\n", "352", 3, 3, etoile(DIGIT, "352",3,3));
     printf("Entre 3 et 10 digits : %s,%d,%d\t:\t%d\n", "352", 3, 10, etoile(DIGIT, "352",3,10));
     printf("Entre 3 et 4 digits : %s,%d,%d\t:\t%d\n", "35a2", 3, 4, etoile(DIGIT, "35a2",3,3));
@@ -34,7 +34,7 @@ int main(int argc, char *argv[])
     printf("Plus de 3 digits : %s,%d,%d\t:\t%d\n", "2552", 3, -1, etoile(DIGIT, "2552",3,-1));
     printf("Moins de 3 digits : %s,%d,%d\t:\t%d\n", "2552", 0, 3, etoile(DIGIT, "2552",0,3));
     printf("Moins de 3 digits : %s,%d,%d\t:\t%d\n", "25", 0, 3, etoile(DIGIT, "25",0,3));
-    */
+    
 
 	
 
