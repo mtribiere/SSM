@@ -10,7 +10,7 @@ Node* createNode(const char name[NAMESIZE]) {
 	return node;
 }
 
-Node** createChild(Node* parent, int count, const char names[][NAMESIZE]) {
+void createChild(Node* parent, int count, const char names[][NAMESIZE]) {
 	//Crée le nombre de fils indiqué au noeud dans l'arbre en utilisant la liste de nom donnée.
 	//Renvoie une liste de pointeurs vers les fils créés.
 	parent->childList = (Node **)malloc(sizeof(Node*) * count);
@@ -20,7 +20,6 @@ Node** createChild(Node* parent, int count, const char names[][NAMESIZE]) {
 		parent->childList[i] = createNode(names[i]);
 		parent->childCount++;
 	}
-	return parent->childList;
 }
 
 void printNode(Node* node)

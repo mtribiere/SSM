@@ -13,6 +13,6 @@ typedef struct Node {
 } Node;
 
 Node* createNode(const char name[NAMESIZE]);
-Node** createChild(Node* parent, int count, const char names[][NAMESIZE]);
+void createChild(Node* parent, int count, const char names[][NAMESIZE]);
 void printNode(Node* node);
 Node* searchByName(Node** root, const char name[NAMESIZE]);

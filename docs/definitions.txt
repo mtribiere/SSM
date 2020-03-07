@@ -117,20 +117,20 @@ path-abempty = * ( "/" segment )
 ###### Définitions de base de l'ABNF ######
 
 ALPHA = %x41-5A / %x61-7A	OK
-BIT = "0"/"1"			OK
-CHAR = %x01-7F
-CR = %x0D
-LF = %x0A
-CRLF = CR LF
-CTL = %x00-1F / %x7F
-DIGIT = %x30-39			OK
-DQUOTE = %x22
+BIT = "0"/"1"				OK
+CHAR = %x01-7F				OK
+CR = %x0D					OK
+LF = %x0A					OK
+DIGIT = %x30-39				OK
+DQUOTE = %x22 				OK
 HEXDIG = DIGIT/"A"/.../"F"	OK
-HTAB = %x09
-LWSP = *(WSP / CRLF WSP)
-OCTET = %x00-FF
-SP = %x20
-VCHAR = %x21-7E
-OWS = *( SP / HTAB )
-RWS = 1*( SP / HTAB )
-BWS = OWS
+HTAB = %x09 				OK
+OCTET = %x00-FF				OK
+SP = %x20					OK
+VCHAR = %x21-7E				OK
+
+
+OWS = *( SP / HTAB )		OK
+RWS = 1*( SP / HTAB )		OK
+BWS = OWS					OK
+CRLF = CR LF				OK
