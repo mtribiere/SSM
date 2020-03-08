@@ -26,9 +26,7 @@ int main(int argc, char *argv[])
 		if(message[i] == '\n') printf("\n");
 	}*/
 
-	printf("%d\n", CR("\r\n"));
-	printf("%d\n", LF("\n\r"));
-	printf("%d\n", CRLF("\n"));
+	printf("%d\n", token("s59"));
 
 	return 0;
 }

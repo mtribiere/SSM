@@ -26,7 +26,14 @@ int RWS(const char *s);
 int BWS(const char *s);
 int CRLF(const char *s);
 
+int tchar(const char *s);
+int token(const char *s);
+
+
+int slash(const char *s);
+int dot(const char *s);
+int HTTPname(const char *s);
+int HTTPVersion(const char *s);
+
 typedef int (*fptr)(const char*);
-int etoile(fptr function, const char *s, int mini, int maxi);
-fptr ou(fptr function1, fptr function2);
-fptr et(fptr function1, fptr function2);
+int etoile(fptr function, const char *s, int mini, int maxi, int shift);
