@@ -26,7 +26,14 @@ int main(int argc, char *argv[])
 		if(message[i] == '\n') printf("\n");
 	}*/
 
-	printf("%d\n", token("s59"));
+	Node* node = createNode("HTTP-Version");
+	printf("%d\n", HTTPVersion("HTTP/1.0", node));
+	printf("%d\n", treeLength(&node));
+	printNode(searchByName(&node, "HTTP-Version"));
+	printNode(searchByName(&node, "HTTP-name"));
+	printNode(searchByName(&node, "/"));
+	printNode(searchByName(&node, "."));
+	printNode(searchByName(&node, "DIGIT"));
 
 	return 0;
 }

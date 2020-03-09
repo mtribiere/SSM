@@ -33,8 +33,26 @@ void printNode(Node* node)
 	printf("\n\n");
 }
 
+int treeLength(Node** root)
+{
+	//Renvoie le nombre de noeud dans l'arbre
+	Node* explorer = *root;
+	if(explorer->childCount == 0)
+		return 1;
+	else
+	{
+		int sum = 1;
+		for(int i = 0; i < explorer->childCount; i++)
+		{
+			sum += treeLength((explorer->childList) + i);
+		}
+		return sum;
+	}
+}
+
 Node* searchByName(Node** root, const char name[NAMESIZE]) {
 	//A partir d'un pointeur vers la racine et d'un nom, trouve le noeud correspondant dans l'arbre
+	//A CHANGER, DEVRAIT RENVOYER TOUS LES NOEUDS CORRESPONDANTS.
 	Node* explorer = *root;
 	int i = 0;
 	Node* result = NULL;
@@ -46,4 +64,19 @@ Node* searchByName(Node** root, const char name[NAMESIZE]) {
 		i++;
 	}
 	return result;
+}
+
+void removeNode(Node* node)
+//Pas encore testée
+{
+	Node* explorer = node;
+	if(explorer->childCount == 0) free(explorer);
+	else
+	{
+		for(int i = (explorer->childCount)-1; i >= 0; i--)
+		{
+			removeNode(explorer->childList[i]);
+			explorer->childCount--;
+		}
+	}
 }

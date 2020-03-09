@@ -1,14 +1,18 @@
+#ifndef PARSER_H
+#define PARSER_H
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <regex.h>
 #include <string.h>
+#include "tree.h"
 
 #define FALSE 0
 #define TRUE 1
 
 
 int regexTest(const char* string, const char* regex, const int size);
-int DIGIT(const char* s);
+int DIGIT(const char* s, Node* node);
 int ALPHA(const char *s);
 int BIT(const char *s);
 int HEXDIG(const char *s);
@@ -30,10 +34,12 @@ int tchar(const char *s);
 int token(const char *s);
 
 
-int slash(const char *s);
-int dot(const char *s);
-int HTTPname(const char *s);
-int HTTPVersion(const char *s);
+int slash(const char *s, Node* node);
+int dot(const char *s, Node* node);
+int HTTPname(const char *s, Node* node);
+int HTTPVersion(const char *s, Node* node);
 
 typedef int (*fptr)(const char*);
 int etoile(fptr function, const char *s, int mini, int maxi, int shift);
+
+#endif
