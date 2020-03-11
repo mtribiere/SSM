@@ -5,6 +5,9 @@
 #include <stdlib.h>
 #include <string.h>
 
+#define FALSE 0
+#define TRUE 1
+
 #define NAMESIZE 50 //Taille maximale du nom d'un noeud
 
 typedef struct Node {

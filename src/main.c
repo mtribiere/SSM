@@ -3,6 +3,7 @@
 #include "parser.h"
 #include "fileManager.h"
 #include "tree.h"
+#include "highLevel.h"
 
 #define MAX_FILE_SIZE 500
 
