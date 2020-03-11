@@ -3,7 +3,11 @@
 Node* createNode(const char name[NAMESIZE]) {
 //Crée un noeud à partir de son nom dans un arbre, renvoie un pointeur vers ce noeud
 	Node* node = (Node*)malloc(sizeof(Node));
-	if(node == NULL) perror("Problème d'allocation de mémoire");
+	if(node == NULL)
+	{
+		perror("Problème d'allocation de mémoire");
+		exit(EXIT_FAILURE);
+	} 
 	strcpy(node->name, name);
 	node->childCount = 0;
 	node->childList = NULL;
@@ -14,7 +18,11 @@ void createChild(Node* parent, int count, const char names[][NAMESIZE]) {
 	//Crée le nombre de fils indiqué au noeud dans l'arbre en utilisant la liste de nom donnée.
 	//Renvoie une liste de pointeurs vers les fils créés.
 	parent->childList = (Node **)malloc(sizeof(Node*) * count);
-	if(parent->childList == NULL) perror("Problème d'allocation de mémoire");
+	if(parent->childList == NULL)
+	{
+		perror("Problème d'allocation de mémoire");
+		exit(EXIT_FAILURE);
+	} 
 	for(int i = 0; i < count; i++)
 	{
 		parent->childList[i] = createNode(names[i]);
@@ -60,20 +68,34 @@ int treeLength(Node** root)
 	}
 }
 
-Node* searchByName(Node** root, const char name[NAMESIZE]) {
-	//A partir d'un pointeur vers la racine et d'un nom, trouve le noeud correspondant dans l'arbre
-	//A CHANGER, DEVRAIT RENVOYER TOUS LES NOEUDS CORRESPONDANTS.
+void searchFunction(Node** root, const char name[NAMESIZE], Node** foundList) {
+//Cette fonction n'est pas faite pour être appelée toute seule
+//Recherche toutes les occurences d'une node avec le nom name dans l'arbre ayant pour racine root
+//Remplit le tableau foundList avec toutes les nodes correspondantes
 	Node* explorer = *root;
 	int i = 0;
-	Node* result = NULL;
 	if(!strcmp(name, explorer->name))
-		result = explorer;
-	while(result == NULL && i < explorer->childCount)
+		foundList[count++] = explorer;
+	while(i < explorer->childCount)
 	{
-		result = searchByName(explorer->childList + i, name);
+		searchFunction(explorer->childList + i, name, foundList);
 		i++;
 	}
-	return result;
+}
+
+Node** searchByName(Node** root, const char name[NAMESIZE])
+//Utilise searchFunction() pour renvoyer un tableau de nodes appartenant à l'arbre de racine root et ayant pour nom name
+{
+	count = 0;
+	Node** foundList = calloc(treeLength(root), sizeof(Node*));
+	if(foundList == NULL)
+	{
+		perror("Problème d'allocation de mémoire");
+		exit(EXIT_FAILURE);
+	} 
+	searchFunction(root, name, foundList);
+	foundList = realloc(foundList, sizeof(Node*) * count);		
+	return foundList;
 }
 
 void removeNode(Node* node)

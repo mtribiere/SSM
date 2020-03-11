@@ -30,11 +30,14 @@ int main(int argc, char *argv[])
 	Node* node = createNode("HTTP-Version");
 	printf("%d\n", HTTPVersion("HTTP/1.0", node));
 	printf("%d\n", treeLength(&node));
-	printNode(searchByName(&node, "HTTP-Version"));
-	printNode(searchByName(&node, "HTTP-name"));
-	printNode(searchByName(&node, "/"));
-	printNode(searchByName(&node, "."));
-	printNode(searchByName(&node, "DIGIT"));
-
+	
+	Node** foundList = searchByName(&node, "HTTP-name");
+	if(foundList != NULL)
+	{
+		int i = 0;
+		while(foundList[i] != NULL)
+			printNode(foundList[i++]);
+	}
+	
 	return 0;
 }

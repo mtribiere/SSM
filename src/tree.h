@@ -20,8 +20,13 @@ typedef struct Node {
 
 Node* createNode(const char name[NAMESIZE]);
 void createChild(Node* parent, int count, const char names[][NAMESIZE]);
-Node* searchByName(Node** root, const char name[NAMESIZE]);
 void removeNode(Node* node);
+
+void searchFunction(Node** root, const char name[NAMESIZE], Node** foundList);
+int count;
+Node** searchByName(Node** root, const char name[NAMESIZE]);
+
+
 
 int treeLength(Node** root);
 
