@@ -27,10 +27,20 @@ void printNode(Node* node)
 	//Affiche les données contenues dans un noeud
 	printf("\n\n");
 	printf("Name\t\t:\t%s\n", node->name);
-	printf("Content\t\t:\t%s\n", node->content);
+	
+	printf("Content\t\t:\t");
+	printStringWithLimit(node->content,node->contentSize);
+	printf("\n");
+
 	printf("ContentSize\t:\t%d\n", node->contentSize);
+	
 	printf("ChildCount\t:\t%d\n", node->childCount);
 	printf("\n\n");
+}
+
+void printStringWithLimit(const char *s,int limit){
+	for(int i = 0;i<limit;i++)
+		printf("%c",s[i]);
 }
 
 int treeLength(Node** root)

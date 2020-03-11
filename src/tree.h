@@ -17,9 +17,12 @@ typedef struct Node {
 
 Node* createNode(const char name[NAMESIZE]);
 void createChild(Node* parent, int count, const char names[][NAMESIZE]);
-void printNode(Node* node);
-int treeLength(Node** root);
 Node* searchByName(Node** root, const char name[NAMESIZE]);
 void removeNode(Node* node);
+
+int treeLength(Node** root);
+
+void printNode(Node* node);
+void printStringWithLimit(const char *s,int limit);
 
 #endif
