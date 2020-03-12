@@ -9,7 +9,14 @@
 
 int regexTest(const char* string, const char* regex, const int size);
 
-typedef int (*fptr)(const char*);
-int etoile(fptr function, const char *s, int mini, int maxi, int shift);
+typedef int (*fptr)(const char*, Node*);
+typedef struct result
+{
+	int boolean;
+	int number;
+} result;
+
+result etoile(fptr function, const char *s, int mini, int maxi, int shift);
+
 
 #endif

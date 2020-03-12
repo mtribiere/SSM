@@ -20,6 +20,7 @@ typedef struct Node {
 
 Node* createNode(const char name[NAMESIZE]);
 void createChild(Node* parent, int count, const char names[][NAMESIZE]);
+void addChild(Node* parent, const char name[NAMESIZE]);
 void removeNode(Node* node);
 
 void searchFunction(Node** root, const char name[NAMESIZE], Node** foundList);

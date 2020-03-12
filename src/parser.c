@@ -20,17 +20,17 @@ int regexTest(const char* string, const char* regex, const int size)
 }
 
 
-int etoile(fptr function, const char *s, int mini, int maxi, int shift)
+result etoile(fptr function, const char *s, int mini, int maxi, int shift)
 //Prend en argument une fonction booléenne sur un caractere, une chaine de caractère et un nombre minimal et maximal d'occurence
 //Le max est à -1 si il est infini, shift est la taille d'un symbole
 //Renvoie TRUE si pour chaque caractère de la chaine de caractère, la fonction boolèenne renvoie TRUE entre le nombre minimal et maximal de fois.
 {
     int i = 0;
-    while(function(s+i)) {
+    while(function(s+i, NULL)) {
         i += shift;
     }
     i /= shift;
-    if((maxi == -1) && i < mini) return FALSE;
-    if((i < mini ||i > maxi) && maxi != -1) return FALSE;
-    return TRUE;
+    if((maxi == -1) && i < mini) return (result){FALSE, i};
+    if((i < mini ||i > maxi) && maxi != -1) return (result){FALSE, i};
+    return (result){TRUE, i};
 }

@@ -4,6 +4,7 @@
 #include "fileManager.h"
 #include "tree.h"
 #include "highLevel.h"
+#include "baseLevel.h"
 
 #define MAX_FILE_SIZE 500
 
@@ -27,17 +28,17 @@ int main(int argc, char *argv[])
 		if(message[i] == '\n') printf("\n");
 	}*/
 
-	Node* node = createNode("HTTP-Version");
-	printf("%d\n", HTTPVersion("HTTP/1.0", node));
-	printf("%d\n", treeLength(&node));
+	Node* node = createNode("token");
+	printf("token : %d\n", token("~:e", node));
+	printf("Taille de l'arbre : %d\n", treeLength(&node));
 	
-	Node** foundList = searchByName(&node, "HTTP-name");
+	Node** foundList = searchByName(&node, "tchar");
 	if(foundList != NULL)
 	{
 		int i = 0;
 		while(foundList[i] != NULL)
 			printNode(foundList[i++]);
-	}
+	} else printf("Pas de tchar\n");
 	
 	return 0;
 }

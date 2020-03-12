@@ -23,11 +23,20 @@ void createChild(Node* parent, int count, const char names[][NAMESIZE]) {
 		perror("Problème d'allocation de mémoire");
 		exit(EXIT_FAILURE);
 	} 
-	for(int i = 0; i < count; i++)
+	if(names != NULL)
 	{
-		parent->childList[i] = createNode(names[i]);
-		parent->childCount++;
+		for(int i = parent->childCount; i < count; i++)
+		{
+			parent->childList[i] = createNode(names[i]);
+			parent->childCount++;
+		}
 	}
+	
+}
+
+void addChild(Node* parent, const char name[NAMESIZE])
+{
+	parent->childList[parent->childCount++] = createNode(name);
 }
 
 void printNode(Node* node)
@@ -94,13 +103,14 @@ Node** searchByName(Node** root, const char name[NAMESIZE])
 		exit(EXIT_FAILURE);
 	} 
 	searchFunction(root, name, foundList);
-	foundList = realloc(foundList, sizeof(Node*) * count);		
+	foundList = realloc(foundList, sizeof(Node*) * (count + 1));
 	return foundList;
 }
 
 void removeNode(Node* node)
 //Pas encore testée
 {
+	if(node == NULL) return;
 	Node* explorer = node;
 	if(explorer->childCount == 0) free(explorer);
 	else
