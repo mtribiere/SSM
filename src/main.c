@@ -28,17 +28,18 @@ int main(int argc, char *argv[])
 		if(message[i] == '\n') printf("\n");
 	}*/
 
-	Node* node = createNode("token");
-	printf("token : %d\n", token("~:e", node));
-	printf("Taille de l'arbre : %d\n", treeLength(&node));
-	
-	Node** foundList = searchByName(&node, "tchar");
-	if(foundList != NULL)
+	Node* node = createNode("unreserved");
+	if(unreserved("~b", node))
 	{
-		int i = 0;
-		while(foundList[i] != NULL)
-			printNode(foundList[i++]);
-	} else printf("Pas de tchar\n");
+		printf("Ouep\n");
+		printf("Taille de l'arbre : %d\n", treeLength(&node));
+		printNode(node);
+		for(int i = 0; i < node->childCount; i++)
+			printNode(node->childList[i]);
+	} else{
+		printf("Nope\n");
+	}
+	
 	
 	return 0;
 }

@@ -3,11 +3,11 @@
 ###### Définitions principales du message HTTP ######
 HTTP-message = request-line * ( header-field CRLF ) CRLF [ message-body ] 
 	request-line = method SP origin-form SP HTTP-version CRLF 
-		method = token 
+		method = token 	OK
 		origin-form = absolute-path [ "?" query ]
 			absolute-path = 1* ( "/" segment )  
-		HTTP-version = HTTP-name "/" DIGIT "." DIGIT
-			HTTP-name = %x48.54.54.50 
+		HTTP-version = HTTP-name "/" DIGIT "." DIGIT	OK
+			HTTP-name = %x48.54.54.50	OK
 	header-field = Connection-header / Content-Length-header / Content-Type-header / Cookie-header / Transfer-Encoding-header / Expect-header / Host-header / Accept-header / Accept-Charset-header / Accept-Encoding-header / Accept-Language-header / Referer-header / User-Agent-header / ( field-name ":" OWS field-value OWS ) 
 		Connection-header = "Connection" ":" OWS Connection OWS
 			Connection = * ( "," OWS ) connection-option * ( OWS "," [ OWS connection-option ] ) 
@@ -69,11 +69,11 @@ HTTP-message = request-line * ( header-field CRLF ) CRLF [ message-body ]
 			obs-fold = CRLF 1* ( SP / HTAB ) 
 
 ###### Définitions que l'on retrouve dans plusieurs définitions #######
-token = 1* tchar
-tchar = "!" / "#" / "$" / "%" / "&" / "'" / "*" / "+" / "-" / "." / "^" / "_" / "`" / "|" / "~" / DIGIT / ALPHA 			
+token = 1* tchar OK
+tchar = "!" / "#" / "$" / "%" / "&" / "'" / "*" / "+" / "-" / "." / "^" / "_" / "`" / "|" / "~" / DIGIT / ALPHA 	OK	
 
 pchar = unreserved / pct-encoded / sub-delims / ":" / "@"
-unreserved = ALPHA / DIGIT / "-" / "." / "_" / "~" 
+unreserved = ALPHA / DIGIT / "-" / "." / "_" / "~"  OK
 pct-encoded = "%" HEXDIG HEXDIG 
 sub-delims = "!" / "$" / "&" / "'" / "(" / ")" / "*" / "+" / "," / ";" / "="
 

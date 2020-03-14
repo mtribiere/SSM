@@ -22,9 +22,14 @@ int CRLF(const char *s, Node* node);
 
 int tchar(const char *s, Node* node);
 int token(const char *s, Node* node);
-
+int method(const char *s, Node* node);
 
 int slash(const char *s, Node* node);
 int dot(const char *s, Node* node);
+int minus(const char *s, Node* node);
+int underscore(const char *s, Node* node);
+int tilde(const char *s, Node* node);
+int unreserved(const char *s, Node* node);
+
 
 #endif

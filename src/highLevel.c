@@ -20,5 +20,5 @@ int HTTPVersion(const char *s, Node* node){
         node->contentSize = 8;
         return TRUE;
     }
-    else return FALSE;
+    else {removeNode(node);return FALSE;}
 }

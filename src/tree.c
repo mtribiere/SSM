@@ -31,6 +31,7 @@ void createChild(Node* parent, int count, const char names[][NAMESIZE]) {
 			parent->childCount++;
 		}
 	}
+	//sinon les fils ne sont pas initialisés
 	
 }
 
@@ -64,8 +65,8 @@ int treeLength(Node** root)
 {
 	//Renvoie le nombre de noeud dans l'arbre
 	Node* explorer = *root;
-	if(explorer->childCount == 0)
-		return 1;
+	if(explorer == NULL) return 0;
+	if(explorer->childCount == 0) return 1;
 	else
 	{
 		int sum = 1;
@@ -112,7 +113,7 @@ void removeNode(Node* node)
 {
 	if(node == NULL) return;
 	Node* explorer = node;
-	if(explorer->childCount == 0) free(explorer);
+	if(node->childCount == 0) free(node);
 	else
 	{
 		for(int i = (explorer->childCount)-1; i >= 0; i--)
@@ -121,4 +122,5 @@ void removeNode(Node* node)
 			explorer->childCount--;
 		}
 	}
+
 }
