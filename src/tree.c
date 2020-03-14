@@ -56,6 +56,17 @@ void printNode(Node* node)
 	printf("\n\n");
 }
 
+void printTree(Node** root)
+{
+	Node* explorer = *root;
+	int i;
+	printNode(explorer);
+	for(i = 0; i < explorer->childCount; i++)
+	{
+		printTree(&(explorer->childList[i]));
+	}
+}
+
 void printStringWithLimit(const char *s,int limit){
 	for(int i = 0;i<limit;i++)
 		printf("%c",s[i]);
@@ -109,7 +120,8 @@ Node** searchByName(Node** root, const char name[NAMESIZE])
 }
 
 void removeNode(Node* node)
-//Pas encore testée
+//Libère la mémoire du noeud donné
+//Attention, on a pas node == NULL après avoir appelé cette fonction ...
 {
 	if(node == NULL) return;
 	Node* explorer = node;

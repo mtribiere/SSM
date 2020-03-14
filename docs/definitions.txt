@@ -72,10 +72,10 @@ HTTP-message = request-line * ( header-field CRLF ) CRLF [ message-body ]
 token = 1* tchar OK
 tchar = "!" / "#" / "$" / "%" / "&" / "'" / "*" / "+" / "-" / "." / "^" / "_" / "`" / "|" / "~" / DIGIT / ALPHA 	OK	
 
-pchar = unreserved / pct-encoded / sub-delims / ":" / "@"
-unreserved = ALPHA / DIGIT / "-" / "." / "_" / "~"  OK
-pct-encoded = "%" HEXDIG HEXDIG 
-sub-delims = "!" / "$" / "&" / "'" / "(" / ")" / "*" / "+" / "," / ";" / "="
+pchar = unreserved / pct-encoded / sub-delims / ":" / "@"	OK
+unreserved = ALPHA / DIGIT / "-" / "." / "_" / "~"	OK
+pct-encoded = "%" HEXDIG HEXDIG	OK 
+sub-delims = "!" / "$" / "&" / "'" / "(" / ")" / "*" / "+" / "," / ";" / "="	OK
 
 
 

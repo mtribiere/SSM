@@ -26,10 +26,10 @@ int method(const char *s, Node* node);
 
 int slash(const char *s, Node* node);
 int dot(const char *s, Node* node);
-int minus(const char *s, Node* node);
-int underscore(const char *s, Node* node);
-int tilde(const char *s, Node* node);
+int percent(const char *s, Node* node);
 int unreserved(const char *s, Node* node);
-
+int subDelims(const char *s, Node* node);
+int colon(const char *s, Node* node);
+int at(const char *s, Node* node);
 
 #endif

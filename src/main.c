@@ -28,18 +28,15 @@ int main(int argc, char *argv[])
 		if(message[i] == '\n') printf("\n");
 	}*/
 
-	Node* node = createNode("unreserved");
-	if(unreserved("~b", node))
+	Node* node = createNode("pchar");
+	if(pchar("%7f", node))
 	{
 		printf("Ouep\n");
 		printf("Taille de l'arbre : %d\n", treeLength(&node));
-		printNode(node);
-		for(int i = 0; i < node->childCount; i++)
-			printNode(node->childList[i]);
+		printTree(&node);
 	} else{
 		printf("Nope\n");
-	}
-	
+	}	
 	
 	return 0;
 }

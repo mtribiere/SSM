@@ -297,37 +297,10 @@ int dot(const char *s, Node* node){
     }
     return toReturn;
 }
-int minus(const char *s, Node* node){
+
+int percent(const char *s, Node* node){
 	int toReturn = FALSE;
-    if(regexTest(s,"-",1)){
-        if(node != NULL)
-    	{
-    		node->content = s;
-        	node->contentSize = 1;
-    	}
-		toReturn =  TRUE;
-    } else {
-        removeNode(node); 
-    }
-    return toReturn;
-}
-int underscore(const char *s, Node* node){
-	int toReturn = FALSE;
-    if(regexTest(s,"_",1)){
-        if(node != NULL)
-    	{
-    		node->content = s;
-        	node->contentSize = 1;
-    	}
-		toReturn =  TRUE;
-    } else {
-        removeNode(node); 
-    }
-    return toReturn;
-}
-int tilde(const char *s, Node* node){
-	int toReturn = FALSE;
-    if(regexTest(s,"~",1)){
+    if(regexTest(s,"%",1)){
         if(node != NULL)
     	{
     		node->content = s;
@@ -340,18 +313,60 @@ int tilde(const char *s, Node* node){
     return toReturn;
 }
 
-
-//unreserved = ALPHA / DIGIT / "-" / "." / "_" / "~" 
 int unreserved(const char *s, Node* node){
-	createChild(node, 1, NULL);
-	if(ALPHA(s, NULL)) addChild(node, "ALPHA");
-	else if(DIGIT(s, NULL)) addChild(node, "DIGIT");
-	else if(minus(s, NULL)) addChild(node, "minus");
-	else if(dot(s, NULL)) addChild(node, "dot");
-	else if(underscore(s, NULL)) addChild(node, "underscore");
-	else if(tilde(s, NULL)) addChild(node, "tilde");
-	else {removeNode(node); return FALSE;}
-	node->content = s; node->contentSize = 1;
-	node->childList[0]->content = s; node->childList[0]->contentSize = 1;
-	return TRUE;
+	int toReturn = FALSE;
+    if(regexTest(s,"([A-Za-z0-9]|\\-|\\.|_|~)",1)){
+        if(node != NULL)
+    	{
+    		node->content = s;
+        	node->contentSize = 1;
+    	}
+		toReturn =  TRUE;
+    } else {
+        removeNode(node); 
+    }
+    return toReturn;
+}
+
+int subDelims(const char *s, Node* node){
+	int toReturn = FALSE;
+    if(regexTest(s,"(\\!|\\$|&|'|\\(|\\)|\\*|\\+|,|;|\\=)",1)){
+        if(node != NULL)
+    	{
+    		node->content = s;
+        	node->contentSize = 1;
+    	}
+		toReturn =  TRUE;
+    } else {
+        removeNode(node); 
+    }
+    return toReturn;
+}
+int colon(const char *s, Node* node){
+	int toReturn = FALSE;
+    if(regexTest(s,":",1)){
+        if(node != NULL)
+    	{
+    		node->content = s;
+        	node->contentSize = 1;
+    	}
+		toReturn =  TRUE;
+    } else {
+        removeNode(node); 
+    }
+    return toReturn;
+}
+int at(const char *s, Node* node){
+	int toReturn = FALSE;
+    if(regexTest(s,"@",1)){
+        if(node != NULL)
+    	{
+    		node->content = s;
+        	node->contentSize = 1;
+    	}
+		toReturn =  TRUE;
+    } else {
+        removeNode(node); 
+    }
+    return toReturn;
 }
