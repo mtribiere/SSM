@@ -29,10 +29,9 @@ int main(int argc, char *argv[])
 	}*/
 
 	Node* node = createNode("segment");
-	if(segment("+%7f+5", node))
+	if(segment("+%7f@5", node))
 	{
 		printf("Ouep\n");
-		printf("Taille de l'arbre : %d\n", treeLength(&node));
 		printTree(&node);
 	} else{
 		printf("Nope\n");

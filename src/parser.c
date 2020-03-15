@@ -27,8 +27,9 @@ result etoile(fptr function, const char *s, int mini, int maxi)
 {
     int i = 0;
     int sum = 0;
+    Node* test;
     while(function(s+sum, NULL)) {
-        Node* test = createNode("test");
+        test = createNode("test"); 
         function(s + sum, test);
         sum += test->contentSize;
         removeNode(test);

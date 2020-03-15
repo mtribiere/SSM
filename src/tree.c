@@ -123,16 +123,17 @@ void removeNode(Node* node)
 //Libère la mémoire du noeud donné
 //Attention, on a pas node == NULL après avoir appelé cette fonction ...
 {
-	if(node == NULL) return;
-	Node* explorer = node;
-	if(node->childCount == 0) free(node);
-	else
-	{
-		for(int i = (explorer->childCount)-1; i >= 0; i--)
-		{
-			removeNode(explorer->childList[i]);
-			explorer->childCount--;
-		}
-	}
+	free(node);
+	// if(node == NULL) return;
+	// Node* explorer = node;
+	// if(node->childCount == 0) free(node);
+	// else
+	// {
+	// 	for(int i = (explorer->childCount)-1; i >= 0; i--)
+	// 	{
+	// 		removeNode(explorer->childList[i]);
+	// 		explorer->childCount--;
+	// 	}
+	// }
 
 }

@@ -52,11 +52,11 @@ int pchar(const char *s, Node* node){
 		return(unreserved(s, NULL) || pctEncoded(s, NULL) || subDelims(s, NULL) || colon(s, NULL) || at(s,NULL));
 	}
 	createChild(node, 1, NULL);
-	if(unreserved(s, NULL)) {addChild(node, "unreserved"); unreserved(s, node->childList[0]);}
-	else if(pctEncoded(s, NULL)) {addChild(node, "pct-encoded"); pctEncoded(s, node->childList[0]);}
+	if(pctEncoded(s, NULL)) {addChild(node, "pct-encoded"); pctEncoded(s, node->childList[0]);}
 	else if(subDelims(s, NULL)) {addChild(node, "sub-delims"); subDelims(s, node->childList[0]);}
-	else if(colon(s, NULL)) {addChild(node, "colon"); colon(s, node->childList[0]);}
-	else if(at(s, NULL)) {addChild(node, "at"); at(s, node->childList[0]);}
+	else if(colon(s, NULL)) {addChild(node, ":"); colon(s, node->childList[0]);}
+	else if(at(s, NULL)) {addChild(node, "@"); at(s, node->childList[0]);}
+	else if(unreserved(s, NULL)) {addChild(node, "unreserved"); unreserved(s, node->childList[0]);}
 	else {removeNode(node); return FALSE;}
 	node->content = s;
 	node->childList[0]->content = s;
@@ -80,7 +80,7 @@ int segment(const char *s, Node* node){
 			}
 			node->content = s;
 			int size = 0;
-			for(int i =0; i<node->childCount; i++) size += node->childList[i]->contentSize;
+			for(int i =0; i < node->childCount; i++) size += node->childList[i]->contentSize;
 			node->contentSize = size;
 		} else {
 			removeNode(node);

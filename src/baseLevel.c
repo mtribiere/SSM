@@ -344,7 +344,7 @@ int subDelims(const char *s, Node* node){
 }
 int colon(const char *s, Node* node){
 	int toReturn = FALSE;
-    if(regexTest(s,":",1)){
+    if(regexTest(s,"^:",1)){
         if(node != NULL)
     	{
     		node->content = s;
@@ -358,7 +358,7 @@ int colon(const char *s, Node* node){
 }
 int at(const char *s, Node* node){
 	int toReturn = FALSE;
-    if(regexTest(s,"@",1)){
+    if(regexTest(s,"^@",1)){
         if(node != NULL)
     	{
     		node->content = s;
