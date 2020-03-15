@@ -28,8 +28,8 @@ int main(int argc, char *argv[])
 		if(message[i] == '\n') printf("\n");
 	}*/
 
-	Node* node = createNode("pchar");
-	if(pchar("%7f", node))
+	Node* node = createNode("segment");
+	if(segment("+%7f+5", node))
 	{
 		printf("Ouep\n");
 		printf("Taille de l'arbre : %d\n", treeLength(&node));

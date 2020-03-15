@@ -16,7 +16,7 @@ typedef struct result
 	int number;
 } result;
 
-result etoile(fptr function, const char *s, int mini, int maxi, int shift);
+result etoile(fptr function, const char *s, int mini, int maxi);
 
 
 #endif

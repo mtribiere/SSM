@@ -176,7 +176,7 @@ int VCHAR(const char *s, Node* node) {
 
 int OWS(const char *s, Node* node) {
 	int OWSaux(const char *s, Node* node) {return (SP(s, NULL) || HTAB(s, NULL));}
-	result ret = etoile(OWSaux, s, 0, -1, 1);
+	result ret = etoile(OWSaux, s, 0, -1);
 	if(ret.boolean == TRUE)
 	{
 		createChild(node, ret.number, NULL);
@@ -200,7 +200,7 @@ int OWS(const char *s, Node* node) {
 
 int RWS(const char *s, Node* node) {
 	int RWSaux(const char *s, Node* node) {return (SP(s, NULL) || HTAB(s, NULL));}
-	result ret = etoile(RWSaux, s, 1, -1, 1);
+	result ret = etoile(RWSaux, s, 1, -1);
 	if(ret.boolean == TRUE)
 	{
 		createChild(node, ret.number, NULL);
@@ -248,7 +248,7 @@ int tchar(const char *s, Node* node) {
 }
 
 int token(const char *s, Node* node){
-	result ret = etoile(tchar, s, 1, -1, 1);
+	result ret = etoile(tchar, s, 1, -1);
 	if(ret.boolean == TRUE)
 	{
 		createChild(node, ret.number, NULL);
@@ -315,7 +315,7 @@ int percent(const char *s, Node* node){
 
 int unreserved(const char *s, Node* node){
 	int toReturn = FALSE;
-    if(regexTest(s,"([A-Za-z0-9]|\\-|\\.|_|~)",1)){
+    if(regexTest(s,"^[A-Za-z0-9]|\\-|\\.|_|~$",1)){
         if(node != NULL)
     	{
     		node->content = s;
@@ -330,7 +330,7 @@ int unreserved(const char *s, Node* node){
 
 int subDelims(const char *s, Node* node){
 	int toReturn = FALSE;
-    if(regexTest(s,"(\\!|\\$|&|'|\\(|\\)|\\*|\\+|,|;|\\=)",1)){
+    if(regexTest(s,"^(\\!|\\$|&|'|\\(|\\)|\\*|\\+|,|;|\\=)",1)){
         if(node != NULL)
     	{
     		node->content = s;

@@ -47,8 +47,6 @@ int pctEncoded(const char *s, Node* node){
     else {removeNode(node);return FALSE;}
 }
 
-//pchar = unreserved / pct-encoded / sub-delims / ":" / "@"
-//pctEncoded(NULL) marche pas ...
 int pchar(const char *s, Node* node){
 	if(node == NULL){
 		return(unreserved(s, NULL) || pctEncoded(s, NULL) || subDelims(s, NULL) || colon(s, NULL) || at(s,NULL));
@@ -65,3 +63,30 @@ int pchar(const char *s, Node* node){
 	node->contentSize = node->childList[0]->contentSize;
 	return TRUE;
 }
+
+int segment(const char *s, Node* node){
+	result ret = etoile(pchar, s, 0, -1);
+	if(node != NULL)
+	{
+		int j = 0;
+		if(ret.boolean == TRUE)
+		{
+			createChild(node, ret.number, NULL);
+			for(int i = 0; i < ret.number; i++)
+			{
+				addChild(node, "pchar");
+				pchar(s+j, node->childList[i]);
+				j += node->childList[i]->contentSize;
+			}
+			node->content = s;
+			int size = 0;
+			for(int i =0; i<node->childCount; i++) size += node->childList[i]->contentSize;
+			node->contentSize = size;
+		} else {
+			removeNode(node);
+		}
+	}
+	return ret.boolean;
+}
+
+//absolute-path = 1* ( "/" segment )
