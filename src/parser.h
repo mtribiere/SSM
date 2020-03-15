@@ -9,12 +9,13 @@
 
 int regexTest(const char* string, const char* regex, const int size);
 
-typedef int (*fptr)(const char*, Node*);
 typedef struct result
 {
 	int boolean;
 	int number;
 } result;
+typedef result (*fptr)(const char*, Node*);
+
 
 result etoile(fptr function, const char *s, int mini, int maxi);
 

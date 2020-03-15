@@ -175,7 +175,7 @@ int VCHAR(const char *s, Node* node) {
 
 
 int OWS(const char *s, Node* node) {
-	int OWSaux(const char *s, Node* node) {return (SP(s, NULL) || HTAB(s, NULL));}
+	result OWSaux(const char *s, Node* node) {return (result){(SP(s, NULL) || HTAB(s, NULL)), 1};}
 	result ret = etoile(OWSaux, s, 0, -1);
 	if(ret.boolean == TRUE)
 	{
@@ -199,7 +199,7 @@ int OWS(const char *s, Node* node) {
 }
 
 int RWS(const char *s, Node* node) {
-	int RWSaux(const char *s, Node* node) {return (SP(s, NULL) || HTAB(s, NULL));}
+	result RWSaux(const char *s, Node* node) {return (result){(SP(s, NULL) || HTAB(s, NULL)), 1};}
 	result ret = etoile(RWSaux, s, 1, -1);
 	if(ret.boolean == TRUE)
 	{
@@ -248,7 +248,8 @@ int tchar(const char *s, Node* node) {
 }
 
 int token(const char *s, Node* node){
-	result ret = etoile(tchar, s, 1, -1);
+	result tcharaux(const char *s, Node* node){return (result){tchar(s, node), 1};}
+	result ret = etoile(tcharaux, s, 1, -1);
 	if(ret.boolean == TRUE)
 	{
 		createChild(node, ret.number, NULL);

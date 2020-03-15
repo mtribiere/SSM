@@ -47,9 +47,10 @@ int pctEncoded(const char *s, Node* node){
     else {removeNode(node);return FALSE;}
 }
 
-int pchar(const char *s, Node* node){
+result pchar(const char *s, Node* node){
 	if(node == NULL){
-		return(unreserved(s, NULL) || pctEncoded(s, NULL) || subDelims(s, NULL) || colon(s, NULL) || at(s,NULL));
+		if(pctEncoded(s, NULL)) return((result){TRUE, 3});
+		else return((result){unreserved(s, NULL) || subDelims(s, NULL) || colon(s, NULL) || at(s,NULL),1});
 	}
 	createChild(node, 1, NULL);
 	if(pctEncoded(s, NULL)) {addChild(node, "pct-encoded"); pctEncoded(s, node->childList[0]);}
@@ -57,36 +58,31 @@ int pchar(const char *s, Node* node){
 	else if(colon(s, NULL)) {addChild(node, ":"); colon(s, node->childList[0]);}
 	else if(at(s, NULL)) {addChild(node, "@"); at(s, node->childList[0]);}
 	else if(unreserved(s, NULL)) {addChild(node, "unreserved"); unreserved(s, node->childList[0]);}
-	else {removeNode(node); return FALSE;}
+	else {removeNode(node); return (result){FALSE,0};}
 	node->content = s;
 	node->childList[0]->content = s;
 	node->contentSize = node->childList[0]->contentSize;
-	return TRUE;
+	return (result){TRUE, node->contentSize};
 }
 
-int segment(const char *s, Node* node){
+result segment(const char *s, Node* node){
 	result ret = etoile(pchar, s, 0, -1);
-	if(node != NULL)
+	if(node == NULL) return (result){ret.boolean, ret.number}; //pas le bon truc ?
+	int j = 0;
+	if(ret.boolean == TRUE)
 	{
-		int j = 0;
-		if(ret.boolean == TRUE)
+		createChild(node, ret.number, NULL);
+		for(int i = 0; i < ret.number; i++)
 		{
-			createChild(node, ret.number, NULL);
-			for(int i = 0; i < ret.number; i++)
-			{
-				addChild(node, "pchar");
-				pchar(s+j, node->childList[i]);
-				j += node->childList[i]->contentSize;
-			}
-			node->content = s;
-			int size = 0;
-			for(int i =0; i < node->childCount; i++) size += node->childList[i]->contentSize;
-			node->contentSize = size;
-		} else {
-			removeNode(node);
+			addChild(node, "pchar"); pchar(s+j, node->childList[i]);
+			j += node->childList[i]->contentSize;
 		}
+		node->content = s;
+		int size = 0;
+		for(int i =0; i < node->childCount; i++) size += node->childList[i]->contentSize;
+		node->contentSize = size;
+	} else {
+		removeNode(node);
 	}
-	return ret.boolean;
+	return (result){ret.boolean, node->contentSize};
 }
-
-//absolute-path = 1* ( "/" segment )

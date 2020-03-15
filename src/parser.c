@@ -21,18 +21,18 @@ int regexTest(const char* string, const char* regex, const int size)
 
 
 result etoile(fptr function, const char *s, int mini, int maxi)
-//Prend en argument une fonction booléenne sur un caractere, une chaine de caractère et un nombre minimal et maximal d'occurence
+//Prend en argument une fonction booléenne sur un caractère, une chaîne de caractère et un nombre minimal et maximal d'occurence
 //Le max est à -1 si il est infini
 //Renvoie TRUE si pour chaque caractère de la chaine de caractère, la fonction boolèenne renvoie TRUE entre le nombre minimal et maximal de fois.
 {
     int i = 0;
     int sum = 0;
-    Node* test;
-    while(function(s+sum, NULL)) {
-        test = createNode("test"); 
-        function(s + sum, test);
-        sum += test->contentSize;
-        removeNode(test);
+    while(function(s+sum, NULL).boolean) {
+        // test = createNode("test"); 
+        // function(s + sum, test);
+        // sum += test->contentSize;
+        // removeNode(test);
+        sum += function(s+sum, NULL).number;
         i++;
     }
     if((maxi == -1) && i < mini) return (result){FALSE, i};

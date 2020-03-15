@@ -1,6 +1,7 @@
 #ifndef BASE_LEVEL_H
 #define BASE_LEVEL_H
 #include "tree.h"
+#include "parser.h"
 
 int DIGIT(const char* s, Node* node);
 int ALPHA(const char *s, Node* node);

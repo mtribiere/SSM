@@ -29,7 +29,7 @@ int main(int argc, char *argv[])
 	}*/
 
 	Node* node = createNode("segment");
-	if(segment("+%7f@5", node))
+	if(segment("+%7f5", node).boolean)
 	{
 		printf("Ouep\n");
 		printTree(&node);
