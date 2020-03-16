@@ -3,6 +3,7 @@
 #include "parser.h"
 #include "tree.h"
 
+//HTTP-name = %x48.54.54.50
 int HTTPname(const char* s, Node* node) {
 	int toReturn = regexTest(s,"HTTP",4);
     if(node != NULL)
@@ -13,7 +14,7 @@ int HTTPname(const char* s, Node* node) {
     return toReturn;
 }
 
-
+//HTTP-version = HTTP-name "/" DIGIT "." DIGIT
 int HTTPVersion(const char *s, Node* node){
 	int toReturn = (strlen(s) > 7 && (HTTPname(s, NULL) && slash(s+4, NULL) && DIGIT(s+5, NULL) && dot(s+6 , NULL) && DIGIT(s+7, NULL))); //On vérifie qu'on a bien tous les éléments
 	if(node != NULL) //Si le noeud est NULL, on renvoie juste le booléen
@@ -32,7 +33,7 @@ int HTTPVersion(const char *s, Node* node){
     return toReturn;
 }
 
-
+//pct-encoded = "%" HEXDIG HEXDIG
 int pctEncoded(const char *s, Node* node){
 	int toReturn = (strlen(s) > 2 && (percent(s, NULL) && HEXDIG(s+1, NULL) && HEXDIG(s+2, NULL)));
 	if(node != NULL){
@@ -48,6 +49,7 @@ int pctEncoded(const char *s, Node* node){
     return toReturn;
 }
 
+//pchar = unreserved / pct-encoded / sub-delims / ":" / "@"
 result pchar(const char *s, Node* node){
 	result toReturn; //On renvoie un result car les fonctions suivantes auront besoin de connaître la taille du pchar
 	if(pctEncoded(s, NULL)) toReturn = ((result){TRUE, 3}); //Si on a un pct-encoded, la taille est de 3
@@ -67,14 +69,14 @@ result pchar(const char *s, Node* node){
 	return toReturn;
 }
 
+//segment = * pchar
 result segment(const char *s, Node* node){
-	result ret = etoile(pchar, s, 0, -1);
-	if(node == NULL) return (result){ret.boolean, ret.number}; //A priori cette ligne est fausse, ret.number n'est pas la taille du segment mais le nombre d'élements qui le compose
+	results ret = etoile(pchar, s, 0, -1);
 	if(node != NULL)
 	{
-		int j = 0;
 		if(ret.boolean == TRUE)
 		{
+			int j = 0;
 			createChild(node, ret.number, NULL);
 			for(int i = 0; i < ret.number; i++)
 			{
@@ -82,10 +84,66 @@ result segment(const char *s, Node* node){
 				j += node->childList[i]->contentSize;
 			}
 			node->content = s;
-			int size = 0;
-			for(int i =0; i < node->childCount; i++) size += node->childList[i]->contentSize;
-			node->contentSize = size; //On calcule la taille du père à partir de la taille de ses fils
+			node->contentSize = ret.size;
 		} else removeNode(node);
 	}
-	return (result){ret.boolean, node->contentSize};
+	return (result){ret.boolean, ret.size};
+}
+
+//absolute-path = 1* ( "/" segment )
+int absolutePath(const char *s, Node* node)
+{
+	result absolutePathaux(const char *s, Node* node) {
+		if(strlen(s) > 1) return (result){(slash(s, NULL) && segment(s+1, NULL).boolean), 1 + segment(s+1, NULL).number};
+		else if(strlen(s) == 1) return (result){slash(s, NULL), 1};
+		else return (result){FALSE, 0};
+	}
+	results ret = etoile(absolutePathaux, s, 1, -1); 
+	if(strlen(s) > 1) ret.number *= 2 ; //etoile repère le motif ("/" segment), pour la fonction on devra créer 2 fois plus de fils
+	if(node != NULL){ 
+		if(ret.boolean == TRUE) 
+		{
+			int j = 0;
+			createChild(node, ret.number, NULL); 
+			for(int i = 0; i < ret.number; i++)
+			{
+				if(slash(s+j, NULL)) {addChild(node, "/"); slash(s+j, node->childList[i]);}
+				else if(segment(s+j, NULL).boolean) {addChild(node, "segment"); segment(s+j, node->childList[i]);} 
+				j += node->childList[i]->contentSize;
+			}
+			node->content = s; 
+			node->contentSize = ret.size;
+		} else {
+			removeNode(node); 
+		}
+	}
+	return ret.boolean;
+}
+
+//query = * ( pchar / "/" / "?" )
+int query(const char *s, Node* node) {
+	result queryaux(const char *s, Node* node) {
+		if(pchar(s, NULL).boolean) return (result){TRUE, pchar(s, NULL).number};
+		else return (result){slash(s, NULL) || interrogation(s, NULL), 1};
+	}
+	results ret = etoile(queryaux, s, 0, -1);
+	if(node != NULL){
+		if(ret.boolean == TRUE)
+		{
+			int j = 0;
+			createChild(node, ret.number, NULL);
+			for(int i = 0; i < ret.number; i++)
+			{
+				if(slash(s+j, NULL)) {addChild(node, "/"); slash(s+j, node->childList[i]);}
+				else if(interrogation(s+j, NULL)) {addChild(node, "?"); interrogation(s+j, node->childList[i]);}
+				else if(pchar(s+j, NULL).boolean) {addChild(node, "pchar"); pchar(s+j, node->childList[i]);}
+				j += node->childList[i]->contentSize;
+			}
+			node->content = s;
+			node->contentSize = ret.size;
+		} else {
+			removeNode(node);
+		}
+	}
+	return ret.boolean;
 }

@@ -9,6 +9,13 @@
 
 int regexTest(const char* string, const char* regex, const int size);
 
+typedef struct results
+{
+	int boolean;
+	int number;
+	int size;
+} results;
+
 typedef struct result
 {
 	int boolean;
@@ -17,7 +24,7 @@ typedef struct result
 typedef result (*fptr)(const char*, Node*);
 
 
-result etoile(fptr function, const char *s, int mini, int maxi);
+results etoile(fptr function, const char *s, int mini, int maxi);
 
 
 #endif

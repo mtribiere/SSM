@@ -122,6 +122,16 @@ int slash(const char* s, Node* node) {
     return toReturn;
 }
 
+int interrogation(const char* s, Node* node) {
+	int toReturn = regexTest(s,"\\?",1);
+    if(node != NULL)
+    {
+    	if(toReturn) {node->content = s; node->contentSize = 1;}
+    	else removeNode(node);
+    }
+    return toReturn;
+}
+
 int dot(const char* s, Node* node) {
 	int toReturn = regexTest(s,"\\.",1);
     if(node != NULL)
@@ -193,7 +203,7 @@ int tchar(const char* s, Node* node) {
 
 int OWS(const char *s, Node* node) {
 	result OWSaux(const char *s, Node* node) {return (result){(SP(s, NULL) || HTAB(s, NULL)), 1};} //Fonction utilisée par etoile
-	result ret = etoile(OWSaux, s, 0, -1); //On appelle etoile, on regarde si il y a 0 ou plus occurrences
+	results ret = etoile(OWSaux, s, 0, -1); //On appelle etoile, on regarde si il y a 0 ou plus occurrences
 	if(node != NULL){ //Si node vaut NULL, on renvoie juste le booléen
 		if(ret.boolean == TRUE) //Si le booléen est vrai, on crée les fils
 		{
@@ -214,7 +224,7 @@ int OWS(const char *s, Node* node) {
 
 int RWS(const char *s, Node* node) {
 	result RWSaux(const char *s, Node* node) {return (result){(SP(s, NULL) || HTAB(s, NULL)), 1};}
-	result ret = etoile(RWSaux, s, 1, -1);
+	results ret = etoile(RWSaux, s, 1, -1);
 	if(node != NULL){
 		if(ret.boolean == TRUE)
 		{
@@ -252,7 +262,7 @@ int CRLF(const char *s, Node* node){
 
 int token(const char *s, Node* node){
 	result tcharaux(const char *s, Node* node){return (result){tchar(s, node), 1};}
-	result ret = etoile(tcharaux, s, 1, -1);
+	results ret = etoile(tcharaux, s, 1, -1);
 	if(ret.boolean == TRUE)
 	{
 		createChild(node, ret.number, NULL);

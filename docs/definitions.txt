@@ -5,7 +5,7 @@ HTTP-message = request-line * ( header-field CRLF ) CRLF [ message-body ]
 	request-line = method SP origin-form SP HTTP-version CRLF 
 		method = token 	OK
 		origin-form = absolute-path [ "?" query ]
-			absolute-path = 1* ( "/" segment )  
+			absolute-path = 1* ( "/" segment )  OK
 		HTTP-version = HTTP-name "/" DIGIT "." DIGIT	OK
 			HTTP-name = %x48.54.54.50	OK
 	header-field = Connection-header / Content-Length-header / Content-Type-header / Cookie-header / Transfer-Encoding-header / Expect-header / Host-header / Accept-header / Accept-Charset-header / Accept-Encoding-header / Accept-Language-header / Referer-header / User-Agent-header / ( field-name ":" OWS field-value OWS ) 
@@ -103,7 +103,7 @@ weight = OWS ";" OWS "q=" qvalue
 	qvalue = ( "0" [ "." *3 DIGIT ] ) / ( "1" [ "." *3 "0" ] )
 
 alphanum = ALPHA / DIGIT 
-query = * ( pchar / "/" / "?" )
+query = * ( pchar / "/" / "?" )	OK
 
 path-abempty = * ( "/" segment ) 
 	path-absolute = "/" [ segment-nz * ( "/" segment ) ]

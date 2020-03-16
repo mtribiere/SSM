@@ -26,6 +26,7 @@ int token(const char *s, Node* node);
 int method(const char *s, Node* node);
 
 int slash(const char *s, Node* node);
+int interrogation(const char *s, Node* node);
 int dot(const char *s, Node* node);
 int percent(const char *s, Node* node);
 int unreserved(const char *s, Node* node);

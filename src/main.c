@@ -28,8 +28,8 @@ int main(int argc, char *argv[])
 		if(message[i] == '\n') printf("\n");
 	}*/
 
-	Node* node = createNode("segment");
-	if(segment("+%7f5", node).boolean)
+	Node* node = createNode("query");
+	if(query("/?//%3f/", node))
 	{
 		printf("Ouep\n");
 		printTree(&node);
