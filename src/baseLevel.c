@@ -40,15 +40,35 @@ int BIT(const char* s, Node* node) {
     }
     return toReturn;
 }
+*/
 int HEXDIG(const char* s, Node* node) {
-	int toReturn = regexTest(s,"[0-9A-Fa-f]",1);
+	int toReturn = regexTest(s,"^[0-9A-Fa-f]",1);
     if(node != NULL)
     {
-    	if(toReturn) {node->content = s; node->contentSize = 1;}
-    	else removeNode(node);
+    	if(toReturn) {
+			strcpy(node->name,"HEXDIG");
+			node->content = s; 
+			node->contentSize = 1;
+			node->childCount = 0;
+		}
     }
     return toReturn;
 }
+
+int pct_encoded(const char *s,Node *node){
+	int toReturn = regexTest(s,"^%[0-9A-Fa-f][0-9A-Fa-f]",3);
+	if(node != NULL){
+		if(toReturn){
+			strcpy(node->name,"pct-encoded");
+			node->content = s;
+			node->contentSize = 3;
+			node->childCount = 0;
+		}
+	}
+
+	return toReturn;
+}
+/*
 int CHAR_(const char* s, Node* node) {
 	int toReturn = regexTest(s,"[-]",1);
     if(node != NULL)
@@ -161,23 +181,36 @@ int percent(const char* s, Node* node) {
     }
     return toReturn;
 }
+*/
 
 int unreserved(const char* s, Node* node) {
 	int toReturn = regexTest(s,"^[A-Za-z0-9]|\\-|\\.|_|~$",1);
     if(node != NULL)
     {
-    	if(toReturn) {node->content = s; node->contentSize = 1;}
-    	else removeNode(node);
+    	if(toReturn) {
+			strcpy(node->name,"unreserved");
+			node->content = s; 
+			node->contentSize = 1;
+			node->childCount = 0;
+		}
     }
     return toReturn;
 }
+
+
+
 int subDelims(const char* s, Node* node) {
 	int toReturn = regexTest(s,"^(\\!|\\$|&|'|\\(|\\)|\\*|\\+|,|;|\\=)",1);
     if(node != NULL)
     {
-    	if(toReturn) {node->content = s; node->contentSize = 1;}
-    	else removeNode(node);
+    	if(toReturn) {
+			strcpy(node->name,"sub-delimiter");
+			node->content = s; 
+			node->contentSize = 1;
+			node->childCount = 0;
+		}
     }
+
     return toReturn;
 }
 
@@ -185,8 +218,12 @@ int colon(const char* s, Node* node) {
 	int toReturn = regexTest(s,"^:",1);
     if(node != NULL)
     {
-    	if(toReturn) {node->content = s; node->contentSize = 1;}
-    	else removeNode(node);
+    	if(toReturn) {
+			strcpy(node->name,"COLON");
+			node->content = s; 
+			node->contentSize = 1;
+			node->childCount = 0;
+		}
     }
     return toReturn;
 }
@@ -195,11 +232,16 @@ int at(const char* s, Node* node) {
 	int toReturn = regexTest(s,"^@",1);
     if(node != NULL)
     {
-    	if(toReturn) {node->content = s; node->contentSize = 1;}
-    	else removeNode(node);
+    	if(toReturn) {
+			strcpy(node->name,"AT");
+			node->content = s; 
+			node->contentSize = 1;
+			node->childCount = 0;
+		}
     }
     return toReturn;
 }
+/*
 int tchar(const char* s, Node* node) {
 	int toReturn = regexTest(s,"(\\!|#|\\$|%|&|'|\\*|\\+|\\-|\\.|\\^|_|`|\\||~|[0-9A-Za-z])",1);
     if(node != NULL)

@@ -5,9 +5,8 @@
 
 int HTTPname(const char *s, Node* node);
 int HTTPVersion(const char *s, Node* node);
-int pctEncoded(const char *s, Node* node);
-result pchar(const char *s, Node* node);
-result segment(const char *s, Node* node);
+int pchar(const char *s, Node* node);
+int segment(const char *s, Node* node);
 int absolutePath(const char *s, Node* node);
 int query(const char *s, Node* node);
 

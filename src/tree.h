@@ -9,6 +9,7 @@
 #define TRUE 1
 
 #define NAMESIZE 50 //Taille maximale du nom d'un noeud
+#define MAX_CHILD_COUNT 50
 
 typedef struct Node {
 	char name[NAMESIZE];
@@ -31,8 +32,8 @@ Node** searchByName(Node** root, const char name[NAMESIZE]);
 
 int treeLength(Node** root);
 
-void printNode(Node* node);
-void printTree(Node* root);
+void printNode(Node* node,int deep);
+void printTree(Node* root,int deep);
 void printStringWithLimit(const char *s,int limit);
 
 #endif

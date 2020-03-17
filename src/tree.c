@@ -40,30 +40,38 @@ void addChild(Node* parent, const char name[NAMESIZE])
 	parent->childList[parent->childCount++] = createNode(name);
 }
 
-void printNode(Node* node)
+void printNode(Node* node,int deep)
 {
 	//Affiche les données contenues dans un noeud
 	printf("\n\n");
+	for(int i = 0;i<deep;i++)
+		printf("\t");
 	printf("Name\t\t:\t%s\n", node->name);
 
+	for(int i = 0;i<deep;i++)
+		printf("\t");
 	printf("Content\t\t:\t");
 	printStringWithLimit(node->content,node->contentSize);
 	printf("\n");
 
+	for(int i = 0;i<deep;i++)
+		printf("\t");
 	printf("ContentSize\t:\t%d\n", node->contentSize);
-	
+		
+	for(int i = 0;i<deep;i++)
+		printf("\t");
 	printf("ChildCount\t:\t%d\n", node->childCount);
 	printf("\n\n");
 }
 
-void printTree(Node* root)
+void printTree(Node* root,int deep)
 {
+	deep++;
+	printNode(root,deep);
 	Node* explorer = root;
-	int i;
-	printNode(explorer);
-	for(i = 0; i < explorer->childCount; i++)
+	for(int i = 0; i < explorer->childCount; i++)
 	{
-		printTree(explorer->childList[i]);
+		printTree(explorer->childList[i],deep);
 	}
 }
 
@@ -124,11 +132,11 @@ void removeNode(Node* node)
 //Attention, on a pas node == NULL après avoir appelé cette fonction ...
 {
 	if(node == NULL) return;
-	Node* explorer = node;
-	for(int i = (explorer->childCount)-1; i >= 0; i--)
+	for(int i = 0; i < node->childCount; i++)
 	{
-		removeNode(explorer->childList[i]);
-		explorer->childCount--;
+		free((node->childList)[i]);
 	}
-	free(node);
+
+	(node->childCount) = 0;
+	free(node->childList);
 }

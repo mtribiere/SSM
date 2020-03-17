@@ -48,48 +48,65 @@ int pctEncoded(const char *s, Node* node){
     }
     return toReturn;
 }
-
+*/
 //pchar = unreserved / pct-encoded / sub-delims / ":" / "@"
-result pchar(const char *s, Node* node){
-	result toReturn; //On renvoie un result car les fonctions suivantes auront besoin de connaître la taille du pchar
-	if(pctEncoded(s, NULL)) toReturn = ((result){TRUE, 3}); //Si on a un pct-encoded, la taille est de 3
-	else toReturn = ((result){unreserved(s, NULL) || subDelims(s, NULL) || colon(s, NULL) || at(s,NULL),1}); //Sinon la taille est de 1
-	if(node != NULL){ //Si la node est NULL, on renvoie juste le booléen(la taille sera inutile)
-		if(toReturn.boolean){ //Si le booléen est vrai, on crée le noeud dans l'arbre
-			createChild(node, 1, NULL);
-			if(pctEncoded(s, NULL)) {addChild(node, "pct-encoded"); pctEncoded(s, node->childList[0]);} //on regarde quel règle à été vérifiée puis on rajoute les bonnes infos au noeud
-			else if(subDelims(s, NULL)) {addChild(node, "sub-delims"); subDelims(s, node->childList[0]);}
-			else if(colon(s, NULL)) {addChild(node, ":"); colon(s, node->childList[0]);}
-			else if(at(s, NULL)) {addChild(node, "@"); at(s, node->childList[0]);}
-			else if(unreserved(s, NULL)) {addChild(node, "unreserved"); unreserved(s, node->childList[0]);}
-			node->content = s; //On règle les valeurs du noeud père
-			node->contentSize = node->childList[0]->contentSize;
-		} else removeNode(node); //Si le booléen est faux, on supprime le noeud père
-	}	
+int pchar(const char *s, Node* node){
+	
+	//Remplir le node
+	strcpy(node->name,"pchar");
+	int toReturn = TRUE;
+
+	//Declarer l'ensemble des fonctions possibles
+	functionArray functions;
+	(functions.functions)[0] = &unreserved;
+	(functions.functions)[1] = &pct_encoded;
+	(functions.functions)[2] = &subDelims;
+	(functions.functions)[3] = &colon;
+	(functions.functions)[4] = &at;
+
+	functions.functionCount = 5;
+	functions.isOrFunction = TRUE;
+
+	//Creer le(s) fils
+	etoile(functions,s,1,1,node);
+
+	//Si etoile ne trouve pas de fils
+	if(node->childCount == 0){
+		toReturn = FALSE;
+		node->childCount = 0;
+	}
+
 	return toReturn;
+	
 }
 
 //segment = * pchar
-result segment(const char *s, Node* node){
-	results ret = etoile(pchar, s, 0, -1);
-	if(node != NULL)
-	{
-		if(ret.boolean == TRUE)
-		{
-			int j = 0;
-			createChild(node, ret.number, NULL);
-			for(int i = 0; i < ret.number; i++)
-			{
-				addChild(node, "pchar"); pchar(s+j, node->childList[i]);
-				j += node->childList[i]->contentSize;
-			}
-			node->content = s;
-			node->contentSize = ret.size;
-		} else removeNode(node);
-	}
-	return (result){ret.boolean, ret.size};
-}
+int segment(const char *s, Node* node){
+	
+	//Remplir le node
+	strcpy(node->name,"segment");
+	int toReturn = TRUE;
 
+	//Declarer l'ensemble des fonctions possibles
+	functionArray functions;
+	(functions.functions)[0] = &pchar;
+
+	functions.functionCount = 1;
+	functions.isOrFunction = TRUE;
+
+	//Creer le fils
+	etoile(functions,s,1,-1,node);
+
+	//Si etoile ne trouve pas de fils
+	if(node->childCount == 0){
+		toReturn = FALSE;
+		node->childCount = 0;
+	}
+
+	return toReturn;
+
+}
+/*
 //absolute-path = 1* ( "/" segment )
 int absolutePath(const char *s, Node* node)
 {

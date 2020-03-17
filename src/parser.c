@@ -48,14 +48,17 @@ void etoile(functionArray functions, const char *s, int min, int max,Node *node)
 
 				//Recuperer la bonne fonction
 				tmpFunction = (functions.functions)[i];
+				
 				tmpNode = malloc(sizeof(Node));
+				(tmpNode->childList) = malloc(sizeof(Node)*MAX_CHILD_COUNT);
+				tmpNode->childCount = 0;
 
 				//Executer la fonction
 				isCorrect = (*tmpFunction)(s,tmpNode);
 
 				//Si la fonction n'est pas correcte
 				if(!isCorrect)
-					free(tmpNode);
+					removeNode(tmpNode);
 
 			}
 
@@ -68,14 +71,15 @@ void etoile(functionArray functions, const char *s, int min, int max,Node *node)
 				//Ajouter un aux nodes trouvées
 				validCount++;
 
+				//Sommer la taille pour le parent
+				totalSize = totalSize + (tmpNode->contentSize);
+
 				//Si on a depassé le maximum
 				if(max != -1 && validCount >= max){
 					isMaxReached = TRUE;
 				}else{ //Sinon passer au node suivant
 					s = s + (tmpNode->contentSize);
 
-					//Sommer la taille
-					totalSize = totalSize + (tmpNode->contentSize);
 				}
 
 			}else{ //Si la aucune fonction n'est correcte

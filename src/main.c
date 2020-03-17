@@ -28,18 +28,15 @@ int main(int argc, char *argv[])
 		if(message[i] == '\n') printf("\n");
 	}*/
 	
-	char s[] = "a3sdsAd "; 
+	char s[] = "a56az "; 
 	Node testNode;
-	strcpy(testNode.name,"TestNode");
+	testNode.childList = malloc(sizeof(Node)*MAX_CHILD_COUNT);
 
-	functionArray functions;
-	(functions.functions)[0] = &DIGIT;
-	(functions.functions)[1] = &ALPHA;
-	functions.functionCount = 2;
-	functions.isOrFunction = TRUE;
-	
-	etoile(functions,s,1,-1,&testNode);
-	printTree(&testNode);
+	segment(s,&testNode);
+
+	printTree(&testNode,0);
+
+	removeNode(&testNode);
 	
 	return 0;
 }
