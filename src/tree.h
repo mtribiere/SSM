@@ -13,7 +13,7 @@
 typedef struct Node {
 	char name[NAMESIZE];
 	const char* content;
-	int contentSize; 
+	int contentSize;
 	struct Node** childList;
 	int childCount;
 } Node;
@@ -31,8 +31,7 @@ Node** searchByName(Node** root, const char name[NAMESIZE]);
 
 int treeLength(Node** root);
 
-void printNode(Node* node);
-void printTree(Node** root);
+void printTree(Node* node);
 void printStringWithLimit(const char *s,int limit);
 
 #endif

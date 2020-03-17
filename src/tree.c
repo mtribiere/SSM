@@ -7,7 +7,7 @@ Node* createNode(const char name[NAMESIZE]) {
 	{
 		perror("Problème d'allocation de mémoire");
 		exit(EXIT_FAILURE);
-	} 
+	}
 	strcpy(node->name, name);
 	node->childCount = 0;
 	node->childList = NULL;
@@ -22,7 +22,7 @@ void createChild(Node* parent, int count, const char names[][NAMESIZE]) {
 	{
 		perror("Problème d'allocation de mémoire");
 		exit(EXIT_FAILURE);
-	} 
+	}
 	if(names != NULL)
 	{
 		for(int i = parent->childCount; i < count; i++)
@@ -32,7 +32,7 @@ void createChild(Node* parent, int count, const char names[][NAMESIZE]) {
 		}
 	}
 	//sinon les fils ne sont pas initialisés
-	
+
 }
 
 void addChild(Node* parent, const char name[NAMESIZE])
@@ -40,30 +40,17 @@ void addChild(Node* parent, const char name[NAMESIZE])
 	parent->childList[parent->childCount++] = createNode(name);
 }
 
-void printNode(Node* node)
+void printTree(Node* node)
 {
-	//Affiche les données contenues dans un noeud
-	printf("\n\n");
-	printf("Name\t\t:\t%s\n", node->name);
-	
-	printf("Content\t\t:\t");
+	if (node == NULL) {printf("NIL\n"); return;}
+	printf("[%s] = \"", node->name);
 	printStringWithLimit(node->content,node->contentSize);
-	printf("\n");
-
-	printf("ContentSize\t:\t%d\n", node->contentSize);
-	
-	printf("ChildCount\t:\t%d\n", node->childCount);
-	printf("\n\n");
-}
-
-void printTree(Node** root)
-{
-	Node* explorer = *root;
-	int i;
-	printNode(explorer);
-	for(i = 0; i < explorer->childCount; i++)
+	printf("\"\n");
+	for (int i = 0; i < node->childCount; i++)
 	{
-		printTree(&(explorer->childList[i]));
+		printf("\t");
+		printTree(node->childList[i]);
+		printf("\n");
 	}
 }
 
@@ -113,7 +100,7 @@ Node** searchByName(Node** root, const char name[NAMESIZE])
 	{
 		perror("Problème d'allocation de mémoire");
 		exit(EXIT_FAILURE);
-	} 
+	}
 	searchFunction(root, name, foundList);
 	foundList = realloc(foundList, sizeof(Node*) * (count + 1));
 	return foundList;
