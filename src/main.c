@@ -28,8 +28,10 @@ int main(int argc, char *argv[])
 		if(message[i] == '\n') printf("\n");
 	}*/
 
-	Node* node = createNode("request-line");
-	if(requestLine("GE+ /where?q=now HTTP/1.1\r\n", node))
+	//Node* node = createNode("request-line");
+	//if(requestLine("GE+ /where?q=now HTTP/1.1\r\n", node))
+	Node* node = createNode("query");
+	if(query("/?//%3f/", node))
 	{
 		printf("Ouep\n");
 		printTree(node);
