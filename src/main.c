@@ -9,7 +9,7 @@
 #define MAX_FILE_SIZE 500
 
 int main(int argc, char *argv[])
-{	
+{
 	/*
 	//Si pas assez d'arguments
 	if(argc != 2){
@@ -32,10 +32,10 @@ int main(int argc, char *argv[])
 	if(requestLine("GE+ /where?q=now HTTP/1.1\r\n", node))
 	{
 		printf("Ouep\n");
-		printTree(&node);
+		printTree(node);
 	} else{
 		printf("Nope\n");
-	}	
-	
+	}
+
 	return 0;
 }
