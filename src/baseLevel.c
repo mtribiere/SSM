@@ -199,7 +199,27 @@ int tchar(const char* s, Node* node) {
     }
     return toReturn;
 }
-
+// 
+// //NOK
+// int obsText(const char* s, Node* node) {
+// 	return TRUE;
+// }
+// // NOK
+// int obsFold(const char* s, Node* node) {
+// 	return TRUE;
+// }
+// // OK
+// int fieldVchar(const char* s, Node* node) {
+// 	return (vchar(s, node) || obsText(s, node));
+// }
+// // NOK
+// int fieldContent(const char* s, Node* node) {
+// 	return fieldVchar(s, node);
+// }
+// // NOK
+// int fieldValue(const char* s, Node* node) {
+// 	return (fieldContent(s, node) || obsFold(s, node));
+// }
 
 int OWS(const char *s, Node* node) {
 	result OWSaux(const char *s, Node* node) {return (result){(SP(s, NULL) || HTAB(s, NULL)), 1};} //Fonction utilisée par etoile

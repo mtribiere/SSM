@@ -29,7 +29,7 @@ int HTTPVersion(const char *s, Node* node){
 		    node->content = s; //On règle les valeurs du noeud père
 		    node->contentSize = 8;
 		    }else removeNode(node);	//Si le booléen est faux, on supprime le noeud
-		} 
+		}
     return toReturn;
 }
 
@@ -65,7 +65,7 @@ result pchar(const char *s, Node* node){
 			node->content = s; //On règle les valeurs du noeud père
 			node->contentSize = node->childList[0]->contentSize;
 		} else removeNode(node); //Si le booléen est faux, on supprime le noeud père
-	}	
+	}
 	return toReturn;
 }
 
@@ -98,23 +98,23 @@ int absolutePath(const char *s, Node* node)
 		else if(strlen(s) == 1) return (result){slash(s, NULL), 1};
 		else return (result){FALSE, 0};
 	}
-	results ret = etoile(absolutePathaux, s, 1, -1); 
+	results ret = etoile(absolutePathaux, s, 1, -1);
 	if(strlen(s) > 1) ret.number *= 2 ; //etoile repère le motif ("/" segment), pour la fonction on devra créer 2 fois plus de fils
-	if(node != NULL){ 
-		if(ret.boolean == TRUE) 
+	if(node != NULL){
+		if(ret.boolean == TRUE)
 		{
 			int j = 0;
-			createChild(node, ret.number, NULL); 
+			createChild(node, ret.number, NULL);
 			for(int i = 0; i < ret.number; i++)
 			{
 				if(slash(s+j, NULL)) {addChild(node, "/"); slash(s+j, node->childList[i]);}
-				else if(segment(s+j, NULL).boolean) {addChild(node, "segment"); segment(s+j, node->childList[i]);} 
+				else if(segment(s+j, NULL).boolean) {addChild(node, "segment"); segment(s+j, node->childList[i]);}
 				j += node->childList[i]->contentSize;
 			}
-			node->content = s; 
+			node->content = s;
 			node->contentSize = ret.size;
 		} else {
-			removeNode(node); 
+			removeNode(node);
 		}
 	}
 	return ret.boolean;
@@ -147,3 +147,15 @@ int query(const char *s, Node* node) {
 	}
 	return ret.boolean;
 }
+
+//field-name = token
+result fieldName(const char *s, Node* node) {
+	return token(s, node);
+}
+
+result fieldContent(const char *s, Node* node) {
+	return token(s, node);
+}
+
+//headerField =  Connection-header / Content-Length-header / Content-Type-header / Cookie-header / Transfer-Encoding-header / Expect-header / Host-header / Accept-header / Accept-Charset-header / Accept-Encoding-header / Accept-Language-header / Referer-header / User-Agent-header / ( field-name ":" OWS field-value OWS )
+int headerField(const char )
