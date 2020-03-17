@@ -29,7 +29,7 @@ int main(int argc, char *argv[])
 	}*/
 
 	Node* node = createNode("request-line");
-	if(requestLine("GE+ /where?q=now HTTP/1.1\r\n", node))
+	if(requestLine("GET /where?q=now HTTP/1.1\r\n", node))
 	{
 		printf("Ouep\n");
 		printTree(&node);
