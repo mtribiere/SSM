@@ -4,7 +4,7 @@
 HTTP-message = request-line * ( header-field CRLF ) CRLF [ message-body ] 
 	request-line = method SP origin-form SP HTTP-version CRLF 
 		method = token 	OK
-		origin-form = absolute-path [ "?" query ]	OK
+		origin-form = absolute-path [ "?" query ]
 			absolute-path = 1* ( "/" segment )  OK
 		HTTP-version = HTTP-name "/" DIGIT "." DIGIT	OK
 			HTTP-name = %x48.54.54.50	OK
