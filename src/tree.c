@@ -132,11 +132,7 @@ void removeNode(Node* node)
 //Attention, on a pas node == NULL après avoir appelé cette fonction ...
 {
 	if(node == NULL) return;
-	for(int i = 0; i < node->childCount; i++)
-	{
-		free((node->childList)[i]);
-	}
-
 	(node->childCount) = 0;
 	free(node->childList);
+	node = NULL;
 }

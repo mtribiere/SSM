@@ -26,14 +26,14 @@ void etoile(functionArray functions, const char *s, int min, int max,Node *node)
 	int isMaxReached = FALSE; 
 	int falseFound = FALSE;
 	int totalSize = 0;
+	int functionReturn;
 	(node->childCount) = 0;
 
+	//Par defaut le contenu de la node est la chaine
+	node->content = s;
 
 	//Si on doit faire un OU
 	if(functions.isOrFunction == TRUE){
-
-		//Par defaut le contenu de la node est la chaine
-		node->content = s;
 
 		//Tant que le max n'est pas atteint et qu'aucun node n'est detecté faux
 		while(!isMaxReached && !falseFound){	
@@ -88,26 +88,102 @@ void etoile(functionArray functions, const char *s, int min, int max,Node *node)
 
 		}
 
-		//Si un a trouvé un faux avant d'avoir le min
-		if(min != -1 && validCount<min){
-			
-			//Liberer les enfants
-			for(int i = 0;i<(node->childCount);i++){
-				free((node->childList)[i]);
-			}
 
-			//Remettre le compteur à zero
-			(node->childCount) = 0;
-			
-			//Mettre le contenu à vide
-			node->content = NULL;
-			node->contentSize = 0;
-
-		}else{ //Si le node peut etre rempli
-
-			//Declarer la taille
-			node->contentSize = totalSize;
-		}
 
 	}
+
+	//On veut faire un ET
+	else
+	{
+		//Tant que le max n'est pas atteint et qu'aucun node n'est detecté faux
+		while(!isMaxReached && !falseFound){	
+		
+			///////Executer toutes les fonctions
+			int isCorrect = TRUE;
+			//Creer une fonction temporaire et un node temporaire
+			int (*tmpFunction)(const char *,Node *);
+			Node *tmpNode;
+			tmpNode = malloc(sizeof(Node) * functions.functionCount);
+			for(int i = 0;i<functions.functionCount && isCorrect == TRUE;i++){
+				//Recuperer la bonne fonction
+				tmpFunction = (functions.functions)[i];
+				
+				((&tmpNode[i])->childList) = malloc(sizeof(Node)*MAX_CHILD_COUNT);
+				(&tmpNode[i])->childCount = 0;
+
+
+				//Executer la fonction
+				functionReturn = (*tmpFunction)(s+totalSize,(&tmpNode[i]));
+
+				if(!optionnal(functions, i))
+					isCorrect = functionReturn;
+
+				//Si une fonction optionnelle n'est pas correcte
+				if(!functionReturn && isCorrect)
+					(&tmpNode[i])->contentSize = 0;
+				//Si une fonction obligatoire n'est pas correcte
+				else if(!isCorrect)
+					removeNode(tmpNode);
+				//Sinon on continue
+				else
+					totalSize = totalSize + (&tmpNode[i])->contentSize;
+				
+			}
+			//Si les fonctions sont correctes
+			if(isCorrect == TRUE){
+				//Inserer le node fils
+				for(int i = 0; i < functions.functionCount; i++)
+				{
+					if((&tmpNode[i])->contentSize != 0)
+					{
+						(node->childList)[node->childCount] = (&tmpNode[i]);
+						(node->childCount)++;
+					}
+				}
+
+				//Ajouter un aux nodes trouvées
+				validCount++;
+
+				//Si on a depassé le maximum
+				if(max != -1 && validCount >= max){
+					isMaxReached = TRUE;
+				}
+
+			}else{ //Si la fonction ET n'est pas correcte
+				falseFound = TRUE;
+			}
+
+		}
+	}
+	//Si un a trouvé un faux avant d'avoir le min
+	if(min != -1 && validCount<min){
+		//Liberer les enfants
+		for(int i = 0;i<(node->childCount);i++)
+			free((node->childList)[i]);
+
+		//Remettre le compteur à zero
+		(node->childCount) = 0;
+			
+		//Mettre le contenu à vide
+		node->content = NULL;
+		node->contentSize = 0;
+
+	}else{ //Si le node peut etre rempli
+		//Declarer la taille
+		node->contentSize = totalSize;
+	}
+}
+
+int optionnal(functionArray functions, int i)
+{
+	int toReturn = FALSE;
+	if(functions.optionnal != NULL)
+	{
+		for(int count = 0; count < functions.functionCount; count++)
+		{
+			if(functions.optionnal[count] == i)
+				toReturn = TRUE;
+		}
+	}
+	return toReturn;
 }

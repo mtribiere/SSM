@@ -28,13 +28,13 @@ int main(int argc, char *argv[])
 		if(message[i] == '\n') printf("\n");
 	}*/
 	
-	char s[] = "a56az "; 
+	char s[] = "GET /images/logo.png?q=now HTTP/1.1\r\n"; 
 	Node testNode;
 	testNode.childList = malloc(sizeof(Node)*MAX_CHILD_COUNT);
 
-	segment(s,&testNode);
-
-	printTree(&testNode,0);
+	if(requestLine(s,&testNode))
+		printTree(&testNode,0);
+	else printf("FAUX\n");
 
 	removeNode(&testNode);
 	
