@@ -4,7 +4,7 @@
 
 //Définitions de base de l'ABNF
 int DIGIT(const char* s, Node* node) {
-	int toReturn = regexTest(s,"[0-9]",1);
+	int toReturn = regexTest(s,"^[0-9]",1);
     if(node != NULL)
     {
     	if(toReturn) {node->content = s; node->contentSize = 1;}
@@ -13,7 +13,7 @@ int DIGIT(const char* s, Node* node) {
     return toReturn;
 }
 int ALPHA(const char* s, Node* node) {
-	int toReturn = regexTest(s,"[A-Za-z]",1);
+	int toReturn = regexTest(s,"^[A-Za-z]",1);
     if(node != NULL)
     {
     	if(toReturn) {node->content = s; node->contentSize = 1;}
@@ -22,7 +22,7 @@ int ALPHA(const char* s, Node* node) {
     return toReturn;
 }
 int BIT(const char* s, Node* node) {
-	int toReturn = regexTest(s,"[01]",1);
+	int toReturn = regexTest(s,"^[01]",1);
     if(node != NULL)
     {
     	if(toReturn) {node->content = s; node->contentSize = 1;}
@@ -31,7 +31,7 @@ int BIT(const char* s, Node* node) {
     return toReturn;
 }
 int HEXDIG(const char* s, Node* node) {
-	int toReturn = regexTest(s,"[0-9A-Fa-f]",1);
+	int toReturn = regexTest(s,"^[0-9A-Fa-f]",1);
     if(node != NULL)
     {
     	if(toReturn) {node->content = s; node->contentSize = 1;}
@@ -40,7 +40,7 @@ int HEXDIG(const char* s, Node* node) {
     return toReturn;
 }
 int CHAR_(const char* s, Node* node) {
-	int toReturn = regexTest(s,"[-]",1);
+	int toReturn = regexTest(s,"^[-]",1);
     if(node != NULL)
     {
     	if(toReturn) {node->content = s; node->contentSize = 1;}
@@ -49,7 +49,7 @@ int CHAR_(const char* s, Node* node) {
     return toReturn;
 }
 int CR(const char* s, Node* node) {
-	int toReturn = regexTest(s,"\r",1);
+	int toReturn = regexTest(s,"^\r",1);
     if(node != NULL)
     {
     	if(toReturn) {node->content = s; node->contentSize = 1;}
@@ -58,7 +58,7 @@ int CR(const char* s, Node* node) {
     return toReturn;
 }
 int LF(const char* s, Node* node) {
-	int toReturn = regexTest(s,"[\n]",1);
+	int toReturn = regexTest(s,"^[\n]",1);
     if(node != NULL)
     {
     	if(toReturn) {node->content = s; node->contentSize = 1;}
@@ -67,7 +67,7 @@ int LF(const char* s, Node* node) {
     return toReturn;
 }
 int DQUOTE(const char* s, Node* node) {
-	int toReturn = regexTest(s,"\"",1);
+	int toReturn = regexTest(s,"^\"",1);
     if(node != NULL)
     {
     	if(toReturn) {node->content = s; node->contentSize = 1;}
@@ -76,7 +76,7 @@ int DQUOTE(const char* s, Node* node) {
     return toReturn;
 }
 int HTAB(const char* s, Node* node) {
-	int toReturn = regexTest(s,"\t",1);
+	int toReturn = regexTest(s,"^\t",1);
     if(node != NULL)
     {
     	if(toReturn) {node->content = s; node->contentSize = 1;}
@@ -85,7 +85,7 @@ int HTAB(const char* s, Node* node) {
     return toReturn;
 }
 int OCTET(const char* s, Node* node) {
-	int toReturn = regexTest(s,"\0-ÿ",1);
+	int toReturn = regexTest(s,"^\0-ÿ",1);
     if(node != NULL)
     {
     	if(toReturn) {node->content = s; node->contentSize = 1;}
@@ -94,7 +94,7 @@ int OCTET(const char* s, Node* node) {
     return toReturn;
 }
 int SP(const char* s, Node* node) {
-	int toReturn = regexTest(s," ",1);
+	int toReturn = regexTest(s,"^ ",1);
     if(node != NULL)
     {
     	if(toReturn) {node->content = s; node->contentSize = 1;}
@@ -103,7 +103,7 @@ int SP(const char* s, Node* node) {
     return toReturn;
 }
 int VCHAR(const char* s, Node* node) {
-	int toReturn = regexTest(s,"[\\!-~]",1);
+	int toReturn = regexTest(s,"^[\\!-~]",1);
     if(node != NULL)
     {
     	if(toReturn) {node->content = s; node->contentSize = 1;}
@@ -113,7 +113,7 @@ int VCHAR(const char* s, Node* node) {
 }
 
 int slash(const char* s, Node* node) {
-	int toReturn = regexTest(s,"/",1);
+	int toReturn = regexTest(s,"^\\/",1);
     if(node != NULL)
     {
     	if(toReturn) {node->content = s; node->contentSize = 1;}
@@ -123,7 +123,7 @@ int slash(const char* s, Node* node) {
 }
 
 int interrogation(const char* s, Node* node) {
-	int toReturn = regexTest(s,"\\?",1);
+	int toReturn = regexTest(s,"^\\?",1);
     if(node != NULL)
     {
     	if(toReturn) {node->content = s; node->contentSize = 1;}
@@ -133,7 +133,7 @@ int interrogation(const char* s, Node* node) {
 }
 
 int dot(const char* s, Node* node) {
-	int toReturn = regexTest(s,"\\.",1);
+	int toReturn = regexTest(s,"^\\.",1);
     if(node != NULL)
     {
     	if(toReturn) {node->content = s; node->contentSize = 1;}
@@ -143,7 +143,7 @@ int dot(const char* s, Node* node) {
 }
 
 int percent(const char* s, Node* node) {
-	int toReturn = regexTest(s,"%",1);
+	int toReturn = regexTest(s,"^%",1);
     if(node != NULL)
     {
     	if(toReturn) {node->content = s; node->contentSize = 1;}
@@ -153,7 +153,7 @@ int percent(const char* s, Node* node) {
 }
 
 int unreserved(const char* s, Node* node) {
-	int toReturn = regexTest(s,"^[A-Za-z0-9]|\\-|\\.|_|~$",1);
+	int toReturn = regexTest(s,"^([A-Za-z0-9]|\\-|\\.|_|~)",1);
     if(node != NULL)
     {
     	if(toReturn) {node->content = s; node->contentSize = 1;}
@@ -191,7 +191,7 @@ int at(const char* s, Node* node) {
     return toReturn;
 }
 int tchar(const char* s, Node* node) {
-	int toReturn = regexTest(s,"(\\!|#|\\$|%|&|'|\\*|\\+|\\-|\\.|\\^|_|`|\\||~|[0-9A-Za-z])",1);
+	int toReturn = regexTest(s,"^(\\!|#|\\$|%|&|'|\\*|\\+|\\-|\\.|\\^|_|`|\\||~|[0-9A-Za-z])",1);
     if(node != NULL)
     {
     	if(toReturn) {node->content = s; node->contentSize = 1;}
@@ -199,7 +199,7 @@ int tchar(const char* s, Node* node) {
     }
     return toReturn;
 }
-// 
+//
 // //NOK
 // int obsText(const char* s, Node* node) {
 // 	return TRUE;
@@ -266,7 +266,7 @@ int RWS(const char *s, Node* node) {
 int BWS(const char *s, Node* node) {return OWS(s, node);}
 
 int CRLF(const char *s, Node* node){
-	int toReturn = strlen(s) > 1 && (CR(s, node->childList[0]) && LF(s + 1, node->childList[1]));
+	int toReturn = strlen(s) > 1 && (CR(s, NULL) && LF(s + 1, NULL));
 	if(node != NULL)
 	{
 		if(toReturn)
@@ -274,28 +274,30 @@ int CRLF(const char *s, Node* node){
 			createChild(node, 2, (char[][NAMESIZE]){"CR","LF"});
 			CR(s, node->childList[0]);
 			LF(s + 1, node->childList[1]);
+			node->content = s;
+			node->contentSize = 2;
 		} else removeNode(node);
 	}
     return toReturn;
 }
 
 
-int token(const char *s, Node* node){
-	result tcharaux(const char *s, Node* node){return (result){tchar(s, node), 1};}
+result token(const char *s, Node* node){
+	result tcharaux(const char *s, Node* node){return (result){tchar(s, NULL), 1};}
 	results ret = etoile(tcharaux, s, 1, -1);
-	if(ret.boolean == TRUE)
-	{
-		createChild(node, ret.number, NULL);
-		for(int i = 0; i < ret.number; i++)
+	if(node != NULL){
+		if(ret.boolean == TRUE)
 		{
-			addChild(node, "tchar"); tchar(s+i, node->childList[i]);
-		}
-		node->content = s;
-		node->contentSize = ret.number;
-	} else {
-		removeNode(node);
+			createChild(node, ret.number, NULL);
+			for(int i = 0; i < ret.number; i++)
+			{
+				addChild(node, "tchar"); tchar(s+i, node->childList[i]);
+			}
+			node->content = s;
+			node->contentSize = ret.number;
+		} else removeNode(node);
 	}
-	return ret.boolean;
+	return (result){ret.boolean, ret.size};
 }
 
-int method(const char *s, Node* node) { return token(s, node); }
+result method(const char *s, Node* node) { return token(s, node); }

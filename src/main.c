@@ -29,9 +29,10 @@ int main(int argc, char *argv[])
 	}*/
 
 	//Node* node = createNode("request-line");
-	//if(requestLine("GE+ /where?q=now HTTP/1.1\r\n", node))
-	Node* node = createNode("query");
-	if(query("/?//%3f/", node))
+	//if(requestLine("GET /where?q=now HTTP/1.1\r\n", node))
+	Node* node = createNode("header-field");
+
+	if(headerField("Referer-header: True\r\n", node))
 	{
 		printf("Ouep\n");
 		printTree(node);

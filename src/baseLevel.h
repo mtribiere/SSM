@@ -22,8 +22,8 @@ int BWS(const char *s, Node* node);
 int CRLF(const char *s, Node* node);
 
 int tchar(const char *s, Node* node);
-int token(const char *s, Node* node);
-int method(const char *s, Node* node);
+result token(const char *s, Node* node);
+result method(const char *s, Node* node);
 
 int slash(const char *s, Node* node);
 int interrogation(const char *s, Node* node);

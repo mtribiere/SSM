@@ -8,6 +8,7 @@
 #include "tree.h"
 
 int regexTest(const char* string, const char* regex, const int size);
+int regexTestInsensitive(const char* string, const char* regex, const int size);
 
 typedef struct results
 {
