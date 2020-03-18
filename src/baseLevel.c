@@ -199,11 +199,19 @@ int tchar(const char* s, Node* node) {
     }
     return toReturn;
 }
-//
-// //NOK
-// int obsText(const char* s, Node* node) {
-// 	return TRUE;
-// }
+
+int obsText(const char* s, Node* node) {
+//En théorie, ça fonctionne mais j'arrive pas à le tester
+//Si j'appelle obsText(s) avec s[0] = 0x80 et je fais printf("%2X",s[0]) ça affiche FFFFFF80
+//Donc c'est normal que ça renvoie faux, il faudrait tester avec un unsigned char ??
+	int toReturn = regexTest(s,"^[\\x80-\\xFF]",1);
+    if(node != NULL)
+    {
+        if(toReturn) {node->content = s; node->contentSize = 1;}
+        else removeNode(node);
+    }
+    return toReturn;
+}
 // // NOK
 // int obsFold(const char* s, Node* node) {
 // 	return TRUE;

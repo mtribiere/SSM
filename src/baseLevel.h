@@ -16,6 +16,8 @@ int OCTET(const char *s, Node* node);
 int SP(const char *s, Node* node);
 int VCHAR(const char *s, Node* node);
 
+int obsText(const char* s, Node* node);
+
 int OWS(const char *s, Node* node);
 int RWS(const char *s, Node* node);
 int BWS(const char *s, Node* node);
