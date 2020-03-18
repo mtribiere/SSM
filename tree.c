@@ -131,13 +131,8 @@ void removeNode(Node* node)
 //Libère la mémoire du noeud donné
 //Attention, on a pas node == NULL après avoir appelé cette fonction ...
 {
-	// if(node == NULL) return;
-	// for(int i = 0; i < node->childCount; i++)
-	// {
-	// 	if(node->childList[i] != NULL)
-	// 		free((node->childList)[i]);
-	// }
-
-	// (node->childCount) = 0;
-	// free(node->childList);
+	if(node == NULL) return;
+	(node->childCount) = 0;
+	free(node->childList);
+	node = NULL;
 }

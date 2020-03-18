@@ -26,6 +26,7 @@ void etoile(functionArray functions, const char *s, int min, int max,Node *node)
 	int isMaxReached = FALSE; 
 	int falseFound = FALSE;
 	int totalSize = 0;
+	int functionReturn;
 	(node->childCount) = 0;
 
 	//Par defaut le contenu de la node est la chaine
@@ -112,21 +113,32 @@ void etoile(functionArray functions, const char *s, int min, int max,Node *node)
 
 
 				//Executer la fonction
-				isCorrect = (*tmpFunction)(s+totalSize,(&tmpNode[i]));
+				functionReturn = (*tmpFunction)(s+totalSize,(&tmpNode[i]));
 
-				//Si la fonction n'est pas correcte
-				if(!isCorrect)
+				if(!optionnal(functions, i))
+					isCorrect = functionReturn;
+
+				//Si une fonction optionnelle n'est pas correcte
+				if(!functionReturn && isCorrect)
+					(&tmpNode[i])->contentSize = 0;
+				//Si une fonction obligatoire n'est pas correcte
+				else if(!isCorrect)
 					removeNode(tmpNode);
+				//Sinon on continue
 				else
 					totalSize = totalSize + (&tmpNode[i])->contentSize;
+				
 			}
-			//Si une fonction est correcte
+			//Si les fonctions sont correctes
 			if(isCorrect == TRUE){
 				//Inserer le node fils
 				for(int i = 0; i < functions.functionCount; i++)
 				{
-					(node->childList)[node->childCount] = (&tmpNode[i]);
-					(node->childCount)++;
+					if((&tmpNode[i])->contentSize != 0)
+					{
+						(node->childList)[node->childCount] = (&tmpNode[i]);
+						(node->childCount)++;
+					}
 				}
 
 				//Ajouter un aux nodes trouvées
@@ -160,4 +172,18 @@ void etoile(functionArray functions, const char *s, int min, int max,Node *node)
 		//Declarer la taille
 		node->contentSize = totalSize;
 	}
+}
+
+int optionnal(functionArray functions, int i)
+{
+	int toReturn = FALSE;
+	if(functions.optionnal != NULL)
+	{
+		for(int count = 0; count < functions.functionCount; count++)
+		{
+			if(functions.optionnal[count] == i)
+				toReturn = TRUE;
+		}
+	}
+	return toReturn;
 }

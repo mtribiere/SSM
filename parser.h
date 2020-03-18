@@ -6,6 +6,7 @@
 #include <regex.h>
 #include <string.h>
 #include "tree.h"
+#include "baseLevel.h"
 
 #define MAX_FUNCTION_NUMBER 50
 
@@ -15,9 +16,11 @@ typedef struct functionArray{
 	void *functions[MAX_FUNCTION_NUMBER];
 	int functionCount;
 	int isOrFunction;
+	int *optionnal;
 } functionArray;
 
 
 void etoile(functionArray functions, const char *s, int mini, int maxi, Node *node);
+int optionnal(functionArray functions, int i);
 
 #endif

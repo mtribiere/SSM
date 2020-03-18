@@ -303,7 +303,7 @@ int CRLF(const char *s, Node* node){
 
     functions.functionCount = 2;
     functions.isOrFunction = FALSE;
-
+    functions.optionnal = NULL;
     etoile(functions, s,1, 1, node);
 
     if(node->childCount == 0)

@@ -30,7 +30,7 @@ int HTTPVersion(const char *s, Node* node){
 
     functions.functionCount = 5;
     functions.isOrFunction = FALSE;
-
+    functions.optionnal = NULL;
     etoile(functions, s,1, 1, node);
 
     if(node->childCount == 0)
@@ -51,7 +51,7 @@ int pct_encoded(const char *s,Node *node){
 
     functions.functionCount = 3;
     functions.isOrFunction = FALSE;
-
+    functions.optionnal = NULL;
     etoile(functions, s, 1,1, node);
 
     if(node->childCount == 0)
@@ -123,6 +123,7 @@ int absolutePath(const char *s, Node* node)
 
 	chooseFrom.functionCount = 2;
 	chooseFrom.isOrFunction = FALSE;
+	chooseFrom.optionnal = NULL;
 
 	etoile(chooseFrom,s,1,-1,node);
 
@@ -131,32 +132,73 @@ int absolutePath(const char *s, Node* node)
 
 	return toReturn;
 }
-/*
+
 //query = * ( pchar / "/" / "?" )
 int query(const char *s, Node* node) {
-	result queryaux(const char *s, Node* node) {
-		if(pchar(s, NULL).boolean) return (result){TRUE, pchar(s, NULL).number};
-		else return (result){slash(s, NULL) || interrogation(s, NULL), 1};
-	}
-	results ret = etoile(queryaux, s, 0, -1);
-	if(node != NULL){
-		if(ret.boolean == TRUE)
-		{
-			int j = 0;
-			createChild(node, ret.number, NULL);
-			for(int i = 0; i < ret.number; i++)
-			{
-				if(slash(s+j, NULL)) {addChild(node, "/"); slash(s+j, node->childList[i]);}
-				else if(interrogation(s+j, NULL)) {addChild(node, "?"); interrogation(s+j, node->childList[i]);}
-				else if(pchar(s+j, NULL).boolean) {addChild(node, "pchar"); pchar(s+j, node->childList[i]);}
-				j += node->childList[i]->contentSize;
-			}
-			node->content = s;
-			node->contentSize = ret.size;
-		} else {
-			removeNode(node);
-		}
-	}
-	return ret.boolean;
+	//Remplir le node
+	strcpy(node->name,"query");
+	int toReturn = TRUE;
+
+	//Declarer l'ensemble des fonctions possibles
+	functionArray functions;
+	(functions.functions)[0] = pchar;
+	(functions.functions)[1] = slash;
+	(functions.functions)[2] = interrogation;
+
+	functions.functionCount = 3;
+	functions.isOrFunction = TRUE;
+
+	//Creer le fils
+	etoile(functions,s,0,-1,node);
+
+	return toReturn;
 }
-*/
+
+//origin-form = absolute-path [ "?" query ]
+int originForm(const char *s, Node* node) {
+	//Remplir le node
+	strcpy(node->name,"origin-form");
+	int toReturn = TRUE;
+
+	functionArray functions;
+	functions.optionnal = calloc(MAX_FUNCTION_NUMBER, sizeof(int));
+	(functions.functions)[0] = absolutePath;
+	(functions.functions)[1] = interrogation; functions.optionnal[0] = 1;
+	(functions.functions)[2] = query; functions.optionnal[1] = 2;
+
+	functions.functionCount = 3;
+	functions.isOrFunction = FALSE;
+
+	etoile(functions,s,1,1,node);
+
+	if(node->childList[0]->contentSize == 0)
+		toReturn = FALSE;
+
+	return toReturn;
+}
+
+//request-line = method SP origin-form SP HTTP-version CRLF
+int requestLine(const char *s, Node* node){
+	//Remplir le node
+	strcpy(node->name,"request-line");
+	int toReturn = TRUE;
+
+	functionArray functions;
+	functions.optionnal = NULL;
+	(functions.functions)[0] = method;
+	(functions.functions)[1] = SP;
+	(functions.functions)[2] = originForm; 
+	(functions.functions)[3] = SP; 
+	(functions.functions)[4] = HTTPVersion; 
+	(functions.functions)[5] = CRLF; 
+
+	functions.functionCount = 6;
+	functions.isOrFunction = FALSE;
+
+	etoile(functions,s,1,1,node);
+
+	if(node->childCount == 0)
+		toReturn = FALSE;
+
+	return toReturn;
+}
