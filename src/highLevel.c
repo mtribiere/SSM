@@ -202,3 +202,127 @@ int requestLine(const char *s, Node* node){
 
 	return toReturn;
 }
+
+int subDelims(const char *s, Node* node){
+	
+	//Copier le nom
+	strcpy(node->name,"subDelimiter");
+	int toReturn  = TRUE; 
+
+	//Creer le tableau des fonctions
+	functionArray chooseFrom;
+	chooseFrom.functions[0] = &exclamation;
+	chooseFrom.functions[1] = &dollar;
+	chooseFrom.functions[2] = &and;
+	chooseFrom.functions[3] = &quote;
+	chooseFrom.functions[4] = &openParenthese;
+	chooseFrom.functions[5] = &closeParenthese;
+	chooseFrom.functions[6] = &star;
+	chooseFrom.functions[7] = &plus;
+	chooseFrom.functions[8] = &coma;
+	chooseFrom.functions[9] = &semiColon;
+	chooseFrom.functions[10] = &equal;
+
+	chooseFrom.isOrFunction = TRUE;
+	chooseFrom.functionCount = 11;
+
+	//Executer la fonction etoile
+	etoile(chooseFrom,s,1,1,node);
+
+	//Si le node n'a pas de fils
+	if(node->childCount == 0){
+		toReturn = FALSE;
+	}
+
+    return toReturn;
+}
+
+
+int tchar(const char* s, Node* node) {
+	
+	//Copier le nom
+	strcpy(node->name,"tchar");
+	int toReturn  = TRUE; 
+
+	//Creer le tableau des fonctions
+	functionArray chooseFrom;
+	chooseFrom.functions[0] = &exclamation;
+	chooseFrom.functions[1] = &octothorp;
+	chooseFrom.functions[2] = &dollar;
+	chooseFrom.functions[3] = &quote;
+	chooseFrom.functions[4] = &star;
+	chooseFrom.functions[5] = &plus;
+	chooseFrom.functions[6] = &minus;
+	chooseFrom.functions[7] = &dot;
+	chooseFrom.functions[8] = &chineseHat;
+	chooseFrom.functions[9] = &underScore;
+	chooseFrom.functions[10] = &inverseQuote;
+	chooseFrom.functions[11] = &pipe;
+	chooseFrom.functions[12] = &tilt;
+	chooseFrom.functions[13] = &DIGIT;
+	chooseFrom.functions[14] = &ALPHA;
+
+	chooseFrom.isOrFunction = TRUE;
+	chooseFrom.functionCount = 15;
+
+	//Executer la fonction etoile
+	etoile(chooseFrom,s,1,1,node);
+
+	//Si le node n'a pas de fils
+	if(node->childCount == 0){
+		toReturn = FALSE;
+	}
+
+    return toReturn;
+}
+
+int unreserved(const char* s, Node* node) {
+	
+	//Copier le nom
+	strcpy(node->name,"unreserved");
+	int toReturn  = TRUE; 
+
+	//Creer le tableau des fonctions
+	functionArray chooseFrom;
+	chooseFrom.functions[0] = &ALPHA;
+	chooseFrom.functions[1] = &DIGIT;
+	chooseFrom.functions[2] = &tiret;
+	chooseFrom.functions[3] = &dot;
+	chooseFrom.functions[4] = &underScore;
+	chooseFrom.functions[5] = &tilt;
+
+	chooseFrom.isOrFunction = TRUE;
+	chooseFrom.functionCount = 6;
+
+	//Executer la fonction etoile
+	etoile(chooseFrom,s,1,1,node);
+
+	//Si le node n'a pas de fils
+	if(node->childCount == 0){
+		toReturn = FALSE;
+	}
+
+    return toReturn;
+}
+
+int token(const char *s, Node* node){
+	strcpy(node->name,"token");
+    int toReturn = TRUE;
+
+    functionArray chooseFrom;
+    chooseFrom.functions[0] = tchar;
+    chooseFrom.functionCount = 1;
+    chooseFrom.isOrFunction = TRUE;
+
+    etoile(chooseFrom,s,1,-1,node);
+
+    if(node->childCount == 0)
+        toReturn = FALSE;
+    return toReturn;
+}
+
+int method(const char *s, Node* node) {
+    int toReturn = token(s, node);
+    strcpy(node->name,"method");
+    return toReturn;
+}

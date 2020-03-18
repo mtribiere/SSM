@@ -28,7 +28,8 @@ int main(int argc, char *argv[])
 		if(message[i] == '\n') printf("\n");
 	}*/
 	
-	char s[] = "GET /images/logo.png?q=now HTTP/1.1\r\n"; 
+	char s[] = "GET /images/l%45ogo.png?q=now HTTP/1.1\r\n"; 
+	//char s[] = "=)4.4-_5z~";
 	Node testNode;
 	testNode.childList = malloc(sizeof(Node)*MAX_CHILD_COUNT);
 

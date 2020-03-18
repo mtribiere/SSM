@@ -46,14 +46,14 @@ void printNode(Node* node,int deep)
 	printf("\n\n");
 	for(int i = 0;i<deep;i++)
 		printf("\t");
-	printf("Name\t\t:\t%s\n", node->name);
+	printf("[Name\t:\t%s]\n", node->name);
 
 	for(int i = 0;i<deep;i++)
 		printf("\t");
-	printf("Content\t\t:\t");
+	printf("Content\t:\t");
 	printStringWithLimit(node->content,node->contentSize);
 	printf("\n");
-
+/*
 	for(int i = 0;i<deep;i++)
 		printf("\t");
 	printf("ContentSize\t:\t%d\n", node->contentSize);
@@ -62,6 +62,7 @@ void printNode(Node* node,int deep)
 		printf("\t");
 	printf("ChildCount\t:\t%d\n", node->childCount);
 	printf("\n\n");
+	*/
 }
 
 void printTree(Node* root,int deep)
