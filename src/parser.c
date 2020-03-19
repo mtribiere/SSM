@@ -19,6 +19,25 @@ int regexTest(const char* string, const char* regex, const int size)
     return toReturn;
 }
 
+int regexTestInsensitive(const char* string, const char* regex, const int size)
+{
+    int toReturn = FALSE;
+	regex_t preg;
+	char* str = malloc(sizeof(char) * size);
+	if(str == NULL) perror("Problème d'allocation de mémoire");
+	strncpy(str, string, size);
+    int err = regcomp (&preg, regex, REG_ICASE | REG_NOSUB  | REG_EXTENDED | REG_NEWLINE);
+    if(!err)
+    {
+    	int match = regexec (&preg, str, 0, NULL, 0);
+    	regfree (&preg);
+    	if(!match) toReturn = TRUE;
+    	else toReturn = FALSE;
+    }
+    free(str);
+    return toReturn;
+}
+
 void etoile(functionArray functions, const char *s, int min, int max,Node *node)
 //Le max est à -1 si il est infini
 {

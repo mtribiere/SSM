@@ -67,13 +67,46 @@ Expect-header = "Expect" ":" OWS Expect OWS
 	Expect = "100-continue"
 */
 
+int expectHeader(const char *s, Node* node)
+{
+	strcpy(node->name,"qdtext");
+    int toReturn = TRUE;
 
+    functionArray chooseFrom;
+    chooseFrom.optionnal = NULL;
+    chooseFrom.functions[0] = expectHeaderName;
+    chooseFrom.functions[1] = colon;
+    chooseFrom.functions[2] = OWS;
+    chooseFrom.functions[3] = expect;
+    chooseFrom.functions[4] = OWS;
+    chooseFrom.functionCount = 5;
+    chooseFrom.isOrFunction = FALSE;
+
+    etoile(chooseFrom,s,1,1,node);
+
+    if(node->childCount == 0)
+        toReturn = FALSE;
+    return toReturn;
+}
+
+int expectHeaderName(const char *s, Node* node)
+{
+	int toReturn = regexTestInsensitive(s,"^Expect",6);
+    if(node != NULL)
+    {
+		strcpy(node->name,"Expect");
+		node->content = s; 
+		node->contentSize = 6;
+		node->childCount = 0;
+    }
+    return toReturn;
+}
 int expect(const char *s, Node* node)
 {
 	int toReturn = regexTest(s,"^100-continue",12);
     if(node != NULL)
     {
-		strcpy(node->name,"HEXDIG");
+		strcpy(node->name,"expect");
 		node->content = s; 
 		node->contentSize = 12;
 		node->childCount = 0;
