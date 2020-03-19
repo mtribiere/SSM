@@ -34,7 +34,7 @@ Referer-header = "Referer" ":" OWS Referer OWS
 /*
 Accept-header = "Accept" ":" OWS Accept OWS 
 	Accept = [ ( "," / ( media-range [ accept-params ] ) ) * ( OWS "," [ OWS ( media-range [ accept-params ] ) ] ) ] 
-		media-range = ( "*SLASH*" / ( type "/" subtype ) / ( type "/*" ) ) * ( OWS ";" OWS parameter ) 
+		media-range = ( "*SLASH*" / ( type "/" subtype ) / ( type "SLASH*" ) ) * ( OWS ";" OWS parameter ) 
 		accept-params = weight * accept-ext 	 
 			accept-ext = OWS ";" OWS token [ "=" ( token / quoted-string ) ] 
 */
@@ -67,12 +67,97 @@ Expect-header = "Expect" ":" OWS Expect OWS
 	Expect = "100-continue"
 */
 
+
+int expect(const char *s, Node* node)
+{
+	int toReturn = regexTest(s,"^100-continue",12);
+    if(node != NULL)
+    {
+		strcpy(node->name,"HEXDIG");
+		node->content = s; 
+		node->contentSize = 12;
+		node->childCount = 0;
+    }
+    return toReturn;
+}
+
+int type(const char *s, Node* node)
+{
+    int toReturn = token(s, node);
+    strcpy(node->name,"type");
+    return toReturn;
+}
+
+int subtype(const char *s, Node* node)
+{
+    int toReturn = token(s, node);
+    strcpy(node->name,"subtype");
+    return toReturn;
+}
+
+int obsText(const char *s, Node* node)
+{
+	int toReturn = regexTest(s,"^[€-ÿ]",1);
+    if(node != NULL)
+    {
+        strcpy(node->name,"obs-text");
+        node->content = s; 
+        node->contentSize = 1;
+        node->childCount = 0;
+    }
+    return toReturn;
+}
+
+int hastagToLeftBracket(const char *s, Node* node)
+{
+	int toReturn = regexTest(s,"^[#-\\[]",1);
+    if(node != NULL)
+    {
+        strcpy(node->name,"%x23-5B");
+        node->content = s; 
+        node->contentSize = 1;
+        node->childCount = 0;
+    }
+    return toReturn;
+}
+int rightBracketToTilde(const char *s, Node* node)
+{
+	int toReturn = regexTest(s,"^[\\]-~]",1);
+    if(node != NULL)
+    {
+        strcpy(node->name,"%x5D-7E");
+        node->content = s; 
+        node->contentSize = 1;
+        node->childCount = 0;
+    }
+    return toReturn;
+}
+
+int qdtext(const char *s, Node* node)
+{
+	strcpy(node->name,"qdtext");
+    int toReturn = TRUE;
+
+    functionArray chooseFrom;
+    chooseFrom.functions[0] = HTAB;
+    chooseFrom.functions[1] = SP;
+    chooseFrom.functions[2] = exclamation;
+    chooseFrom.functions[3] = hastagToLeftBracket;
+    chooseFrom.functions[4] = rightBracketToTilde;
+    chooseFrom.functions[5] = obsText;
+    chooseFrom.functionCount = 6;
+    chooseFrom.isOrFunction = TRUE;
+
+    etoile(chooseFrom,s,1,1,node);
+
+    if(node->childCount == 0)
+        toReturn = FALSE;
+    return toReturn;
+}
+
 /*COMMUN A PLUSIEURS HEADERS:
 
-type = token 
-subtype = token
 parameter = token "=" ( token / quoted-string )
 	quoted-string = DQUOTE * ( qdtext / quoted-pair ) DQUOTE
-		qdtext = HTAB / SP / "!" / %x23-5B / %x5D-7E / obs-text
 		quoted-pair = "\" ( HTAB / SP / VCHAR / obs-text ) 
-			obs-text = %x80-FF 
+*/

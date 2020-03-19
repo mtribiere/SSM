@@ -5,6 +5,7 @@
 #include "tree.h"
 #include "highLevel.h"
 #include "baseLevel.h"
+#include "header.h"
 
 #define MAX_FILE_SIZE 500
 
@@ -28,12 +29,11 @@ int main(int argc, char *argv[])
 		if(message[i] == '\n') printf("\n");
 	}*/
 	
-	char s[] = "GET /images/l%45ogo.png?q=now HTTP/1.1\r\n"; 
-	//char s[] = "=)4.4-_5z~";
+	char s[] = "ET /images/l%45ogo.png?q=now HTTP/1.1\r\n"; 
 	Node testNode;
 	testNode.childList = malloc(sizeof(Node)*MAX_CHILD_COUNT);
 
-	if(requestLine(s,&testNode))
+	if(qdtext(s,&testNode))
 		printTree(&testNode,0);
 	else printf("FAUX\n");
 
