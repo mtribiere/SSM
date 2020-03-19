@@ -250,7 +250,7 @@ int quote(const char* s, Node* node) {
 }
 
 int star(const char* s, Node* node) {
-	int toReturn = regexTest(s,"^*",1);
+	int toReturn = regexTest(s,"^\\*",1);
     if(node != NULL)
     {
         strcpy(node->name,"*");
@@ -262,7 +262,7 @@ int star(const char* s, Node* node) {
 }
 
 int plus(const char* s, Node* node) {
-	int toReturn = regexTest(s,"^+",1);
+	int toReturn = regexTest(s,"^\\+",1);
     if(node != NULL)
     {
         strcpy(node->name,"+");
@@ -274,7 +274,7 @@ int plus(const char* s, Node* node) {
 }
 
 int minus(const char* s, Node* node) {
-	int toReturn = regexTest(s,"^-",1);
+	int toReturn = regexTest(s,"^\\-",1);
     if(node != NULL)
     {
         strcpy(node->name,"-");
@@ -350,7 +350,7 @@ int tilt(const char* s, Node* node) {
 }
 
 int tiret(const char* s, Node* node) {
-	int toReturn = regexTest(s,"^-",1);
+	int toReturn = regexTest(s,"^\\-",1);
     if(node != NULL)
     {
         strcpy(node->name,"-");
@@ -362,7 +362,7 @@ int tiret(const char* s, Node* node) {
 }
 
 int openParenthese(const char* s, Node* node) {
-	int toReturn = regexTest(s,"^(",1);
+	int toReturn = regexTest(s,"^\\(",1);
     if(node != NULL)
     {
         strcpy(node->name,"(");
@@ -374,7 +374,7 @@ int openParenthese(const char* s, Node* node) {
 }
 
 int closeParenthese(const char* s, Node* node) {
-	int toReturn = regexTest(s,"^)",1);
+	int toReturn = regexTest(s,"^\\)",1);
     if(node != NULL)
     {
         strcpy(node->name,")");
@@ -410,7 +410,7 @@ int semiColon(const char* s, Node* node) {
 }
 
 int equal(const char* s, Node* node) {
-	int toReturn = regexTest(s,"^=",1);
+	int toReturn = regexTest(s,"^\\=",1);
     if(node != NULL)
     {
         strcpy(node->name,"=");
@@ -423,7 +423,7 @@ int equal(const char* s, Node* node) {
 
 
 int colon(const char* s, Node* node) {
-	int toReturn = regexTest(s,"^:",1);
+	int toReturn = regexTest(s,"^\\:",1);
     if(node != NULL)
     {
 		strcpy(node->name,":");
