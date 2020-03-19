@@ -31,6 +31,9 @@ int HTTPVersion(const char *s, Node* node){
     functions.functionCount = 5;
     functions.isOrFunction = FALSE;
     functions.optionnal = NULL;
+
+	(node->contentSize) = 0;
+	(node->childCount) = 0;
     etoile(functions, s,1, 1, node);
 
     if(node->childCount == 0)
@@ -52,6 +55,9 @@ int pct_encoded(const char *s,Node *node){
     functions.functionCount = 3;
     functions.isOrFunction = FALSE;
     functions.optionnal = NULL;
+
+	(node->contentSize) = 0;
+	(node->childCount) = 0;
     etoile(functions, s, 1,1, node);
 
     if(node->childCount == 0)
@@ -79,6 +85,8 @@ int pchar(const char *s, Node* node){
 	functions.isOrFunction = TRUE;
 
 	//Creer le(s) fils
+	(node->contentSize) = 0;
+	(node->childCount) = 0;
 	etoile(functions,s,1,1,node);
 
 	//Si etoile ne trouve pas de fils
@@ -103,7 +111,9 @@ int segment(const char *s, Node* node){
 	functions.functionCount = 1;
 	functions.isOrFunction = TRUE;
 
-	//Creer le fils
+	//Creer les fils
+	(node->contentSize) = 0;
+	(node->childCount) = 0;
 	etoile(functions,s,0,-1,node);
 
 	return toReturn;
@@ -125,6 +135,8 @@ int absolutePath(const char *s, Node* node)
 	chooseFrom.isOrFunction = FALSE;
 	chooseFrom.optionnal = NULL;
 
+	(node->contentSize) = 0;
+	(node->childCount) = 0;
 	etoile(chooseFrom,s,1,-1,node);
 
 	if(node->childCount == 0)
@@ -148,7 +160,9 @@ int query(const char *s, Node* node) {
 	functions.functionCount = 3;
 	functions.isOrFunction = TRUE;
 
-	//Creer le fils
+	//Creer les fils
+	(node->contentSize) = 0;
+	(node->childCount) = 0;
 	etoile(functions,s,0,-1,node);
 
 	return toReturn;
@@ -169,6 +183,8 @@ int originForm(const char *s, Node* node) {
 	functions.functionCount = 3;
 	functions.isOrFunction = FALSE;
 
+	(node->contentSize) = 0;
+	(node->childCount) = 0;
 	etoile(functions,s,1,1,node);
 
 	if(node->childList[0]->contentSize == 0)
@@ -195,6 +211,8 @@ int requestLine(const char *s, Node* node){
 	functions.functionCount = 6;
 	functions.isOrFunction = FALSE;
 
+	(node->contentSize) = 0;
+	(node->childCount) = 0;
 	etoile(functions,s,1,1,node);
 
 	if(node->childCount == 0)
@@ -227,6 +245,8 @@ int subDelims(const char *s, Node* node){
 	chooseFrom.functionCount = 11;
 
 	//Executer la fonction etoile
+	(node->contentSize) = 0;
+	(node->childCount) = 0;
 	etoile(chooseFrom,s,1,1,node);
 
 	//Si le node n'a pas de fils
@@ -266,6 +286,8 @@ int tchar(const char* s, Node* node) {
 	chooseFrom.functionCount = 15;
 
 	//Executer la fonction etoile
+	(node->contentSize) = 0;
+	(node->childCount) = 0;
 	etoile(chooseFrom,s,1,1,node);
 
 	//Si le node n'a pas de fils
@@ -295,6 +317,8 @@ int unreserved(const char* s, Node* node) {
 	chooseFrom.functionCount = 6;
 
 	//Executer la fonction etoile
+	(node->contentSize) = 0;
+	(node->childCount) = 0;
 	etoile(chooseFrom,s,1,1,node);
 
 	//Si le node n'a pas de fils
@@ -314,6 +338,8 @@ int token(const char *s, Node* node){
     chooseFrom.functionCount = 1;
     chooseFrom.isOrFunction = TRUE;
 
+	(node->contentSize) = 0;
+	(node->childCount) = 0;
     etoile(chooseFrom,s,1,-1,node);
 
     if(node->childCount == 0)

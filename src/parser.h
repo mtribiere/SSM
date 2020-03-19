@@ -11,6 +11,7 @@
 #define MAX_FUNCTION_NUMBER 50
 
 int regexTest(const char* string, const char* regex, const int size);
+int regexTestInsensitive(const char* string, const char* regex, const int size);
 
 typedef struct functionArray{
 	void *functions[MAX_FUNCTION_NUMBER];

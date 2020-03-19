@@ -82,6 +82,8 @@ int expectHeader(const char *s, Node* node)
     chooseFrom.functionCount = 5;
     chooseFrom.isOrFunction = FALSE;
 
+	(node->contentSize) = 0;
+	(node->childCount) = 0;
     etoile(chooseFrom,s,1,1,node);
 
     if(node->childCount == 0)
@@ -181,6 +183,8 @@ int qdtext(const char *s, Node* node)
     chooseFrom.functionCount = 6;
     chooseFrom.isOrFunction = TRUE;
 
+	(node->contentSize) = 0;
+	(node->childCount) = 0;
     etoile(chooseFrom,s,1,1,node);
 
     if(node->childCount == 0)
@@ -194,3 +198,58 @@ parameter = token "=" ( token / quoted-string )
 	quoted-string = DQUOTE * ( qdtext / quoted-pair ) DQUOTE
 		quoted-pair = "\" ( HTAB / SP / VCHAR / obs-text ) 
 */
+
+
+int quotedPair(const char *s,Node *node){
+	
+	//Remplir le node
+	strcpy(node->name,"quotedPair");
+	int toReturn = TRUE;
+
+	///////Si premier caractère est un backslash
+	//Declarer la fonction
+	functionArray functions;
+	(functions.functions)[0] = &backSlash;
+
+	functions.functionCount = 1;
+	functions.isOrFunction = TRUE;
+
+	//Executer etoile
+	(node->childCount) = 0;
+	(node->contentSize) = 0;
+	etoile(functions,s,1,1,node);
+
+	//Si le node n'a de fils
+	if(node->childCount == 0)
+		//Declarer la node fausse
+		toReturn = FALSE;
+
+
+	//Si le node n'est pas déjà faux
+	if(toReturn == TRUE){
+		//Sauvegerder l'ancien nombre de child
+		int backChildCount = node->childCount;
+
+		//Declarer l'ensemble des fonctions possibles
+		(functions.functions)[0] = &HTAB;
+		(functions.functions)[1] = &SP;
+		(functions.functions)[2] = &VCHAR;
+		(functions.functions)[3] = &obsText;
+
+
+		functions.functionCount = 4;
+		functions.isOrFunction = TRUE;
+
+		//Creer le(s) fils
+		(node->childCount) = 1;
+		etoile(functions,s,1,1,node);
+
+		//Si etoile ne trouve pas de fils
+		if((node->childCount) - backChildCount == 0)
+			toReturn = FALSE;
+
+	}
+
+	return toReturn;
+	
+}

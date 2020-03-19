@@ -13,5 +13,6 @@ int expect(const char *s, Node* node);
 int expectHeaderName(const char *s, Node* node);
 int expectHeader(const char *s, Node* node);
 
+int quotedPair(const char *s,Node *node);
 
 #endif

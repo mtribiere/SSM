@@ -46,10 +46,13 @@ void etoile(functionArray functions, const char *s, int min, int max,Node *node)
 	int falseFound = FALSE;
 	int totalSize = 0;
 	int functionReturn;
-	(node->childCount) = 0;
 
 	//Par defaut le contenu de la node est la chaine
-	node->content = s;
+	(node->content) = s;
+
+	//Si on doit sauter des caractères
+	if(node->contentSize > 0)
+		s = s + (node->contentSize);
 
 	//Si on doit faire un OU
 	if(functions.isOrFunction == TRUE){
@@ -70,6 +73,7 @@ void etoile(functionArray functions, const char *s, int min, int max,Node *node)
 				
 				tmpNode = malloc(sizeof(Node));
 				(tmpNode->childList) = malloc(sizeof(Node)*MAX_CHILD_COUNT);
+				tmpNode->contentSize = 0;
 				tmpNode->childCount = 0;
 
 				//Executer la fonction
@@ -84,7 +88,7 @@ void etoile(functionArray functions, const char *s, int min, int max,Node *node)
 			//Si une fonction est correcte
 			if(isCorrect == TRUE){
 				//Inserer le node fils
-				(node->childList)[validCount] = tmpNode;
+				(node->childList)[(node->childCount)] = tmpNode;
 				(node->childCount)++;
 
 				//Ajouter un aux nodes trouvées
@@ -189,7 +193,7 @@ void etoile(functionArray functions, const char *s, int min, int max,Node *node)
 
 	}else{ //Si le node peut etre rempli
 		//Declarer la taille
-		node->contentSize = totalSize;
+		node->contentSize += totalSize;
 	}
 }
 

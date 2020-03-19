@@ -447,6 +447,23 @@ int at(const char* s, Node* node) {
 }
 
 
+int backSlash(const char *s,Node* node){
+	
+	int toReturn = TRUE;
+	if(s[0] != 92)
+		toReturn = FALSE;
+
+    if(node != NULL)
+    {
+		strcpy(node->name,"\\");
+		node->content = s; 
+		node->contentSize = 1;
+		node->childCount = 0;
+    }
+    return toReturn;
+}
+
+
 int OWS(const char *s, Node* node) {
     strcpy(node->name,"OWS");
     int toReturn = TRUE;
@@ -457,6 +474,8 @@ int OWS(const char *s, Node* node) {
 	chooseFrom.functionCount = 2;
 	chooseFrom.isOrFunction = TRUE;
 
+	(node->contentSize) = 0;
+	(node->childCount) = 0;
 	etoile(chooseFrom,s,0,-1,node);
 
     return toReturn;
@@ -472,6 +491,8 @@ int RWS(const char *s, Node* node) {
     chooseFrom.functionCount = 2;
     chooseFrom.isOrFunction = TRUE;
 
+	(node->contentSize) = 0;
+	(node->childCount) = 0;
     etoile(chooseFrom,s,1,-1,node);
 
     if(node->childCount == 0)
@@ -497,6 +518,9 @@ int CRLF(const char *s, Node* node){
     functions.functionCount = 2;
     functions.isOrFunction = FALSE;
     functions.optionnal = NULL;
+
+	(node->contentSize) = 0;
+	(node->childCount) = 0;
     etoile(functions, s,1, 1, node);
 
     if(node->childCount == 0)

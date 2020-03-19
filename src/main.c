@@ -29,11 +29,13 @@ int main(int argc, char *argv[])
 		if(message[i] == '\n') printf("\n");
 	}*/
 	
-	char s[] = "ExPeCt: 	100-continue   ET /images/l%45ogo.png?q=now HTTP/1.1\r\n"; 
+	char s[] = "\\u/images/l%45ogo.png?q=now HTTP/1.1\r\n"; 
 	Node testNode;
 	testNode.childList = malloc(sizeof(Node)*MAX_CHILD_COUNT);
+	testNode.childCount = 0;
+	testNode.contentSize = 0;
 
-	if(expectHeader(s,&testNode))
+	if(quotedPair(s,&testNode))
 		printTree(&testNode,0);
 	else printf("FAUX\n");
 
