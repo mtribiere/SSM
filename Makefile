@@ -4,8 +4,7 @@ CC=gcc
 SRC_DIR = src
 OBJ_DIR = obj
 
-SRC = $(wildcard $(SRC_DIR)/*.c)\
-	  $(wildcard $(SRC_DIR)/Instruction/*.c)
+SRC = $(wildcard $(SRC_DIR)/*.c)
 OBJ = $(SRC:$(SRC_DIR)/%.c=$(OBJ_DIR)/%.o)
 
 CPPFLAGS += -Iinclude -I$(SRC_DIR)

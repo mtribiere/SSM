@@ -47,6 +47,10 @@ void etoile(functionArray functions, const char *s, int min, int max,Node *node)
 	int totalSize = 0;
 	int functionReturn;
 
+	//Faire une copie des parametres du node
+	int backChildCount = (node->childCount);
+	int backContentSize = (node->contentSize);
+
 	//Par defaut le contenu de la node est la chaine
 	(node->content) = s;
 
@@ -180,16 +184,16 @@ void etoile(functionArray functions, const char *s, int min, int max,Node *node)
 	}
 	//Si un a trouvé un faux avant d'avoir le min
 	if(min != -1 && validCount<min){
-		//Liberer les enfants PAS MARCHE POUR L'INSTANT
-		// for(int i = 0;i<(node->childCount);i++)
-		// 	free((node->childList)[i]);
+		
+		//Liberer les enfants créés
+		for(int i = (node->childCount)-1;i>=backChildCount;i--)
+			free((node->childList)[i]);
 
-		//Remettre le compteur à zero
-		(node->childCount) = 0;
+		//Remettre le nombre d'enfants à son état initial
+		(node->childCount) = backChildCount;
 			
-		//Mettre le contenu à vide
-		node->content = NULL;
-		node->contentSize = 0;
+		//Remettre le contenu à son état initial
+		node->contentSize = backContentSize;
 
 	}else{ //Si le node peut etre rempli
 		//Declarer la taille
