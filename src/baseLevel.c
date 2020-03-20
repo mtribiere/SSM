@@ -85,10 +85,10 @@ int LF(const char* s, Node* node) {
     return toReturn;
 }
 int DQUOTE(const char* s, Node* node) {
-	int toReturn = regexTest(s,"DQUOTE",1);
+	int toReturn = regexTest(s,"^\"",1);
     if(node != NULL)
     {
-        strcpy(node->name,"^\"");
+        strcpy(node->name,"DQUOTE");
         node->content = s; 
         node->contentSize = 1;
         node->childCount = 0;
@@ -214,7 +214,7 @@ int octothorp(const char* s, Node* node) {
 }
 
 int dollar(const char* s, Node* node) {
-	int toReturn = regexTest(s,"^$",1);
+	int toReturn = regexTest(s,"^\\$",1);
     if(node != NULL)
     {
         strcpy(node->name,"$");
@@ -238,10 +238,10 @@ int and(const char* s, Node* node) {
 }
 
 int quote(const char* s, Node* node) {
-	int toReturn = regexTest(s,"^\\'",1);
+	int toReturn = regexTest(s,"^'",1);
     if(node != NULL)
     {
-        strcpy(node->name,"\'");
+        strcpy(node->name,"'");
         node->content = s; 
         node->contentSize = 1;
         node->childCount = 0;

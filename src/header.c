@@ -40,11 +40,6 @@ Accept-header = "Accept" ":" OWS Accept OWS
 */
 
 /*
-Content-Type-header = "Content-Type" ":" OWS media-type OWS
-	media-type = type "/" subtype * ( OWS ";" OWS parameter )
-*/
-
-/*
 Cookie-header = "Cookie:" OWS cookie-string OWS 
 	cookie-string = cookie-pair * ( ";" SP cookie-pair ) 
 		cookie-pair = cookie-name "=" cookie-value 
@@ -63,13 +58,98 @@ Accept-Language-header = "Accept-Language" ":" OWS Accept-Language OWS
 */
 
 /*
-Expect-header = "Expect" ":" OWS Expect OWS 
-	Expect = "100-continue"
+Content-Type-header = "Content-Type" ":" OWS media-type OWS
 */
+
+int contentTypeHeader(const char *s, Node* node){
+	//Remplir le node
+	strcpy(node->name,"media-type");
+	int toReturn = TRUE;
+
+	functionArray functions;
+	(functions.functions[0]) = contentTypeHeaderName;
+	(functions.functions[1]) = colon;
+	(functions.functions[2]) = OWS;
+	(functions.functions[3]) = mediaType;
+	(functions.functions[4]) = OWS;
+
+	functions.functionCount = 5;
+	functions.isOrFunction = FALSE;
+	functions.optionnal = NULL;
+
+	//Executer etoile
+	(node->childCount) = 0;
+	(node->contentSize) = 0;
+	etoile(functions,s,1,1,node);
+
+	//Si le node n'a de fils, déclarer la node fausse
+	if(node->childCount == 0)
+		toReturn = FALSE;
+
+	return toReturn;
+}
+
+int contentTypeHeaderName(const char *s, Node* node)
+{
+	int toReturn = regexTestInsensitive(s,"^Content-Type",12);
+    if(node != NULL)
+    {
+		strcpy(node->name,"Content-Type");
+		node->content = s; 
+		node->contentSize = 12;
+		node->childCount = 0;
+    }
+    return toReturn;
+}
+
+int mediaType(const char *s, Node* node){
+	//Remplir le node
+	strcpy(node->name,"media-type");
+	int toReturn = TRUE;
+
+	functionArray functions;
+	(functions.functions[0]) = type;
+	(functions.functions[1]) = slash;
+	(functions.functions[2]) = subtype;
+
+	functions.functionCount = 3;
+	functions.isOrFunction = FALSE;
+	functions.optionnal = NULL;
+
+	//Executer etoile
+	(node->childCount) = 0;
+	(node->contentSize) = 0;
+	etoile(functions,s,1,1,node);
+
+	//Si le node n'a de fils, déclarer la node fausse
+	if(node->childCount == 0)
+		toReturn = FALSE;
+
+	//Si le node n'est pas déjà faux
+	if(toReturn == TRUE){
+		//Declarer l'ensemble des fonctions possibles
+		(functions.functions)[0] = OWS;
+		(functions.functions)[1] = semiColon;
+		(functions.functions)[2] = OWS;
+		(functions.functions)[3] = parameter;
+
+		functions.functionCount = 4;
+		functions.isOrFunction = FALSE;
+		functions.optionnal = NULL;
+
+		//Creer le(s) fils
+		etoile(functions,s,0,-1,node);
+
+		//Si etoile ne trouve pas de fils
+		if((node->childCount) - 3 <= 0)
+			toReturn = FALSE;
+	}
+	return toReturn;
+}
 
 int expectHeader(const char *s, Node* node)
 {
-	strcpy(node->name,"qdtext");
+	strcpy(node->name,"Expect-header");
     int toReturn = TRUE;
 
     functionArray chooseFrom;
@@ -145,7 +225,7 @@ int obsText(const char *s, Node* node)
 
 int hastagToLeftBracket(const char *s, Node* node)
 {
-	int toReturn = regexTest(s,"^[#-\\[]",1);
+	int toReturn = regexTest(s,"^[#-Z]",1) || regexTest(s,"^\\[",1);
     if(node != NULL)
     {
         strcpy(node->name,"%x23-5B");
@@ -157,7 +237,7 @@ int hastagToLeftBracket(const char *s, Node* node)
 }
 int rightBracketToTilde(const char *s, Node* node)
 {
-	int toReturn = regexTest(s,"^[\\]-~]",1);
+	int toReturn = regexTest(s,"^[_-~]",1) || regexTest(s,"^\\]",1) || regexTest(s,"^\\^",1);
     if(node != NULL)
     {
         strcpy(node->name,"%x5D-7E");
@@ -192,18 +272,61 @@ int qdtext(const char *s, Node* node)
     return toReturn;
 }
 
-/*COMMUN A PLUSIEURS HEADERS:
 
-parameter = token "=" ( token / quoted-string )
-	quoted-string = DQUOTE * ( qdtext / quoted-pair ) DQUOTE
-		quoted-pair = "\" ( HTAB / SP / VCHAR / obs-text ) 
-*/
+int quotedString(const char *s, Node* node){
+	//Remplir le node
+	strcpy(node->name,"quoted-string");
+	int toReturn = TRUE;
 
+	functionArray functions;
+	(functions.functions[0]) = DQUOTE;
+	functions.functionCount = 1;
+	functions.isOrFunction = TRUE;
+	//Executer etoile
+	(node->childCount) = 0;
+	(node->contentSize) = 0;
+	etoile(functions,s,1,1,node);
+
+	//Si le node n'a de fils, déclarer la node fausse
+	if(node->childCount == 0)
+		toReturn = FALSE;
+
+	//Si le node n'est pas déjà faux
+	if(toReturn == TRUE){
+		//Declarer l'ensemble des fonctions possibles
+		(functions.functions)[0] = qdtext;
+		(functions.functions)[1] = quotedPair;
+
+		functions.functionCount = 2;
+		functions.isOrFunction = TRUE;
+
+		//Creer le(s) fils
+		etoile(functions,s,0,-1,node);
+
+		//Si etoile ne trouve pas de fils
+		if((node->childCount) == 0)
+			toReturn = FALSE;
+
+		if(toReturn == TRUE){
+			//Declarer l'ensemble des fonctions possibles
+			(functions.functions)[0] = DQUOTE;
+
+			functions.functionCount = 1;
+			functions.isOrFunction = TRUE;
+
+			etoile(functions,s,1,1,node);
+
+			if((node->childCount) == 0)
+				toReturn = FALSE;
+		}
+	}
+	return toReturn;
+}
 
 int quotedPair(const char *s,Node *node){
 	
 	//Remplir le node
-	strcpy(node->name,"quotedPair");
+	strcpy(node->name,"quoted-pair");
 	int toReturn = TRUE;
 
 	///////Si premier caractère est un backslash
@@ -227,8 +350,8 @@ int quotedPair(const char *s,Node *node){
 
 	//Si le node n'est pas déjà faux
 	if(toReturn == TRUE){
-		//Sauvegerder l'ancien nombre de child
-		int backChildCount = node->childCount;
+		//Sauvegarder l'ancien nombre de child
+		/*int backChildCount = node->childCount;*/
 
 		//Declarer l'ensemble des fonctions possibles
 		(functions.functions)[0] = &HTAB;
@@ -245,9 +368,60 @@ int quotedPair(const char *s,Node *node){
 		etoile(functions,s,1,1,node);
 
 		//Si etoile ne trouve pas de fils
-		if((node->childCount) - backChildCount == 0)
+		if((node->childCount) -1 <= 0)
 			toReturn = FALSE;
+	}
 
+	return toReturn;
+	
+}
+
+int parameter(const char *s,Node *node){
+	
+	//Remplir le node
+	strcpy(node->name,"parameter");
+	int toReturn = TRUE;
+
+	///////Si premier caractère est un backslash
+	//Declarer la fonction
+	functionArray functions;
+	(functions.functions)[0] = token;
+	(functions.functions)[1] = equal;
+
+	functions.functionCount = 2;
+	functions.isOrFunction = FALSE;
+	functions.optionnal = NULL;
+
+	//Executer etoile
+	(node->childCount) = 0;
+	(node->contentSize) = 0;
+	etoile(functions,s,1,1,node);
+
+	//Si le node n'a de fils
+	if(node->childCount == 0)
+		//Declarer la node fausse
+		toReturn = FALSE;
+
+
+	//Si le node n'est pas déjà faux
+	if(toReturn == TRUE){
+		//Sauvegarder l'ancien nombre de child
+
+		//Declarer l'ensemble des fonctions possibles
+		(functions.functions)[0] = token;
+		(functions.functions)[1] = quotedString;
+
+
+
+		functions.functionCount = 2;
+		functions.isOrFunction = TRUE;
+
+		//Creer le(s) fils
+		etoile(functions,s,1,1,node);
+
+		//Si etoile ne trouve pas de fils
+		if((node->childCount) - 2 <= 0)
+			toReturn = FALSE;
 	}
 
 	return toReturn;

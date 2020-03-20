@@ -180,9 +180,9 @@ void etoile(functionArray functions, const char *s, int min, int max,Node *node)
 	}
 	//Si un a trouvé un faux avant d'avoir le min
 	if(min != -1 && validCount<min){
-		//Liberer les enfants
-		for(int i = 0;i<(node->childCount);i++)
-			free((node->childList)[i]);
+		//Liberer les enfants PAS MARCHE POUR L'INSTANT
+		// for(int i = 0;i<(node->childCount);i++)
+		// 	free((node->childList)[i]);
 
 		//Remettre le compteur à zero
 		(node->childCount) = 0;

@@ -29,13 +29,13 @@ int main(int argc, char *argv[])
 		if(message[i] == '\n') printf("\n");
 	}*/
 	
-	char s[] = "\\u/images/l%45ogo.png?q=now HTTP/1.1\r\n"; 
+	char s[] = "Content-Type: text/html; charset=ISO-8859-4"; 
 	Node testNode;
 	testNode.childList = malloc(sizeof(Node)*MAX_CHILD_COUNT);
 	testNode.childCount = 0;
 	testNode.contentSize = 0;
 
-	if(quotedPair(s,&testNode))
+	if(contentTypeHeader(s,&testNode))
 		printTree(&testNode,0);
 	else printf("FAUX\n");
 
