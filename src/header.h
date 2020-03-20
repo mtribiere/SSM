@@ -9,6 +9,10 @@ int type(const char *s, Node* node);
 int subtype(const char *s, Node* node);
 int obsText(const char *s, Node* node);
 int qdtext(const char *s, Node* node);
+
+int languageRange(const char *s,Node *node);
+int languageRangePart2(const char *s,Node *node);
+
 int expect(const char *s, Node* node);
 int expectHeaderName(const char *s, Node* node);
 int expectHeader(const char *s, Node* node);

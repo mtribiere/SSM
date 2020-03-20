@@ -29,13 +29,13 @@ int main(int argc, char *argv[])
 		if(message[i] == '\n') printf("\n");
 	}*/
 	
-	char s[] = "Content-Type: text/html; charset=ISO-8859-4"; 
+	char s[] = "afdjf-44ta-t7-45-4-!"; 
 	Node testNode;
 	testNode.childList = malloc(sizeof(Node)*MAX_CHILD_COUNT);
 	testNode.childCount = 0;
 	testNode.contentSize = 0;
 
-	if(contentTypeHeader(s,&testNode))
+	if(languageRange(s,&testNode))
 		printTree(&testNode,0);
 	else printf("FAUX\n");
 

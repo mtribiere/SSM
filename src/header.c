@@ -167,11 +167,112 @@ int qvalue(const char *s, Node* node){
 	return toReturn;
 }
 
+//ACCEPT-LANGUAGE HEADER
+int languageRange(const char *s,Node *node){
+
+	//Remplir le node
+	strcpy(node->name,"language-range");
+	int toReturn = TRUE ;
+
+	//PARTIE 0
+	functionArray chooseFrom;
+	
+	(chooseFrom.functions)[0] = &star;
+
+	(chooseFrom.functionCount) = 1;
+	(chooseFrom.isOrFunction) = TRUE;
+	(chooseFrom.optionnal) = NULL;
+
+	//Executer etoile
+	etoile(chooseFrom,s,1,1,node);
+
+	//Si le node n'est pas de fils
+	if(node->childCount == 0)
+		toReturn = FALSE;
+
+	//S'il est utile de verifier la prochiane partie
+	if(toReturn == FALSE){
+		toReturn = TRUE;
+
+		//PARTIE 1
+		(chooseFrom.functions)[0] = &ALPHA;
+
+		(chooseFrom.functionCount) = 1;
+		(chooseFrom.isOrFunction) = TRUE;
+		(chooseFrom.optionnal) = NULL;
+
+		//Executer etoile
+		(node->childCount) = 0;
+		(node->contentSize) = 0;
+		etoile(chooseFrom,s,1,8,node);
+
+		//Si le node n'a pas de fils
+		if(node->childCount == 0)
+			toReturn = FALSE;
+		
+
+		//PARTIE 2
+		if(toReturn == TRUE)
+			while(languageRangePart2(s,node) == TRUE);
+		
+	}
+
+	return toReturn;
+
+}
+
+int languageRangePart2(const char *s,Node *node){
+	
+	int toReturn = TRUE;
+	int backChildCount = (node->childCount);
+	int backContentSize = (node->contentSize);
+
+	////Si le premier caractère est un tiret
+	functionArray chooseFrom;
+	(chooseFrom.functions)[0] = &tiret;
+
+	(chooseFrom.functionCount) = 1;
+	(chooseFrom.isOrFunction) = TRUE;
+	(chooseFrom.optionnal) = NULL;
+
+	//Executer etoile
+	etoile(chooseFrom,s,1,1,node);
+
+	//Si le node n'as pas de fils en plus
+	if((node->childCount) - backChildCount == 0)
+		toReturn = FALSE;
+
+	///////Si la suite est une suite de alphanum
+	if(toReturn == TRUE){
+
+		(chooseFrom.functions)[0] = &alphanum;
+
+		(chooseFrom.functionCount) = 1;
+
+		//Executer la fonction étoile
+		etoile(chooseFrom,s,1,8,node);
+
+		//Si le node n'a pas de fils en plus
+		if((node->childCount) - (backChildCount + 1) == 0)
+			toReturn = FALSE;
+
+	}
+
+	//Si la node est fausse
+	if(toReturn == FALSE){
+		(node->childCount) = backChildCount; //Restaurer le nombre de fils
+		(node->contentSize) = backContentSize; //Restaurer le content size
+	}
+
+	return toReturn;
+}
+
+
 //CONTENT-TYPE HEADER
 
 int contentTypeHeader(const char *s, Node* node){
 	//Remplir le node
-	strcpy(node->name,"media-type");
+	strcpy(node->name,"Content-type-header");
 	int toReturn = TRUE;
 
 	functionArray functions;
