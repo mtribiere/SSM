@@ -137,7 +137,7 @@ void etoile(functionArray functions, const char *s, int min, int max,Node *node)
 
 				//Executer la fonction
 				functionReturn = (*tmpFunction)(s+totalSize,(&tmpNode[i]));
-
+				
 				if(!optionnal(functions, i))
 					isCorrect = functionReturn;
 

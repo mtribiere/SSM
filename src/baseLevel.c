@@ -529,3 +529,25 @@ int CRLF(const char *s, Node* node){
 }
 
 
+int ZERO(const char* s, Node* node) {
+    int toReturn = regexTest(s,"^0",1);
+    if(node != NULL)
+    {
+        strcpy(node->name,"0");
+        node->content = s; 
+        node->contentSize = 1;
+        node->childCount = 0;
+    }
+    return toReturn;
+}
+int ONE(const char* s, Node* node) {
+    int toReturn = regexTest(s,"^1",1);
+    if(node != NULL)
+    {
+        strcpy(node->name,"1");
+        node->content = s; 
+        node->contentSize = 1;
+        node->childCount = 0;
+    }
+    return toReturn;
+}

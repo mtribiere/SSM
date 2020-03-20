@@ -52,14 +52,122 @@ Cookie-header = "Cookie:" OWS cookie-string OWS
 Accept-Language-header = "Accept-Language" ":" OWS Accept-Language OWS 
 	Accept-Language = * ( "," OWS ) ( language-range [ weight ] ) * ( OWS "," [ OWS ( language-range [ weight ] ) ] ) 
 		language-range = ( 1*8 ALPHA * ( "-" 1*8 alphanum ) ) / "*" 
-			alphanum = ALPHA / DIGIT 
-		weight = OWS ";" OWS "q=" qvalue 
-			qvalue = ( "0" [ "." *3 DIGIT ] ) / ( "1" [ "." *3 "0" ] )
 */
 
-/*
-Content-Type-header = "Content-Type" ":" OWS media-type OWS
-*/
+int alphanum(const char *s, Node* node){
+//Remplir le node
+	strcpy(node->name,"alphanum");
+	int toReturn = TRUE;
+
+	functionArray functions;
+	(functions.functions[0]) = ALPHA;
+	(functions.functions[1]) = DIGIT;
+
+	functions.functionCount = 2;
+	functions.isOrFunction = TRUE;
+
+	//Executer etoile
+	(node->childCount) = 0;
+	(node->contentSize) = 0;
+	etoile(functions,s,1,1,node);
+
+	if(node->childCount == 0)
+		toReturn = FALSE;	
+
+	return toReturn;
+}
+
+int qEquals(const char *s, Node* node){
+    int toReturn = regexTest(s,"^q=",2);
+    if(node != NULL)
+    {
+        strcpy(node->name,"q=");
+        node->content = s; 
+        node->contentSize = 2;
+        node->childCount = 0;
+    }
+    return toReturn;
+}
+
+int weight(const char *s, Node* node){
+	//Remplir le node
+	strcpy(node->name,"weight");
+	int toReturn = TRUE;
+
+	functionArray functions;
+	(functions.functions[0]) = OWS;
+	(functions.functions[1]) = semiColon;
+	(functions.functions[2]) = OWS; 
+	(functions.functions[3]) = qEquals; 
+	(functions.functions[4]) = qvalue; 
+
+	functions.functionCount = 5;
+	functions.isOrFunction = FALSE;
+	functions.optionnal = NULL;
+
+	//Executer etoile
+	(node->childCount) = 0;
+	(node->contentSize) = 0;
+	etoile(functions,s,1,1,node);
+
+	if(node->childCount == 0)
+		toReturn = FALSE;	
+
+	return toReturn;
+}
+
+int qvalue(const char *s, Node* node){
+	//Remplir le node
+	strcpy(node->name,"qvalue");
+	int toReturn = TRUE;
+
+	functionArray functions;
+	functions.optionnal = malloc(MAX_FUNCTION_NUMBER*sizeof(int));
+	memset(functions.optionnal,MAX_FUNCTION_NUMBER,MAX_FUNCTION_NUMBER*sizeof(int));
+
+	(functions.functions[0]) = ZERO;
+	(functions.functions[1]) = dot; functions.optionnal[0] = 1;
+	(functions.functions[2]) = DIGIT; functions.optionnal[1] = 2;
+	(functions.functions[3]) = DIGIT; functions.optionnal[2] = 3;
+	(functions.functions[4]) = DIGIT; functions.optionnal[3] = 4;
+
+	functions.functionCount = 5;
+	functions.isOrFunction = FALSE;
+
+	//Executer etoile
+	(node->childCount) = 0;
+	(node->contentSize) = 0;
+	etoile(functions,s,1,1,node);
+
+	if(node->childCount == 0){
+		//On test l'autre partie du OU
+		free(functions.optionnal);
+
+		functions.optionnal = malloc(MAX_FUNCTION_NUMBER*sizeof(int));
+		memset(functions.optionnal,MAX_FUNCTION_NUMBER,MAX_FUNCTION_NUMBER*sizeof(int));
+
+		(functions.functions[0]) = ONE;
+		(functions.functions[1]) = dot; functions.optionnal[0] = 1;
+		(functions.functions[2]) = ZERO; functions.optionnal[1] = 2;
+		(functions.functions[3]) = ZERO; functions.optionnal[2] = 3;
+		(functions.functions[4]) = ZERO; functions.optionnal[3] = 4;
+
+		functions.functionCount = 5;
+		functions.isOrFunction = FALSE;
+
+		//Executer etoile
+		(node->childCount) = 0;
+		(node->contentSize) = 0;
+		etoile(functions,s,1,1,node);
+
+		if(node->childCount == 0)
+			toReturn = FALSE;
+	}
+
+	return toReturn;
+}
+
+//CONTENT-TYPE HEADER
 
 int contentTypeHeader(const char *s, Node* node){
 	//Remplir le node
@@ -147,6 +255,8 @@ int mediaType(const char *s, Node* node){
 	return toReturn;
 }
 
+//EXPECT-HEADER
+
 int expectHeader(const char *s, Node* node)
 {
 	strcpy(node->name,"Expect-header");
@@ -195,6 +305,8 @@ int expect(const char *s, Node* node)
     }
     return toReturn;
 }
+
+//FONCTIONS PLUS GENERALES EN DESSOUS
 
 int type(const char *s, Node* node)
 {

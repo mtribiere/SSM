@@ -21,4 +21,8 @@ int mediaType(const char *s, Node* node);
 int contentTypeHeaderName(const char *s, Node* node);
 int contentTypeHeader(const char *s, Node* node);
 
+int qvalue(const char *s, Node* node);
+int weight(const char *s, Node* node);
+int alphanum(const char *s, Node* node);
+
 #endif
