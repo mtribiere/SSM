@@ -41,16 +41,257 @@ Accept-header = "Accept" ":" OWS Accept OWS
 
 /*
 Cookie-header = "Cookie:" OWS cookie-string OWS 
-	cookie-string = cookie-pair * ( ";" SP cookie-pair ) 
-		cookie-pair = cookie-name "=" cookie-value 
-			cookie-name = token
-			cookie-value = ( DQUOTE * cookie-octet DQUOTE ) / * cookie-octet 
-				cookie-octet = %x21 / %x23-2B / %x2D-3A / %x3C-5B / %x5D-7E 
 */
 
-/*
-Accept-Language-header = "Accept-Language" ":" OWS Accept-Language OWS 
-*/
+//ACCEPT-LANGUAGE HEADER
+
+int cookieHeader(const char *s, Node* node){
+	//Remplir le node
+	strcpy(node->name,"Cookie-header");
+	int toReturn = TRUE;
+
+	functionArray functions;
+	(functions.functions[0]) = cookieHeaderName;
+	(functions.functions[1]) = colon;
+	(functions.functions[2]) = OWS;
+	(functions.functions[3]) = cookieString;
+	(functions.functions[4]) = OWS;
+
+	functions.functionCount = 5;
+	functions.isOrFunction = FALSE;
+	functions.optionnal = NULL;
+
+	//Executer etoile
+	(node->childCount) = 0;
+	(node->contentSize) = 0;
+	etoile(functions,s,1,1,node);
+
+	//Si le node n'a de fils, déclarer la node fausse
+	if(node->childCount == 0)
+		toReturn = FALSE;
+
+	return toReturn;
+}
+
+int cookieHeaderName(const char *s, Node* node)
+{
+	int toReturn = regexTestInsensitive(s,"^Cookie",6);
+    if(node != NULL)
+    {
+		strcpy(node->name,"Cookie");
+		node->content = s; 
+		node->contentSize = 6;
+		node->childCount = 0;
+    }
+    return toReturn;
+}
+
+int cookieString(const char *s, Node* node)
+{
+	strcpy(node->name,"cookie-string");
+	int toReturn = TRUE;
+
+	functionArray functions;
+	(functions.functions[0]) = cookiePair;
+
+	functions.functionCount = 1;
+	functions.isOrFunction = TRUE;
+
+	//Executer etoile
+	(node->childCount) = 0;
+	(node->contentSize) = 0;
+	etoile(functions,s,1,1,node);
+
+	//Si le node n'a de fils, déclarer la node fausse
+	if(node->childCount == 0)
+		toReturn = FALSE;
+
+	else
+	{
+		int backChildCount = (node->childCount);
+		int backContentSize = (node->contentSize);
+
+		(functions.functions[0]) = semiColon;
+		(functions.functions[1]) = SP;
+		(functions.functions[2]) = cookiePair;
+
+		functions.functionCount = 3;
+		functions.isOrFunction = FALSE;
+		functions.optionnal = NULL;
+
+		etoile(functions,s,0,-1,node);
+
+		if(node->childCount - backChildCount <= 0)
+		{
+			(node->childCount) = backChildCount;
+			(node->contentSize) = backContentSize;
+		}
+	}
+
+	return toReturn;
+}
+
+int cookiePair(const char *s, Node* node)
+{
+	//Remplir le node
+	strcpy(node->name,"cookie-pair");
+	int toReturn = TRUE;
+
+	functionArray functions;
+	(functions.functions[0]) = cookieName;
+	(functions.functions[1]) = equal;
+	(functions.functions[2]) = cookieValue;
+
+	functions.functionCount = 3;
+	functions.isOrFunction = FALSE;
+	functions.optionnal = NULL;
+
+	//Executer etoile
+	(node->childCount) = 0;
+	(node->contentSize) = 0;
+	etoile(functions,s,1,1,node);
+
+	//Si le node n'a de fils, déclarer la node fausse
+	if(node->childCount == 0)
+		toReturn = FALSE;
+
+	return toReturn;
+}
+
+int cookieName(const char *s, Node* node)
+{
+    int toReturn = token(s, node);
+    strcpy(node->name,"cookie-name");
+    return toReturn;
+}
+
+int cookieValue(const char *s, Node* node){
+//Remplir le node
+	strcpy(node->name,"cookie-value");
+	int toReturn = TRUE;
+
+	functionArray functionsQuote;
+	(functionsQuote.functions[0]) = DQUOTE;
+
+	functionsQuote.functionCount = 1;
+	functionsQuote.isOrFunction = TRUE;
+
+	node->childCount = 0;
+	node->contentSize = 0;
+	etoile(functionsQuote, s,1, 1, node);
+
+	if(node->childCount == 0)
+		toReturn = FALSE;
+
+	functionArray functions;
+	(functions.functions[0]) = cookieOctet;
+
+	functions.functionCount = 1;
+	functions.isOrFunction = TRUE;
+
+	if(toReturn == TRUE)
+	{
+		//Executer etoile
+		etoile(functions,s,0,-1,node);
+
+
+		int backChildCount = (node->childCount);
+		etoile(functionsQuote, s, 1,1, node);
+
+		if(node->childCount - backChildCount == 0)
+			toReturn = FALSE;
+	} 
+	if(toReturn == FALSE)
+	{
+		node->childCount = 0;
+		node->contentSize = 0;
+		etoile(functions,s,0,-1,node);
+
+		if(node->childCount >= 0)
+			toReturn = TRUE;
+	}
+	
+	return toReturn;
+}
+
+int rightBracketToTilde(const char *s, Node* node)
+{
+	int toReturn = regexTest(s,"^[_-~]",1) || regexTest(s,"^\\]",1) || regexTest(s,"^\\^",1);
+    if(node != NULL)
+    {
+        strcpy(node->name,"%x5D-7E");
+        node->content = s; 
+        node->contentSize = 1;
+        node->childCount = 0;
+    }
+    return toReturn;
+}
+
+int hastagToPlus(const char *s, Node* node)
+{
+	int toReturn = regexTest(s,"^[#-']",1) || regexTest(s,"^\\(",1) | regexTest(s,"^\\)",1) || regexTest(s,"^\\*",1) || regexTest(s,"^\\+",1);
+    if(node != NULL)
+    {
+        strcpy(node->name,"%x23-2B");
+        node->content = s; 
+        node->contentSize = 1;
+        node->childCount = 0;
+    }
+    return toReturn;
+}
+
+int minusToColon(const char *s, Node* node)
+{
+	int toReturn = regexTest(s,"^[.-9]",1) || regexTest(s,"^\\-",1) || regexTest(s,"^\\:",1);
+    if(node != NULL)
+    {
+        strcpy(node->name," %x2D-3A");
+        node->content = s; 
+        node->contentSize = 1;
+        node->childCount = 0;
+    }
+    return toReturn;
+}
+
+int lesserToLeftBracket(const char *s, Node* node)
+{
+	int toReturn = regexTest(s,"^[<-Z]",1) || regexTest(s, "^\\[", 1);
+    if(node != NULL)
+    {
+        strcpy(node->name," %x3C-5B");
+        node->content = s; 
+        node->contentSize = 1;
+        node->childCount = 0;
+    }
+    return toReturn;
+}
+
+int cookieOctet(const char *s, Node* node){
+	//Remplir le node
+	strcpy(node->name,"cookie-octet");
+	int toReturn = TRUE;
+
+	functionArray functions;
+	(functions.functions[0]) = exclamation;
+	(functions.functions[1]) = hastagToPlus;
+	(functions.functions[2]) = minusToColon;
+	(functions.functions[3]) = lesserToLeftBracket;
+	(functions.functions[4]) = rightBracketToTilde;
+
+	functions.functionCount = 5;
+	functions.isOrFunction = TRUE;
+
+	//Executer etoile
+	(node->childCount) = 0;
+	(node->contentSize) = 0;
+	etoile(functions,s,1,1,node);
+
+	//Si le node n'a de fils, déclarer la node fausse
+	if(node->childCount == 0)
+		toReturn = FALSE;
+
+	return toReturn;
+}
 
 //ACCEPT-LANGUAGE HEADER
 
@@ -553,18 +794,6 @@ int hastagToLeftBracket(const char *s, Node* node)
     if(node != NULL)
     {
         strcpy(node->name,"%x23-5B");
-        node->content = s; 
-        node->contentSize = 1;
-        node->childCount = 0;
-    }
-    return toReturn;
-}
-int rightBracketToTilde(const char *s, Node* node)
-{
-	int toReturn = regexTest(s,"^[_-~]",1) || regexTest(s,"^\\]",1) || regexTest(s,"^\\^",1);
-    if(node != NULL)
-    {
-        strcpy(node->name,"%x5D-7E");
         node->content = s; 
         node->contentSize = 1;
         node->childCount = 0;

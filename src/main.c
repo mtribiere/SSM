@@ -29,13 +29,14 @@ int main(int argc, char *argv[])
 		if(message[i] == '\n') printf("\n");
 	}*/
 	
-	char s[] = "Accept-Language: da, en-gb;q=0.8, en;q=0.7"; 
+	//char s[] = "Accept-Language: da, en-gb;q=0.8, en;q=0.7"; 
+	char s[] = "Cookie: SID=31d4d96e407aad42; lang=en-US";
 	Node testNode;
 	testNode.childList = malloc(sizeof(Node)*MAX_CHILD_COUNT);
 	testNode.childCount = 0;
 	testNode.contentSize = 0;
 
-	if(acceptLanguageHeader(s,&testNode))
+	if(cookieHeader(s,&testNode))
 		printTree(&testNode,0);
 	else printf("FAUX\n");
 

@@ -10,6 +10,14 @@ int subtype(const char *s, Node* node);
 int obsText(const char *s, Node* node);
 int qdtext(const char *s, Node* node);
 
+int cookieOctet(const char *s, Node* node);
+int cookieValue(const char *s, Node* node);
+int cookieName(const char *s, Node* node);
+int cookiePair(const char *s, Node* node);
+int cookieString(const char *s, Node* node);
+int cookieHeaderName(const char *s, Node* node);
+int cookieHeader(const char *s, Node* node);
+
 int languageRange(const char *s,Node *node);
 int languageRangePart2(const char *s,Node *node);
 int acceptLanguage(const char *s, Node* node);
