@@ -53,7 +53,6 @@ void etoile(functionArray functions, const char *s, int min, int max,Node *node)
 
 	//Par defaut le contenu de la node est la chaine
 	(node->content) = s;
-
 	//Si on doit sauter des caractères
 	if(node->contentSize > 0)
 		s = s + (node->contentSize);

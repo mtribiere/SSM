@@ -12,6 +12,9 @@ int qdtext(const char *s, Node* node);
 
 int languageRange(const char *s,Node *node);
 int languageRangePart2(const char *s,Node *node);
+int acceptLanguage(const char *s, Node* node);
+int acceptLanguageHeader(const char *s, Node* node);
+int acceptLanguageHeaderName(const char *s, Node* node);
 
 int expect(const char *s, Node* node);
 int expectHeaderName(const char *s, Node* node);

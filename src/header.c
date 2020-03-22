@@ -50,9 +50,120 @@ Cookie-header = "Cookie:" OWS cookie-string OWS
 
 /*
 Accept-Language-header = "Accept-Language" ":" OWS Accept-Language OWS 
-	Accept-Language = * ( "," OWS ) ( language-range [ weight ] ) * ( OWS "," [ OWS ( language-range [ weight ] ) ] ) 
-		language-range = ( 1*8 ALPHA * ( "-" 1*8 alphanum ) ) / "*" 
 */
+
+//ACCEPT-LANGUAGE HEADER
+
+int acceptLanguageHeader(const char *s, Node* node){
+	//Remplir le node
+	strcpy(node->name,"Accept-Language-header");
+	int toReturn = TRUE;
+
+	functionArray functions;
+	(functions.functions[0]) = acceptLanguageHeaderName;
+	(functions.functions[1]) = colon;
+	(functions.functions[2]) = OWS;
+	(functions.functions[3]) = acceptLanguage;
+	(functions.functions[4]) = OWS;
+
+	functions.functionCount = 5;
+	functions.isOrFunction = FALSE;
+	functions.optionnal = NULL;
+
+	//Executer etoile
+	(node->childCount) = 0;
+	(node->contentSize) = 0;
+	etoile(functions,s,1,1,node);
+
+	//Si le node n'a de fils, déclarer la node fausse
+	if(node->childCount == 0)
+		toReturn = FALSE;
+
+	return toReturn;
+}
+
+int acceptLanguageHeaderName(const char *s, Node* node)
+{
+	int toReturn = regexTestInsensitive(s,"^Accept-Language",15);
+    if(node != NULL)
+    {
+		strcpy(node->name,"Accept-Language");
+		node->content = s; 
+		node->contentSize = 15;
+		node->childCount = 0;
+    }
+    return toReturn;
+}
+
+
+int languageWeight(const char *s, Node* node){
+	//Remplir le node
+	strcpy(node->name,"A changer /!\\");
+ 	int toReturn = TRUE;
+ 	int backChildCount = (node->childCount);
+ 	int backContentSize = (node->contentSize);
+
+  	functionArray functions;
+  	functions.optionnal = malloc(MAX_FUNCTION_NUMBER*sizeof(int));
+  	memset(functions.optionnal,MAX_FUNCTION_NUMBER,MAX_FUNCTION_NUMBER*sizeof(int));
+  	(functions.functions[0]) = languageRange;
+  	(functions.functions[1]) = weight; functions.optionnal[0] = 1;
+
+  	functions.functionCount = 2;
+  	functions.isOrFunction = FALSE;
+
+  	//Executer etoile
+  	node->childCount = 0;
+  	node->contentSize = 0;
+  	etoile(functions,s,1,1,node);
+
+  	if(node->childCount - backChildCount == 0)
+  		toReturn = FALSE;	
+  	if(!toReturn)
+  	{
+  		(node->childCount) = backChildCount;
+ 		(node->contentSize) = backContentSize;
+  	}
+
+  	return toReturn;
+}
+
+int acceptLanguage(const char *s, Node* node){
+ 	//Remplir le node
+  	strcpy(node->name,"Accept-Language");
+  	int toReturn = TRUE;
+
+  	functionArray functions;
+  	(functions.functions[0]) = coma;
+  	(functions.functions[1]) = OWS;
+
+  	functions.functionCount = 2;
+  	functions.isOrFunction = FALSE;
+  	functions.optionnal = NULL;
+
+  	//Executer etoile
+  	(node->childCount) = 0;
+  	(node->contentSize) = 0;
+  	etoile(functions,s,0,-1,node);
+
+  	toReturn = languageWeight(s, node);
+
+  	if(toReturn){
+
+  		functions.optionnal = malloc(MAX_FUNCTION_NUMBER*sizeof(int));
+  		memset(functions.optionnal,MAX_FUNCTION_NUMBER,MAX_FUNCTION_NUMBER*sizeof(int));
+  		(functions.functions[0]) = OWS;
+  		(functions.functions[1]) = coma;
+  		(functions.functions[2]) = OWS; functions.optionnal[0] = 2;
+  		(functions.functions[3]) = languageWeight; functions.optionnal[1] = 3;
+
+  		functions.functionCount = 4;
+  		functions.isOrFunction = FALSE;
+		
+  		etoile(functions, s, 0, -1, node);
+  	}
+  	return toReturn;
+}
 
 int alphanum(const char *s, Node* node){
 //Remplir le node
@@ -184,13 +295,14 @@ int languageRange(const char *s,Node *node){
 	(chooseFrom.optionnal) = NULL;
 
 	//Executer etoile
+	node->contentSize = 0;
 	etoile(chooseFrom,s,1,1,node);
 
 	//Si le node n'est pas de fils
 	if(node->childCount == 0)
 		toReturn = FALSE;
 
-	//S'il est utile de verifier la prochiane partie
+	//S'il est utile de verifier la prochaine partie
 	if(toReturn == FALSE){
 		toReturn = TRUE;
 
@@ -216,7 +328,6 @@ int languageRange(const char *s,Node *node){
 			while(languageRangePart2(s,node) == TRUE);
 		
 	}
-
 	return toReturn;
 
 }

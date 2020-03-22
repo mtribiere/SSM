@@ -29,13 +29,13 @@ int main(int argc, char *argv[])
 		if(message[i] == '\n') printf("\n");
 	}*/
 	
-	char s[] = "afdjf-44ta-t7-45-4-!"; 
+	char s[] = "Accept-Language: da, en-gb;q=0.8, en;q=0.7"; 
 	Node testNode;
 	testNode.childList = malloc(sizeof(Node)*MAX_CHILD_COUNT);
 	testNode.childCount = 0;
 	testNode.contentSize = 0;
 
-	if(languageRange(s,&testNode))
+	if(acceptLanguageHeader(s,&testNode))
 		printTree(&testNode,0);
 	else printf("FAUX\n");
 
