@@ -1,49 +1,95 @@
-#include <stdlib.h>
-#include <stdio.h>
-#include "parser.h"
-#include "fileManager.h"
-#include "tree.h"
-#include "highLevel.h"
-#include "baseLevel.h"
-#include "header.h"
+#include <stdio.h> 
+#include <stdlib.h> 
+#include <string.h> 
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <unistd.h>
+#include <sys/mman.h>
+#include <fcntl.h>
+#include <errno.h>
 
-#define MAX_FILE_SIZE 500
+#include "api.h" 
 
-int main(int argc, char *argv[])
-{	
-	/*
-	//Si pas assez d'arguments
-	if(argc != 2){
-		printf("Erreur d'arguments.\n Usage : ./ssm <filename>\n");
-		exit(1);
-	}
+#define false 0 
 
-	//Charger le fichier
-	char message[MAX_FILE_SIZE] = {0};
-	int messageSize = loadFile(argv[1],message);
 
-	//DEBUG
-	printf("Size loaded : %d char\n",messageSize);
-	for(int i = 0;i<messageSize;i++){
-		printf(" %d ",message[i]);s
-		if(message[i] == '\n') printf("\n");
-	}*/
+int main(int argc,char *argv[])
+{
+	////////////////////////MAIN CONSIGNE
+	// int res,i,fi;
+	// char *p=NULL,*addr;
+
 	
-	//char s[] = "Accept-Language: da, en-gb;q=0.8, en;q=0.7"; 
-	//char s[] = "Cookie:   	 G-e=9wgDeL*x; 3Y=]n(j]?InfIE%e&w%vFTy";
-	//char s[] = "Content-Type:	K!/K;	 *#=\"¾H\" 	 	";
-	//char s[] = "Accept: audio/*; q=0.2, audio/basic";
-	char s[] = "5qsd+%5c";
+    //     struct stat st;
+
+	// if (argc < 3 ) { printf("Usage: httpparser <file> <search>\nAttention <search> is case sensitive\n"); exit(1); }
+	// /* ouverture du fichier contenant la requête */ 
+	// if ((fi=open(argv[1],O_RDWR)) == -1) {
+    //             perror("open");
+    //             return false;
+    //     }
+    //     if (fstat(fi, &st) == -1)           /* To obtain file size */
+    //             return false;
+    //     if ((addr=mmap(NULL,st.st_size,PROT_WRITE,MAP_PRIVATE, fi, 0)) == NULL )
+    //             return false;
+
+	// // This is a special HACK since identificateur in C can't have character '-'
+
+	// if (argc == 3 ) { 
+	// 	p=argv[2]; 	
+	// 	printf("searching for %s\n",p); 
+	// 	while (*p) { 
+	// 		if (*p=='-') { *p='_'; }
+	// 		p++; 
+	// 	}
+	// 	p=argv[2]; 	
+	// }
+	// // call parser and get results. 
+	// if (res=parseur(addr,st.st_size)) {
+	// 	_Token *r,*tok; 
+	// 	void *root=NULL;
+	// 	root=getRootTree(); 
+	// 	r=searchTree(root,p); 
+	// 	tok=r; 
+	// 	while (tok) {
+	// 		int l; 
+	// 		char *s; 
+	// 		s=getElementValue(tok->node,&l); 
+	// 		printf("FOUND [%.*s]\n",l,s);
+	// 		tok=tok->next; 
+	// 	}
+	// 	purgeElement(&r);
+	// 	purgeTree(root);
+	// }
+	// close(fi);
+	// return(res); 
+
+	////////////////////TEST FONCTIONS
+	/*
+
+	char s[] = "%2f@/3+";
 	Node testNode;
 	testNode.childList = malloc(sizeof(Node)*MAX_CHILD_COUNT);
 	testNode.childCount = 0;
 	testNode.contentSize = 0;
 
-	if(regName(s,&testNode))
+	if(pathEmpty(s,&testNode))
 		printTree(&testNode,0);
 	else printf("FAUX\n");
 
 	removeNode(&testNode);
 	
-	return 0;
+	return 0;*/
+
+	/////////////////TEST API
+
+	char s[] = "GET / HTTP/1.1\r\n";
+	parseur(s,strlen(s));
+
+	void *treeRoot = getRootTree();
+
+	printf("Resulat : %s\n",getElementValue(treeRoot,NULL));
+
+	
+
 }
