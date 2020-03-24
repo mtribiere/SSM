@@ -17,16 +17,102 @@ Referer-header = "Referer" ":" OWS Referer OWS
 							dec-octet = "25" %x30-35 / "2" %x30-34 DIGIT / "1" 2 DIGIT / %x31-39 DIGIT / DIGIT
 						IP-literal = "[" ( IPv6address / IPvFuture ) "]" 
 							IPv6address = 6 ( h16 ":" ) ls32 / "::" 5 ( h16 ":" ) ls32 / [ h16 ] "::" 4 ( h16 ":" ) ls32 / [ h16 *1 ( ":" h16 ) ] "::" 3 ( h16 ":" ) ls32 / [ h16 *2 ( ":" h16 ) ] "::" 2 ( h16 ":" ) ls32 / [ h16 *3 ( ":" h16 ) ] "::" h16 ":" ls32 / [ h16 *4 ( ":" h16 ) ] "::" ls32 / [ h16 *5 ( ":" h16 ) ] "::" h16 / [ h16 *6 ( ":" h16 ) ] "::" 
-								h16 = 1*4 HEXDIG
 								ls32 = ( h16 ":" h16 ) / IPv4address	  
+									h16 = 1*4 HEXDIG
 							IPvFuture = "v" 1* HEXDIG "." 1* ( unreserved / sub-delims / ":" ) 
-						reg-name = * ( unreserved / pct-encoded / sub-delims ) 
-					port = * DIGIT
-			path-abempty = * ( "/" segment ) 
-			path-absolute = "/" [ segment-nz * ( "/" segment ) ]
-			path-rootless = segment-nz * ( "/" segment ) 
 */
 
+
+
+int IPvFuture(const char *s, Node* node){
+//A faire
+}
+
+int regName(const char *s, Node* node){
+	//Remplir le node
+	strcpy(node->name,"reg-name");
+	int toReturn = TRUE;
+
+	functionArray functions;
+	(functions.functions[0]) = unreserved;
+	(functions.functions[1]) = pct_encoded;
+	(functions.functions[2]) = subDelims;
+
+	functions.functionCount = 3;
+	functions.isOrFunction = TRUE;
+
+	//Executer etoile
+	(node->childCount) = 0;
+	(node->contentSize) = 0;
+	etoile(functions,s,0,-1,node);
+
+	return toReturn;
+}
+
+int port(const char *s, Node* node){
+	//Remplir le node
+	strcpy(node->name,"port");
+	int toReturn = TRUE;
+
+	functionArray functions;
+	(functions.functions[0]) = DIGIT;
+
+	functions.functionCount = 1;
+	functions.isOrFunction = TRUE;
+
+	//Executer etoile
+	(node->childCount) = 0;
+	(node->contentSize) = 0;
+	etoile(functions,s,0,-1,node);
+
+	return toReturn;
+}
+
+int pathAbempty(const char *s, Node* node){
+	//Remplir le node
+	strcpy(node->name,"path-abempty");
+	int toReturn = TRUE;
+
+	functionArray functions;
+	functions.optionnal = NULL;
+	(functions.functions[0]) = slash;
+	(functions.functions[1]) = segment;
+
+	functions.functionCount = 2;
+	functions.isOrFunction = FALSE;
+
+	//Executer etoile
+	(node->childCount) = 0;
+	(node->contentSize) = 0;
+	etoile(functions,s,0,-1,node);
+
+	return toReturn;
+}
+
+int pathAbsolute(const char *s, Node* node){
+	//Remplir le node
+	strcpy(node->name,"path-absolute");
+	int toReturn = TRUE;
+
+	functionArray functions;
+	functions.optionnal = malloc(MAX_FUNCTION_NUMBER*sizeof(int));
+  	memset(functions.optionnal,MAX_FUNCTION_NUMBER,MAX_FUNCTION_NUMBER*sizeof(int));
+	(functions.functions[0]) = slash;
+	(functions.functions[1]) = pathRootless; functions.optionnal[0] = 1;
+
+	functions.functionCount = 2;
+	functions.isOrFunction = FALSE;
+
+	//Executer etoile
+	(node->childCount) = 0;
+	(node->contentSize) = 0;
+	etoile(functions,s,1,1,node);
+
+	if(node->childCount == 0)
+		toReturn = FALSE;
+
+	return toReturn;
+}
 
 int pathRootless(const char *s, Node* node){
 	//Remplir le node

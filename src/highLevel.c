@@ -224,7 +224,7 @@ int requestLine(const char *s, Node* node){
 int subDelims(const char *s, Node* node){
 
 	//Copier le nom
-	strcpy(node->name,"subDelimiter");
+	strcpy(node->name,"sub-delims");
 	int toReturn  = TRUE;
 
 	//Creer le tableau des fonctions

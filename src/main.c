@@ -33,13 +33,13 @@ int main(int argc, char *argv[])
 	//char s[] = "Cookie:   	 G-e=9wgDeL*x; 3Y=]n(j]?InfIE%e&w%vFTy";
 	//char s[] = "Content-Type:	K!/K;	 *#=\"¾H\" 	 	";
 	//char s[] = "Accept: audio/*; q=0.2, audio/basic";
-	char s[] = "%2f@/3+";
+	char s[] = "5qsd+%5c";
 	Node testNode;
 	testNode.childList = malloc(sizeof(Node)*MAX_CHILD_COUNT);
 	testNode.childCount = 0;
 	testNode.contentSize = 0;
 
-	if(pathEmpty(s,&testNode))
+	if(regName(s,&testNode))
 		printTree(&testNode,0);
 	else printf("FAUX\n");
 

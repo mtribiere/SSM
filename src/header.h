@@ -15,6 +15,10 @@ int segmentNz(const char *s, Node* node);
 int pathNoscheme(const char *s, Node* node);
 int pathEmpty(const char *s, Node* node);
 int pathRootless(const char *s, Node* node);
+int pathAbsolute(const char *s, Node* node);
+int pathAbempty(const char *s, Node* node);
+int port(const char *s, Node* node);
+int regName(const char *s, Node* node);
 
 int acceptExt(const char *s, Node* node);
 int acceptParams(const char *s, Node* node);
