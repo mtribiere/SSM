@@ -10,8 +10,18 @@ int subtype(const char *s, Node* node);
 int obsText(const char *s, Node* node);
 int qdtext(const char *s, Node* node);
 
+int segmentNzNc(const char *s, Node* node);
+int segmentNz(const char *s, Node* node);
+int pathNoscheme(const char *s, Node* node);
+int pathEmpty(const char *s, Node* node);
+int pathRootless(const char *s, Node* node);
+
 int acceptExt(const char *s, Node* node);
 int acceptParams(const char *s, Node* node);
+int mediaRange(const char *s, Node* node);
+int accept(const char *s, Node* node);
+int acceptHeaderName(const char *s, Node* node);
+int acceptHeader(const char *s, Node* node);
 
 int cookieOctet(const char *s, Node* node);
 int cookieValue(const char *s, Node* node);

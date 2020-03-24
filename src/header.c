@@ -1,6 +1,6 @@
 #include "header.h"
 
-//headers supportés = {Referer-header, Accept-header, Content-Type-header, Cookie-header, Accept-Language-header, Expect-header
+//headers supportés = {Referer-header, Accept-header, Content-Type-header, Cookie-header, Accept-Language-header, Expect-header}
 
 /*
 Referer-header = "Referer" ":" OWS Referer OWS 
@@ -25,18 +25,284 @@ Referer-header = "Referer" ":" OWS Referer OWS
 			path-abempty = * ( "/" segment ) 
 			path-absolute = "/" [ segment-nz * ( "/" segment ) ]
 			path-rootless = segment-nz * ( "/" segment ) 
-			path-empty = "" 
-			path-noscheme = segment-nz-nc * ( "/" segment ) 
-				segment-nz = 1* pchar 
-				segment-nz-nc = 1* ( unreserved / pct-encoded / sub-delims / "@" )
 */
 
-/*
-Accept-header = "Accept" ":" OWS Accept OWS 
-	Accept = [ ( "," / ( media-range [ accept-params ] ) ) * ( OWS "," [ OWS ( media-range [ accept-params ] ) ] ) ] 
-		media-range = ( "*SLASH*" / ( type "/" subtype ) / ( type "SLASH*" ) ) * ( OWS ";" OWS parameter ) 
-		accept-params = weight * accept-ext 	 
-*/
+
+int pathRootless(const char *s, Node* node){
+	//Remplir le node
+	strcpy(node->name,"path-rootless");
+	int toReturn = FALSE;
+
+	functionArray functions;
+	(functions.functions[0]) = segmentNz;
+
+	functions.functionCount = 1;
+	functions.isOrFunction = TRUE;
+
+	//Executer etoile
+	(node->childCount) = 0;
+	(node->contentSize) = 0;
+	etoile(functions,s,1,1,node);
+
+	if(node->childCount > 0)
+	{
+		functions.optionnal = NULL;
+		(functions.functions[0]) = slash;
+		(functions.functions[1]) = segment;
+
+		functions.functionCount = 2;
+		functions.isOrFunction = FALSE;
+
+		//Executer etoile
+		etoile(functions,s,0,-1,node);
+		
+			//Si le node n'a de fils, déclarer la node fausse
+		if(node->childCount > 0)
+			toReturn = TRUE;
+	}
+
+	return toReturn;
+}
+
+int pathEmpty(const char *s, Node* node){
+	//Remplir le node
+	strcpy(node->name,"path-empty");
+	
+	node->childCount = 0;
+	node->contentSize = 0;
+
+	return TRUE;
+}
+
+int pathNoscheme(const char *s, Node* node){
+	//Remplir le node
+	strcpy(node->name,"path-noscheme");
+	int toReturn = FALSE;
+
+	functionArray functions;
+	(functions.functions[0]) = segmentNzNc;
+
+	functions.functionCount = 1;
+	functions.isOrFunction = TRUE;
+
+	//Executer etoile
+	(node->childCount) = 0;
+	(node->contentSize) = 0;
+	etoile(functions,s,1,1,node);
+
+	if(node->childCount > 0)
+	{
+		functions.optionnal = NULL;
+		(functions.functions[0]) = slash;
+		(functions.functions[1]) = segment;
+
+		functions.functionCount = 2;
+		functions.isOrFunction = FALSE;
+
+		//Executer etoile
+		etoile(functions,s,0,-1,node);
+		
+			//Si le node n'a de fils, déclarer la node fausse
+		if(node->childCount > 0)
+			toReturn = TRUE;
+	}
+
+	return toReturn;
+}
+
+int segmentNz(const char *s, Node* node){
+	//Remplir le node
+	strcpy(node->name,"segment-nz");
+	int toReturn = TRUE;
+
+	functionArray functions;
+	(functions.functions[0]) = pchar;
+
+	functions.functionCount = 1;
+	functions.isOrFunction = TRUE;
+
+	//Executer etoile
+	(node->childCount) = 0;
+	(node->contentSize) = 0;
+	etoile(functions,s,1,-1,node);
+
+	//Si le node n'a de fils, déclarer la node fausse
+	if(node->childCount == 0)
+		toReturn = FALSE;
+
+	return toReturn;
+}
+
+int segmentNzNc(const char *s, Node* node){
+	//Remplir le node
+	strcpy(node->name,"segment-nz-nc");
+	int toReturn = TRUE;
+
+	functionArray functions;
+	(functions.functions[0]) = unreserved;
+	(functions.functions[1]) = pct_encoded;
+	(functions.functions[2]) = subDelims;
+	(functions.functions[3]) = at;
+
+	functions.functionCount = 4;
+	functions.isOrFunction = TRUE;
+
+	//Executer etoile
+	(node->childCount) = 0;
+	(node->contentSize) = 0;
+	etoile(functions,s,1,-1,node);
+
+	//Si le node n'a de fils, déclarer la node fausse
+	if(node->childCount == 0)
+		toReturn = FALSE;
+
+	return toReturn;
+}
+
+
+//ACCEPT HEADER
+
+int acceptHeader(const char *s, Node* node){
+	//Remplir le node
+	strcpy(node->name,"Accept-header");
+	int toReturn = TRUE;
+
+	functionArray functions;
+	(functions.functions[0]) = acceptHeaderName;
+	(functions.functions[1]) = colon;
+	(functions.functions[2]) = OWS;
+	(functions.functions[3]) = accept;
+	(functions.functions[4]) = OWS;
+
+	functions.functionCount = 5;
+	functions.isOrFunction = FALSE;
+	functions.optionnal = NULL;
+
+	//Executer etoile
+	(node->childCount) = 0;
+	(node->contentSize) = 0;
+	etoile(functions,s,1,1,node);
+
+	//Si le node n'a de fils, déclarer la node fausse
+	if(node->childCount == 0)
+		toReturn = FALSE;
+
+	return toReturn;
+}
+
+int acceptHeaderName(const char *s, Node* node)
+{
+	int toReturn = regexTestInsensitive(s,"^Accept",6);
+    if(node != NULL)
+    {
+		strcpy(node->name,"Accept");
+		node->content = s; 
+		node->contentSize = 6;
+		node->childCount = 0;
+    }
+    return toReturn;
+}
+
+//Problème de def ? En réalité, il n'y a jamais d'acceptParams car parameter de media-range prend le dessus
+// int mediaRangeAcceptParams(const char *s, Node* node){
+// 	//Remplir le node
+// 	strcpy(node->name,"/!\\ A changer");
+// 	int toReturn = TRUE;
+
+// 	functionArray functions;
+// 	functions.optionnal = malloc(MAX_FUNCTION_NUMBER*sizeof(int));
+//   	memset(functions.optionnal,MAX_FUNCTION_NUMBER,MAX_FUNCTION_NUMBER*sizeof(int));
+// 	(functions.functions[0]) = mediaRange;
+// 	(functions.functions[1]) = acceptParams; functions.optionnal[0] = 1;
+
+// 	functions.functionCount = 2;
+// 	functions.isOrFunction = FALSE;
+
+// 	//Executer etoile
+// 	(node->childCount) = 0;
+// 	(node->contentSize) = 0;
+// 	etoile(functions,s,1,1,node);
+
+// 	if(node->childCount == 0)
+// 		toReturn = FALSE;
+
+// 	return toReturn;
+// }
+
+int accept(const char *s, Node* node){
+	//Remplir le node
+	strcpy(node->name,"Accept");
+	int toReturn = TRUE;
+
+	functionArray functions;
+	(functions.functions[0]) = coma;
+	(functions.functions[1]) = mediaRange/*AcceptParams*/;
+	
+	functions.functionCount = 2;
+	functions.isOrFunction = TRUE;
+
+	//Executer etoile
+	(node->childCount) = 0;
+	(node->contentSize) = 0;
+	etoile(functions,s,1,1,node);
+
+	if(node->childCount > 0)
+	{
+		functions.optionnal = malloc(MAX_FUNCTION_NUMBER*sizeof(int));
+  		memset(functions.optionnal,MAX_FUNCTION_NUMBER,MAX_FUNCTION_NUMBER*sizeof(int));
+		(functions.functions[0]) = OWS;
+		(functions.functions[1]) = coma;
+		(functions.functions[2]) = OWS; functions.optionnal[0] = 2;
+		(functions.functions[3]) = mediaRange/*AcceptParams*/; functions.optionnal[1] = 3;
+		
+		functions.functionCount = 4;
+		functions.isOrFunction = FALSE;
+
+		//Executer etoile
+		etoile(functions,s,0,-1,node);
+	}
+	//Toujours vrai car tout est optionnel
+	return toReturn;
+}
+
+//media-range = ( "*SLASH*" / ( type "/" subtype ) / ( type "SLASH*" ) ) * ( OWS ";" OWS parameter ) 
+//media-range = ( type "/" subtype ) * ( OWS ";" OWS parameter ) 			
+int mediaRange(const char *s, Node* node){
+	//Remplir le node
+	strcpy(node->name,"media-range");
+	int toReturn = TRUE;
+
+	functionArray functions;
+	(functions.functions[0]) = type;
+	(functions.functions[1]) = slash;
+	(functions.functions[2]) = subtype;
+
+	functions.functionCount = 3;
+	functions.isOrFunction = FALSE;
+
+	//Executer etoile
+	(node->childCount) = 0;
+	(node->contentSize) = 0;
+	etoile(functions,s,1,1,node);
+
+	if(node->childCount > 0)
+	{
+		(functions.functions[0]) = OWS;
+		(functions.functions[1]) = semiColon;
+		(functions.functions[2]) = OWS;
+		(functions.functions[3]) = parameter;
+
+		functions.functionCount = 4;
+		functions.isOrFunction = FALSE;
+		functions.optionnal = NULL;
+		etoile(functions,s,0,-1,node);
+	}
+	//Si le node n'a de fils, déclarer la node fausse
+	if(node->childCount == 0)
+		toReturn = FALSE;
+
+	return toReturn;	
+}
 
 int acceptParams(const char *s, Node* node){
 	//Remplir le node

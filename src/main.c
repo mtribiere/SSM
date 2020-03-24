@@ -32,13 +32,14 @@ int main(int argc, char *argv[])
 	//char s[] = "Accept-Language: da, en-gb;q=0.8, en;q=0.7"; 
 	//char s[] = "Cookie:   	 G-e=9wgDeL*x; 3Y=]n(j]?InfIE%e&w%vFTy";
 	//char s[] = "Content-Type:	K!/K;	 *#=\"¾H\" 	 	";
-	char s[] = " ;q=0.02	;s=\"s\"	;s=\"s\"";
+	//char s[] = "Accept: audio/*; q=0.2, audio/basic";
+	char s[] = "%2f@/3+";
 	Node testNode;
 	testNode.childList = malloc(sizeof(Node)*MAX_CHILD_COUNT);
 	testNode.childCount = 0;
 	testNode.contentSize = 0;
 
-	if(acceptParams(s,&testNode))
+	if(pathEmpty(s,&testNode))
 		printTree(&testNode,0);
 	else printf("FAUX\n");
 
