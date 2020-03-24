@@ -8,7 +8,7 @@ int DIGIT(const char* s, Node* node) {
     if(node != NULL)
     {
 		strcpy(node->name,"DIGIT");
-		node->content = s; 
+		node->content = s;
 		node->contentSize = 1;
 		node->childCount = 0;
     }
@@ -19,7 +19,7 @@ int ALPHA(const char* s, Node* node) {
     if(node != NULL)
     {
 		strcpy(node->name,"ALPHA");
-		node->content = s; 
+		node->content = s;
 		node->contentSize = 1;
 		node->childCount = 0;
     }
@@ -31,7 +31,7 @@ int BIT(const char* s, Node* node) {
     if(node != NULL)
     {
         strcpy(node->name,"BIT");
-        node->content = s; 
+        node->content = s;
         node->contentSize = 1;
         node->childCount = 0;
     }
@@ -43,7 +43,7 @@ int HEXDIG(const char* s, Node* node) {
     if(node != NULL)
     {
 		strcpy(node->name,"HEXDIG");
-		node->content = s; 
+		node->content = s;
 		node->contentSize = 1;
 		node->childCount = 0;
     }
@@ -55,7 +55,7 @@ int CHAR_(const char* s, Node* node) {
     if(node != NULL)
     {
         strcpy(node->name,"CHAR");
-        node->content = s; 
+        node->content = s;
         node->contentSize = 1;
         node->childCount = 0;
     }
@@ -67,7 +67,7 @@ int CR(const char* s, Node* node) {
     if(node != NULL)
     {
         strcpy(node->name,"CR");
-        node->content = s; 
+        node->content = s;
         node->contentSize = 1;
         node->childCount = 0;
     }
@@ -78,7 +78,7 @@ int LF(const char* s, Node* node) {
     if(node != NULL)
     {
         strcpy(node->name,"LF");
-        node->content = s; 
+        node->content = s;
         node->contentSize = 1;
         node->childCount = 0;
     }
@@ -89,7 +89,7 @@ int DQUOTE(const char* s, Node* node) {
     if(node != NULL)
     {
         strcpy(node->name,"DQUOTE");
-        node->content = s; 
+        node->content = s;
         node->contentSize = 1;
         node->childCount = 0;
     }
@@ -100,7 +100,7 @@ int HTAB(const char* s, Node* node) {
     if(node != NULL)
     {
         strcpy(node->name,"HTAB");
-        node->content = s; 
+        node->content = s;
         node->contentSize = 1;
         node->childCount = 0;
     }
@@ -111,7 +111,7 @@ int OCTET(const char* s, Node* node) {
     if(node != NULL)
     {
         strcpy(node->name,"OCTET");
-        node->content = s; 
+        node->content = s;
         node->contentSize = 1;
         node->childCount = 0;
     }
@@ -122,7 +122,7 @@ int SP(const char* s, Node* node) {
     if(node != NULL)
     {
         strcpy(node->name,"SP");
-        node->content = s; 
+        node->content = s;
         node->contentSize = 1;
         node->childCount = 0;
     }
@@ -133,7 +133,7 @@ int VCHAR(const char* s, Node* node) {
     if(node != NULL)
     {
         strcpy(node->name,"VCHAR");
-        node->content = s; 
+        node->content = s;
         node->contentSize = 1;
         node->childCount = 0;
     }
@@ -145,7 +145,7 @@ int slash(const char* s, Node* node) {
     if(node != NULL)
     {
         strcpy(node->name,"/");
-        node->content = s; 
+        node->content = s;
         node->contentSize = 1;
         node->childCount = 0;
     }
@@ -157,7 +157,7 @@ int interrogation(const char* s, Node* node) {
     if(node != NULL)
     {
         strcpy(node->name,"?");
-        node->content = s; 
+        node->content = s;
         node->contentSize = 1;
         node->childCount = 0;
     }
@@ -169,7 +169,7 @@ int dot(const char* s, Node* node) {
     if(node != NULL)
     {
         strcpy(node->name,".");
-        node->content = s; 
+        node->content = s;
         node->contentSize = 1;
         node->childCount = 0;
     }
@@ -182,7 +182,7 @@ int percent(const char* s, Node* node) {
     if(node != NULL)
     {
         strcpy(node->name,"%");
-        node->content = s; 
+        node->content = s;
         node->contentSize = 1;
         node->childCount = 0;
     }
@@ -194,7 +194,7 @@ int exclamation(const char* s, Node* node) {
     if(node != NULL)
     {
         strcpy(node->name,"!");
-        node->content = s; 
+        node->content = s;
         node->contentSize = 1;
         node->childCount = 0;
     }
@@ -206,7 +206,7 @@ int octothorp(const char* s, Node* node) {
     if(node != NULL)
     {
         strcpy(node->name,"#");
-        node->content = s; 
+        node->content = s;
         node->contentSize = 1;
         node->childCount = 0;
     }
@@ -218,7 +218,7 @@ int dollar(const char* s, Node* node) {
     if(node != NULL)
     {
         strcpy(node->name,"$");
-        node->content = s; 
+        node->content = s;
         node->contentSize = 1;
         node->childCount = 0;
     }
@@ -230,7 +230,7 @@ int and(const char* s, Node* node) {
     if(node != NULL)
     {
         strcpy(node->name,"&");
-        node->content = s; 
+        node->content = s;
         node->contentSize = 1;
         node->childCount = 0;
     }
@@ -242,7 +242,7 @@ int quote(const char* s, Node* node) {
     if(node != NULL)
     {
         strcpy(node->name,"'");
-        node->content = s; 
+        node->content = s;
         node->contentSize = 1;
         node->childCount = 0;
     }
@@ -254,7 +254,7 @@ int star(const char* s, Node* node) {
     if(node != NULL)
     {
         strcpy(node->name,"*");
-        node->content = s; 
+        node->content = s;
         node->contentSize = 1;
         node->childCount = 0;
     }
@@ -266,7 +266,7 @@ int plus(const char* s, Node* node) {
     if(node != NULL)
     {
         strcpy(node->name,"+");
-        node->content = s; 
+        node->content = s;
         node->contentSize = 1;
         node->childCount = 0;
     }
@@ -278,7 +278,7 @@ int minus(const char* s, Node* node) {
     if(node != NULL)
     {
         strcpy(node->name,"-");
-        node->content = s; 
+        node->content = s;
         node->contentSize = 1;
         node->childCount = 0;
     }
@@ -290,7 +290,7 @@ int chineseHat(const char* s, Node* node) {
     if(node != NULL)
     {
         strcpy(node->name,"^");
-        node->content = s; 
+        node->content = s;
         node->contentSize = 1;
         node->childCount = 0;
     }
@@ -302,7 +302,7 @@ int underScore(const char* s, Node* node) {
     if(node != NULL)
     {
         strcpy(node->name,"_");
-        node->content = s; 
+        node->content = s;
         node->contentSize = 1;
         node->childCount = 0;
     }
@@ -310,7 +310,7 @@ int underScore(const char* s, Node* node) {
 }
 
 int inverseQuote(const char* s, Node* node) {
-	
+
 	int toReturn = FALSE;
     if(s[0] == 96)
 		toReturn = TRUE;
@@ -318,7 +318,7 @@ int inverseQuote(const char* s, Node* node) {
 	if(node != NULL)
     {
         strcpy(node->name,"\\`");
-        node->content = s; 
+        node->content = s;
         node->contentSize = 1;
         node->childCount = 0;
     }
@@ -330,7 +330,7 @@ int pipe(const char* s, Node* node) {
     if(node != NULL)
     {
         strcpy(node->name,"\\|");
-        node->content = s; 
+        node->content = s;
         node->contentSize = 1;
         node->childCount = 0;
     }
@@ -342,7 +342,7 @@ int tilt(const char* s, Node* node) {
     if(node != NULL)
     {
         strcpy(node->name,"~");
-        node->content = s; 
+        node->content = s;
         node->contentSize = 1;
         node->childCount = 0;
     }
@@ -354,7 +354,7 @@ int tiret(const char* s, Node* node) {
     if(node != NULL)
     {
         strcpy(node->name,"-");
-        node->content = s; 
+        node->content = s;
         node->contentSize = 1;
         node->childCount = 0;
     }
@@ -366,7 +366,7 @@ int openParenthese(const char* s, Node* node) {
     if(node != NULL)
     {
         strcpy(node->name,"(");
-        node->content = s; 
+        node->content = s;
         node->contentSize = 1;
         node->childCount = 0;
     }
@@ -378,7 +378,7 @@ int closeParenthese(const char* s, Node* node) {
     if(node != NULL)
     {
         strcpy(node->name,")");
-        node->content = s; 
+        node->content = s;
         node->contentSize = 1;
         node->childCount = 0;
     }
@@ -390,7 +390,7 @@ int coma(const char* s, Node* node) {
     if(node != NULL)
     {
         strcpy(node->name,",");
-        node->content = s; 
+        node->content = s;
         node->contentSize = 1;
         node->childCount = 0;
     }
@@ -402,7 +402,7 @@ int semiColon(const char* s, Node* node) {
     if(node != NULL)
     {
         strcpy(node->name,";");
-        node->content = s; 
+        node->content = s;
         node->contentSize = 1;
         node->childCount = 0;
     }
@@ -414,7 +414,7 @@ int equal(const char* s, Node* node) {
     if(node != NULL)
     {
         strcpy(node->name,"=");
-        node->content = s; 
+        node->content = s;
         node->contentSize = 1;
         node->childCount = 0;
     }
@@ -427,7 +427,7 @@ int colon(const char* s, Node* node) {
     if(node != NULL)
     {
 		strcpy(node->name,":");
-		node->content = s; 
+		node->content = s;
 		node->contentSize = 1;
 		node->childCount = 0;
     }
@@ -439,7 +439,7 @@ int at(const char* s, Node* node) {
     if(node != NULL)
     {
 		strcpy(node->name,"@");
-		node->content = s; 
+		node->content = s;
 		node->contentSize = 1;
 		node->childCount = 0;
     }
@@ -448,7 +448,7 @@ int at(const char* s, Node* node) {
 
 
 int backSlash(const char *s,Node* node){
-	
+
 	int toReturn = TRUE;
 	if(s[0] != 92)
 		toReturn = FALSE;
@@ -456,7 +456,7 @@ int backSlash(const char *s,Node* node){
     if(node != NULL)
     {
 		strcpy(node->name,"\\");
-		node->content = s; 
+		node->content = s;
 		node->contentSize = 1;
 		node->childCount = 0;
     }
@@ -534,7 +534,7 @@ int ZERO(const char* s, Node* node) {
     if(node != NULL)
     {
         strcpy(node->name,"0");
-        node->content = s; 
+        node->content = s;
         node->contentSize = 1;
         node->childCount = 0;
     }
@@ -545,7 +545,7 @@ int ONE(const char* s, Node* node) {
     if(node != NULL)
     {
         strcpy(node->name,"1");
-        node->content = s; 
+        node->content = s;
         node->contentSize = 1;
         node->childCount = 0;
     }

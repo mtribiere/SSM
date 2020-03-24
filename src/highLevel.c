@@ -9,7 +9,7 @@ int HTTPname(const char* s, Node* node) {
     if(node != NULL)
     {
 		strcpy(node->name,"HTTP-name");
-		node->content = s; 
+		node->content = s;
 		node->contentSize = 4;
 		node->childCount = 0;
     }
@@ -39,7 +39,7 @@ int HTTPVersion(const char *s, Node* node){
     if(node->childCount == 0)
         toReturn = FALSE;
     return toReturn;
-	
+
 }
 
 //pct-encoded = "%" HEXDIG HEXDIG
@@ -68,7 +68,7 @@ int pct_encoded(const char *s,Node *node){
 
 //pchar = unreserved / pct-encoded / sub-delims / ":" / "@"
 int pchar(const char *s, Node* node){
-	
+
 	//Remplir le node
 	strcpy(node->name,"pchar");
 	int toReturn = TRUE;
@@ -94,12 +94,12 @@ int pchar(const char *s, Node* node){
 		toReturn = FALSE;
 
 	return toReturn;
-	
+
 }
 
 //segment = * pchar
 int segment(const char *s, Node* node){
-	
+
 	//Remplir le node
 	strcpy(node->name,"segment");
 	int toReturn = TRUE;
@@ -203,10 +203,10 @@ int requestLine(const char *s, Node* node){
 	functions.optionnal = NULL;
 	(functions.functions)[0] = method;
 	(functions.functions)[1] = SP;
-	(functions.functions)[2] = originForm; 
-	(functions.functions)[3] = SP; 
-	(functions.functions)[4] = HTTPVersion; 
-	(functions.functions)[5] = CRLF; 
+	(functions.functions)[2] = originForm;
+	(functions.functions)[3] = SP;
+	(functions.functions)[4] = HTTPVersion;
+	(functions.functions)[5] = CRLF;
 
 	functions.functionCount = 6;
 	functions.isOrFunction = FALSE;
@@ -222,10 +222,10 @@ int requestLine(const char *s, Node* node){
 }
 
 int subDelims(const char *s, Node* node){
-	
+
 	//Copier le nom
 	strcpy(node->name,"subDelimiter");
-	int toReturn  = TRUE; 
+	int toReturn  = TRUE;
 
 	//Creer le tableau des fonctions
 	functionArray chooseFrom;
@@ -259,10 +259,10 @@ int subDelims(const char *s, Node* node){
 
 
 int tchar(const char* s, Node* node) {
-	
+
 	//Copier le nom
 	strcpy(node->name,"tchar");
-	int toReturn  = TRUE; 
+	int toReturn  = TRUE;
 
 	//Creer le tableau des fonctions
 	functionArray chooseFrom;
@@ -299,10 +299,10 @@ int tchar(const char* s, Node* node) {
 }
 
 int unreserved(const char* s, Node* node) {
-	
+
 	//Copier le nom
 	strcpy(node->name,"unreserved");
-	int toReturn  = TRUE; 
+	int toReturn  = TRUE;
 
 	//Creer le tableau des fonctions
 	functionArray chooseFrom;
@@ -345,6 +345,119 @@ int token(const char *s, Node* node){
     if(node->childCount == 0)
         toReturn = FALSE;
     return toReturn;
+}
+
+int fieldVchar(const char *s, Node *node) {
+	strcpy(node->name, "field-vchar");
+	int toReturn = TRUE;
+
+	functionArray chooseFrom;
+	chooseFrom.functions[0] = VCHAR;
+	chooseFrom.functions[1] = obsText;
+
+	chooseFrom.functionCount = 2;
+	chooseFrom.isOrFunction = TRUE;
+	chooseFrom.optionnal = NULL;
+
+	(node->contentSize) = 0;
+	(node->childCount) = 0;
+    etoile(chooseFrom,s,1,1,node);
+
+	if(node->childCount == 0)
+		toReturn = FALSE;
+	return toReturn;
+}
+
+int fieldContent(const char *s, Node *node) {
+	strcpy(node->name, "field-content");
+	int toReturn = TRUE;
+	// int toReturnWithoutOptionnal = TRUE;
+	// int toReturnWithOptionnal = TRUE;
+
+	functionArray chooseFrom;
+	chooseFrom.functions[0] = fieldVchar;
+
+	chooseFrom.functionCount = 1;
+	chooseFrom.isOrFunction = FALSE;
+	chooseFrom.optionnal = NULL;
+
+	(node->contentSize) = 0;
+	(node->childCount) = 0;
+    etoile(chooseFrom,s,1,1,node);
+
+	if(node->childCount == 0)
+		toReturn = FALSE;
+	else
+	{
+		// Continuer a parser la commande
+	}
+
+	return toReturn;
+}
+
+int fieldValue(const char *s, Node *node) {
+	strcpy(node->name, "field-value");
+	int toReturn = TRUE;
+
+	functionArray chooseFrom;
+	chooseFrom.functions[0] = fieldContent;
+	// chooseFrom.functions[1] = obsFold;
+
+	chooseFrom.functionCount = 2;
+	chooseFrom.isOrFunction = TRUE;
+	chooseFrom.optionnal = NULL;
+
+	(node->contentSize) = 0;
+	(node->childCount) = 0;
+    etoile(chooseFrom,s,1,-1,node);
+
+	if(node->childCount == 0)
+		toReturn = FALSE;
+	return toReturn;
+}
+
+int fieldName(const char *s, Node *node) {
+	strcpy(node->name, "field-name");
+	int toReturn = TRUE;
+
+	functionArray chooseFrom;
+	chooseFrom.functions[0] = token;
+
+	chooseFrom.functionCount = 1;
+	chooseFrom.isOrFunction = FALSE;
+	chooseFrom.optionnal = NULL;
+
+	(node->contentSize) = 0;
+	(node->childCount) = 0;
+    etoile(chooseFrom,s,1,-1,node);
+
+	if(node->childCount == 0)
+		toReturn = FALSE;
+	return toReturn;
+}
+
+int headerField(const char *s, Node *node) {
+	strcpy(node->name, "header-field");
+	int toReturn = TRUE;
+
+	functionArray chooseFrom;
+	chooseFrom.functions[0] = fieldName;
+	chooseFrom.functions[1] = colon;
+	chooseFrom.functions[2] = OWS;
+	chooseFrom.functions[3] = fieldValue;
+	chooseFrom.functions[4] = OWS;
+
+	chooseFrom.functionCount = 5;
+	chooseFrom.isOrFunction = FALSE;
+	chooseFrom.optionnal = NULL;
+
+	(node->contentSize) = 0;
+	(node->childCount) = 0;
+    etoile(chooseFrom,s,1,1,node);
+
+	if(node->childCount == 0)
+		toReturn = FALSE;
+	return toReturn;
 }
 
 int method(const char *s, Node* node) {
