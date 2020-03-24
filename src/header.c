@@ -36,12 +36,97 @@ Accept-header = "Accept" ":" OWS Accept OWS
 	Accept = [ ( "," / ( media-range [ accept-params ] ) ) * ( OWS "," [ OWS ( media-range [ accept-params ] ) ] ) ] 
 		media-range = ( "*SLASH*" / ( type "/" subtype ) / ( type "SLASH*" ) ) * ( OWS ";" OWS parameter ) 
 		accept-params = weight * accept-ext 	 
-			accept-ext = OWS ";" OWS token [ "=" ( token / quoted-string ) ] 
 */
 
-/*
-Cookie-header = "Cookie:" OWS cookie-string OWS 
-*/
+int acceptParams(const char *s, Node* node){
+	//Remplir le node
+	strcpy(node->name,"accept-params");
+	int toReturn = TRUE;
+
+	functionArray functions;
+	(functions.functions[0]) = weight;
+
+	functions.functionCount = 1;
+	functions.isOrFunction = TRUE;
+
+	//Executer etoile
+	(node->childCount) = 0;
+	(node->contentSize) = 0;
+	etoile(functions,s,1,1,node);
+
+	if(node->childCount > 0)
+	{
+		(functions.functions[0]) = acceptExt;
+		etoile(functions,s,0,-1,node);
+	}
+	//Si le node n'a de fils, déclarer la node fausse
+	if(node->childCount == 0)
+		toReturn = FALSE;
+
+	return toReturn;	
+}
+
+int equalTokenOrQuotedString(const char *s, Node* node){
+	//Remplir le node
+	strcpy(node->name,"/!\\ A changer");
+	int toReturn = FALSE;
+
+	functionArray functions;
+	(functions.functions[0]) = equal;
+	functions.functionCount = 1;
+	functions.isOrFunction = TRUE;
+
+	(node->childCount) = 0;
+	(node->contentSize) = 0;
+	etoile(functions, s, 1, 1, node);
+
+	if(node->childCount >= 1)
+	{
+		
+		(functions.functions[0]) = token;
+		(functions.functions[1]) = quotedString;
+		functions.functionCount = 2;
+		
+		//Executer etoile
+		// (node->childCount) = 0;
+		// (node->contentSize) = 0;
+		etoile(functions,s,1,1,node);
+
+		if(node->childCount >= 2)
+		//Si le node a au moins un fils, déclarer la node vraie
+			toReturn = TRUE;
+	}
+	return toReturn;
+}
+
+int acceptExt(const char *s, Node* node){
+	//Remplir le node
+	strcpy(node->name,"accept-ext");
+	int toReturn = TRUE;
+
+	functionArray functions;
+	functions.optionnal = malloc(MAX_FUNCTION_NUMBER*sizeof(int));
+  	memset(functions.optionnal,MAX_FUNCTION_NUMBER,MAX_FUNCTION_NUMBER*sizeof(int));
+	(functions.functions[0]) = OWS;
+	(functions.functions[1]) = semiColon;
+	(functions.functions[2]) = OWS;
+	(functions.functions[3]) = token;
+	(functions.functions[4]) = equalTokenOrQuotedString; functions.optionnal[0] = 4;
+
+	functions.functionCount = 5;
+	functions.isOrFunction = FALSE;
+
+	//Executer etoile
+	(node->childCount) = 0;
+	(node->contentSize) = 0;
+	etoile(functions,s,1,1,node);
+
+	//Si le node n'a de fils, déclarer la node fausse
+	if(node->childCount == 0)
+		toReturn = FALSE;
+
+	return toReturn;
+}
 
 //ACCEPT-LANGUAGE HEADER
 

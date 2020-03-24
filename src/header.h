@@ -10,6 +10,9 @@ int subtype(const char *s, Node* node);
 int obsText(const char *s, Node* node);
 int qdtext(const char *s, Node* node);
 
+int acceptExt(const char *s, Node* node);
+int acceptParams(const char *s, Node* node);
+
 int cookieOctet(const char *s, Node* node);
 int cookieValue(const char *s, Node* node);
 int cookieName(const char *s, Node* node);
