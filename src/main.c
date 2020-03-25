@@ -69,13 +69,13 @@ int main(int argc,char *argv[])
 	// return(res); 
 
 	////////////////////TEST FONCTIONS
-	char s[] = "255.25.15.1";
+	char s[] = "qds:+%3f";
 	Node testNode;
 	testNode.childList = malloc(sizeof(Node)*MAX_CHILD_COUNT);
 	testNode.childCount = 0;
 	testNode.contentSize = 0;
 
-	if(ls32(s,&testNode))
+	if(userinfo(s,&testNode))
 		printTree(&testNode,0);
 	else printf("FAUX\n");
 

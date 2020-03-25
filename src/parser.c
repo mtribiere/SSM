@@ -2,7 +2,7 @@
 
 int regexTest(const char* string, const char* regex, const int size)
 {
-    int toReturn;
+    int toReturn = FALSE;
 	regex_t preg;
 	char* str = malloc(sizeof(char) * size);
 	if(str == NULL) perror("Problème d'allocation de mémoire");
@@ -186,7 +186,10 @@ void etoile(functionArray functions, const char *s, int min, int max,Node *node)
 		
 		//Liberer les enfants créés
 		for(int i = (node->childCount)-1;i>=backChildCount;i--)
-			free((node->childList)[i]);
+		{
+			//free((node->childList)[i]); //CA MARCHE PLUS SINON
+			(node->childList)[i] = NULL;
+		}
 
 		//Remettre le nombre d'enfants à son état initial
 		(node->childCount) = backChildCount;

@@ -24,6 +24,10 @@ int decOctet(const char *s, Node* node);
 int IPv4address(const char *s, Node* node);
 int h16(const char *s, Node* node);
 int ls32(const char *s, Node* node);
+int IPv6address(const char *s, Node* node);
+int IPliteral(const char *s, Node* node);
+int host(const char *s, Node* node);
+int userinfo(const char *s, Node* node);
 
 int acceptExt(const char *s, Node* node);
 int acceptParams(const char *s, Node* node);

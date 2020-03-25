@@ -446,6 +446,30 @@ int at(const char* s, Node* node) {
     return toReturn;
 }
 
+int openBracket(const char* s, Node* node) {
+    int toReturn = regexTest(s,"^\\[",1);
+    if(node != NULL)
+    {
+        strcpy(node->name,"[");
+        node->content = s;
+        node->contentSize = 1;
+        node->childCount = 0;
+    }
+    return toReturn;
+}
+
+int closeBracket(const char* s, Node* node) {
+    int toReturn = regexTest(s,"^\\]",1);
+    if(node != NULL)
+    {
+        strcpy(node->name,"]");
+        node->content = s;
+        node->contentSize = 1;
+        node->childCount = 0;
+    }
+    return toReturn;
+}
+
 
 int backSlash(const char *s,Node* node){
 

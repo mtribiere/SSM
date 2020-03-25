@@ -11,11 +11,376 @@ Referer-header = "Referer" ":" OWS Referer OWS
 		partial-URI = relative-part [ "?" query ] 
 			relative-part = "//" authority path-abempty / path-absolute / path-noscheme / path-empty
 				authority = [ userinfo "@" ] host [ ":" port ] 
-					userinfo = * ( unreserved / pct-encoded / sub-delims / ":" ) 
-					host = IP-literal / IPv4address / reg-name
-						IP-literal = "[" ( IPv6address / IPvFuture ) "]" 
-							IPv6address = 6 ( h16 ":" ) ls32 / "::" 5 ( h16 ":" ) ls32 / [ h16 ] "::" 4 ( h16 ":" ) ls32 / [ h16 *1 ( ":" h16 ) ] "::" 3 ( h16 ":" ) ls32 / [ h16 *2 ( ":" h16 ) ] "::" 2 ( h16 ":" ) ls32 / [ h16 *3 ( ":" h16 ) ] "::" h16 ":" ls32 / [ h16 *4 ( ":" h16 ) ] "::" ls32 / [ h16 *5 ( ":" h16 ) ] "::" h16 / [ h16 *6 ( ":" h16 ) ] "::" 
 */
+
+int userinfo(const char *s, Node* node){
+	//Remplir le node
+	strcpy(node->name,"userinfo");
+	int toReturn = TRUE;
+
+	functionArray functions;
+	(functions.functions[0]) = unreserved;
+	(functions.functions[1]) = pct_encoded;
+	(functions.functions[2]) = subDelims;
+	(functions.functions[3]) = colon;
+
+	functions.functionCount = 4;
+	functions.isOrFunction = TRUE;
+
+	//Executer etoile
+	(node->childCount) = 0;
+	(node->contentSize) = 0;
+	etoile(functions,s,0,-1,node);
+
+	return toReturn;
+}
+
+int host(const char *s, Node* node){
+	//Remplir le node
+	strcpy(node->name,"host");
+	int toReturn = TRUE;
+
+	functionArray functions;
+	(functions.functions[0]) = IPliteral;
+	(functions.functions[1]) = IPv4address;
+	(functions.functions[2]) = regName;
+
+	functions.functionCount = 3;
+	functions.isOrFunction = TRUE;
+
+	//Executer etoile
+	(node->childCount) = 0;
+	(node->contentSize) = 0;
+	etoile(functions,s,1,1,node);
+
+	if(node->childCount == 0)
+		toReturn = FALSE;
+	return toReturn;
+}
+
+int IPliteral(const char *s, Node* node){
+	//Remplir le node
+	strcpy(node->name,"IP-literal");
+	int toReturn = TRUE;
+
+	functionArray functions;
+	(functions.functions[0]) = openBracket;
+	(functions.functions[1]) = IPv6address;
+	(functions.functions[2]) = closeBracket;
+
+	functions.optionnal = NULL;
+	functions.functionCount = 3;
+	functions.isOrFunction = FALSE;
+
+	//Executer etoile
+	(node->childCount) = 0;
+	(node->contentSize) = 0;
+	etoile(functions,s,1,1,node);
+
+	if(node->childCount == 0)
+	{
+		(functions.functions[1]) = IPvFuture;
+
+		//Executer etoile
+		etoile(functions,s,1,1,node);
+	}
+
+	//Si le node n'a de fils, déclarer la node fausse
+	if(node->childCount == 0)
+		toReturn = FALSE;
+
+	return toReturn;
+}
+
+void checkls32(functionArray functions, const char *s, Node* node)
+{
+	if(node->childCount > 0){
+		int backChildCount = node->childCount;
+		(functions.functions[0]) = ls32;
+		functions.functionCount = 1;
+		functions.isOrFunction = TRUE;
+		etoile(functions,s,1,1,node); //ls32 
+
+		if(node->childCount - backChildCount != 1)
+		{
+			(node->childCount) = 0;
+			(node->contentSize) = 0;
+		}
+			
+	}
+}
+
+int colonh16(const char *s, Node* node){
+	//Remplir le node
+	strcpy(node->name,"/!\\ A changer");
+	int toReturn = TRUE;
+
+	functionArray functions;
+	(functions.functions[0]) = colon;
+	(functions.functions[1]) = h16;
+
+	functions.optionnal = NULL;
+	functions.functionCount = 2;
+	functions.isOrFunction = FALSE;
+
+	//Executer etoile
+	(node->childCount) = 0;
+	(node->contentSize) = 0;
+	etoile(functions,s,1,1,node);
+
+	//Si le node n'a de fils, déclarer la node fausse
+	if(node->childCount == 0)
+		toReturn = FALSE;
+
+	return toReturn;
+}
+
+int doubleColon(const char *s, Node* node){
+	int toReturn = regexTest(s,"^\\:\\:",2);
+    if(node != NULL)
+    {
+		strcpy(node->name,"::");
+		node->content = s;
+		node->contentSize = 2;
+		node->childCount = 0;
+    }
+    return toReturn;
+}
+
+int IPv6address(const char *s, Node* node){
+	//Remplir le node
+	strcpy(node->name,"IPv6address");
+	int toReturn = TRUE;
+	int backChildCount;
+
+	functionArray functions;
+	(functions.functions[0]) = h16;
+	(functions.functions[1]) = colon;	
+
+	functions.optionnal = NULL;
+	functions.functionCount = 2;
+	functions.isOrFunction = FALSE;
+
+	//Executer etoile
+	(node->childCount) = 0;
+	(node->contentSize) = 0;
+	etoile(functions,s,6,6,node); //6 ( h16 ":" )
+
+	if(node->childCount == 0){
+		(functions.functions[0]) = doubleColon;
+		functions.functionCount = 1;
+		functions.isOrFunction = TRUE;
+		etoile(functions,s,1,1,node); //"::"
+
+		if(node->childCount > 0){
+			(functions.functions[0]) = h16;
+			(functions.functions[1]) = colon;
+			functions.functionCount = 2;
+			functions.isOrFunction = FALSE;
+			backChildCount = node->childCount;
+			etoile(functions,s,5,5,node); //5 ( h16 ":" )
+
+			if(node->childCount - backChildCount == 0)
+			{
+				(node->childCount) = 0;
+				(node->contentSize) = 0;
+			}
+			checkls32(functions, s, node);
+		}
+	}
+	if(node->childCount == 0){
+		functions.optionnal = malloc(MAX_FUNCTION_NUMBER*sizeof(int));
+  		memset(functions.optionnal,MAX_FUNCTION_NUMBER,MAX_FUNCTION_NUMBER*sizeof(int));
+  		(functions.functions[0]) = h16; functions.optionnal[0] = 0;
+		(functions.functions[1]) = doubleColon;
+		functions.functionCount = 2;
+		functions.isOrFunction = FALSE;
+		etoile(functions,s,1,1,node); //[ h16 ] "::"
+
+		if(node->childCount > 0){
+			if(functions.optionnal != NULL) {free(functions.optionnal); functions.optionnal = NULL;}
+			(functions.functions[0]) = h16;
+			(functions.functions[1]) = colon;
+			functions.functionCount = 2;
+			functions.isOrFunction = FALSE;
+			backChildCount = node->childCount;
+			etoile(functions,s,4,4,node); //4 ( h16 ":" )
+
+			if(node->childCount - backChildCount == 0)
+			{
+				(node->childCount) = 0;
+				(node->contentSize) = 0;
+			}
+			checkls32(functions, s, node);
+		}
+	}
+	if(node->childCount == 0){
+		if(functions.optionnal != NULL) {free(functions.optionnal); functions.optionnal = NULL;}
+		functions.optionnal = malloc(MAX_FUNCTION_NUMBER*sizeof(int));
+  		memset(functions.optionnal,MAX_FUNCTION_NUMBER,MAX_FUNCTION_NUMBER*sizeof(int));
+  		(functions.functions[0]) = h16; functions.optionnal[0] = 0;
+  		(functions.functions[1]) = colonh16; functions.optionnal[1] = 1;
+		(functions.functions[2]) = doubleColon;
+		functions.functionCount = 3;
+		functions.isOrFunction = FALSE;
+		etoile(functions,s,1,1,node); //[ h16 *1 ( ":" h16 ) ] "::"
+
+		if(node->childCount > 0){
+			if(functions.optionnal != NULL) {free(functions.optionnal); functions.optionnal = NULL;}
+			(functions.functions[0]) = h16;
+			(functions.functions[1]) = colon;
+			functions.functionCount = 2;
+			functions.isOrFunction = FALSE;
+			backChildCount = node->childCount;
+			etoile(functions,s,3,3,node); //3 ( h16 ":" )
+
+			if(node->childCount - backChildCount == 0)
+			{
+				(node->childCount) = 0;
+				(node->contentSize) = 0;
+			}
+			checkls32(functions, s, node);
+		}
+	}
+	if(node->childCount == 0){
+		if(functions.optionnal != NULL) {free(functions.optionnal); functions.optionnal = NULL;}
+		functions.optionnal = malloc(MAX_FUNCTION_NUMBER*sizeof(int));
+  		memset(functions.optionnal,MAX_FUNCTION_NUMBER,MAX_FUNCTION_NUMBER*sizeof(int));
+  		(functions.functions[0]) = h16; functions.optionnal[0] = 0;
+  		(functions.functions[1]) = colonh16; functions.optionnal[1] = 1;
+  		(functions.functions[2]) = colonh16; functions.optionnal[2] = 2;
+		(functions.functions[3]) = doubleColon;
+		functions.functionCount = 4;
+		functions.isOrFunction = FALSE;
+		etoile(functions,s,1,1,node); //[ h16 *2 ( ":" h16 ) ] "::"
+
+		if(node->childCount > 0){
+			if(functions.optionnal != NULL) {free(functions.optionnal); functions.optionnal = NULL;}
+			(functions.functions[0]) = h16;
+			(functions.functions[1]) = colon;
+			functions.functionCount = 2;
+			functions.isOrFunction = FALSE;
+			backChildCount = node->childCount;
+			etoile(functions,s,2,2,node); //2 ( h16 ":" )
+
+			if(node->childCount - backChildCount == 0)
+			{
+				(node->childCount) = 0;
+				(node->contentSize) = 0;
+			}
+			checkls32(functions, s, node);
+		}
+	}
+	if(node->childCount == 0){
+		if(functions.optionnal != NULL) {free(functions.optionnal); functions.optionnal = NULL;}
+		functions.optionnal = malloc(MAX_FUNCTION_NUMBER*sizeof(int));
+  		memset(functions.optionnal,MAX_FUNCTION_NUMBER,MAX_FUNCTION_NUMBER*sizeof(int));
+  		(functions.functions[0]) = h16; functions.optionnal[0] = 0;
+  		(functions.functions[1]) = colonh16; functions.optionnal[1] = 1;
+  		(functions.functions[2]) = colonh16; functions.optionnal[2] = 2;
+  		(functions.functions[3]) = colonh16; functions.optionnal[3] = 3;
+		(functions.functions[4]) = doubleColon;
+		functions.functionCount = 5;
+		functions.isOrFunction = FALSE;
+		etoile(functions,s,1,1,node); //[ h16 *3 ( ":" h16 ) ] "::"
+
+		if(node->childCount > 0){
+			if(functions.optionnal != NULL) {free(functions.optionnal); functions.optionnal = NULL;}
+			(functions.functions[0]) = h16;
+			(functions.functions[1]) = colon;
+			functions.functionCount = 2;
+			functions.isOrFunction = FALSE;
+			backChildCount = node->childCount;
+			etoile(functions,s,1,1,node); // h16 ":"
+
+			if(node->childCount - backChildCount == 0)
+			{
+				(node->childCount) = 0;
+				(node->contentSize) = 0;
+			}
+			checkls32(functions, s, node);
+		}
+	}
+	if(node->childCount == 0){
+		if(functions.optionnal != NULL) {free(functions.optionnal); functions.optionnal = NULL;}
+		functions.optionnal = malloc(MAX_FUNCTION_NUMBER*sizeof(int));
+  		memset(functions.optionnal,MAX_FUNCTION_NUMBER,MAX_FUNCTION_NUMBER*sizeof(int));
+  		(functions.functions[0]) = h16; functions.optionnal[0] = 0;
+  		(functions.functions[1]) = colonh16; functions.optionnal[1] = 1;
+  		(functions.functions[2]) = colonh16; functions.optionnal[2] = 2;
+  		(functions.functions[3]) = colonh16; functions.optionnal[3] = 3;
+  		(functions.functions[4]) = colonh16; functions.optionnal[4] = 4;
+		(functions.functions[5]) = doubleColon;
+		functions.functionCount = 6;
+		functions.isOrFunction = FALSE;
+		backChildCount = node->childCount;
+		etoile(functions,s,1,1,node); //[ h16 *4 ( ":" h16 ) ] "::"
+
+		if(node->childCount - backChildCount == 0)
+			{
+				(node->childCount) = 0;
+				(node->contentSize) = 0;
+			}
+		checkls32(functions, s, node);
+	}
+	if(node->childCount == 0){
+		if(functions.optionnal != NULL) {free(functions.optionnal); functions.optionnal = NULL;}
+		functions.optionnal = malloc(MAX_FUNCTION_NUMBER*sizeof(int));
+  		memset(functions.optionnal,MAX_FUNCTION_NUMBER,MAX_FUNCTION_NUMBER*sizeof(int));
+  		(functions.functions[0]) = h16; functions.optionnal[0] = 0;
+  		(functions.functions[1]) = colonh16; functions.optionnal[1] = 1;
+  		(functions.functions[2]) = colonh16; functions.optionnal[2] = 2;
+  		(functions.functions[3]) = colonh16; functions.optionnal[3] = 3;
+  		(functions.functions[4]) = colonh16; functions.optionnal[4] = 4;
+  		(functions.functions[5]) = colonh16; functions.optionnal[5] = 5;
+		(functions.functions[6]) = doubleColon;
+		functions.functionCount = 7;
+		functions.isOrFunction = FALSE;
+		etoile(functions,s,1,1,node); //[ h16 *5 ( ":" h16 ) ] "::"
+
+		if(node->childCount == 0){
+			(node->childCount) = 0;
+			(node->contentSize) = 0;
+		}
+		if(node->childCount > 0){
+			int backChildCount = node->childCount;
+			(functions.functions[0]) = h16;
+			functions.functionCount = 1;
+			functions.isOrFunction = TRUE;
+			etoile(functions,s,1,1,node); //h16 
+
+			if(node->childCount - backChildCount != 1)
+			{
+				(node->childCount) = 0;
+				(node->contentSize) = 0;
+			}	
+		}
+	}
+	if(node->childCount == 0){
+		if(functions.optionnal != NULL) {free(functions.optionnal); functions.optionnal = NULL;}
+		functions.optionnal = malloc(MAX_FUNCTION_NUMBER*sizeof(int));
+  		memset(functions.optionnal,MAX_FUNCTION_NUMBER,MAX_FUNCTION_NUMBER*sizeof(int));
+  		(functions.functions[0]) = h16; functions.optionnal[0] = 0;
+  		(functions.functions[1]) = colonh16; functions.optionnal[1] = 1;
+  		(functions.functions[2]) = colonh16; functions.optionnal[2] = 2;
+  		(functions.functions[3]) = colonh16; functions.optionnal[3] = 3;
+  		(functions.functions[4]) = colonh16; functions.optionnal[4] = 4;
+  		(functions.functions[5]) = colonh16; functions.optionnal[5] = 5;
+  		(functions.functions[6]) = colonh16; functions.optionnal[6] = 6;
+		(functions.functions[7]) = doubleColon;
+		functions.functionCount = 8;
+		functions.isOrFunction = FALSE;
+		etoile(functions,s,1,1,node); //[ h16 *6 ( ":" h16 ) ] "::"
+
+		if(node->childCount == 0){
+			(node->childCount) = 0;
+			(node->contentSize) = 0;
+		}
+	}
+	if(node->childCount == 0)
+		toReturn = FALSE;
+	return toReturn;
+}
 
 int ls32(const char *s, Node* node){
 	//Remplir le node
