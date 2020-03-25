@@ -19,6 +19,11 @@ int pathAbsolute(const char *s, Node* node);
 int pathAbempty(const char *s, Node* node);
 int port(const char *s, Node* node);
 int regName(const char *s, Node* node);
+int IPvFuture(const char *s, Node* node);
+int decOctet(const char *s, Node* node);
+int IPv4address(const char *s, Node* node);
+int h16(const char *s, Node* node);
+int ls32(const char *s, Node* node);
 
 int acceptExt(const char *s, Node* node);
 int acceptParams(const char *s, Node* node);

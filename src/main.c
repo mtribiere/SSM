@@ -1,14 +1,18 @@
 #include <stdio.h> 
 #include <stdlib.h> 
 #include <string.h> 
-#include <sys/types.h>
-#include <sys/stat.h>
-#include <unistd.h>
-#include <sys/mman.h>
-#include <fcntl.h>
-#include <errno.h>
+//#include <sys/types.h>
+//#include <sys/stat.h>
+//#include <unistd.h>
+//#include <sys/mman.h>
+//#include <fcntl.h>
+//#include <errno.h>
 
 #include "api.h" 
+#include "header.h"
+#include "baseLevel.h"
+#include "highLevel.h"
+#include "parser.h"
 
 #define false 0 
 
@@ -65,31 +69,30 @@ int main(int argc,char *argv[])
 	// return(res); 
 
 	////////////////////TEST FONCTIONS
-	/*
-
-	char s[] = "%2f@/3+";
+	char s[] = "255.25.15.1";
 	Node testNode;
 	testNode.childList = malloc(sizeof(Node)*MAX_CHILD_COUNT);
 	testNode.childCount = 0;
 	testNode.contentSize = 0;
 
-	if(pathEmpty(s,&testNode))
+	if(ls32(s,&testNode))
 		printTree(&testNode,0);
 	else printf("FAUX\n");
 
 	removeNode(&testNode);
 	
-	return 0;*/
+	return 0;
 
 	/////////////////TEST API
-
+	/*
 	char s[] = "GET / HTTP/1.1\r\n";
 	parseur(s,strlen(s));
 
 	void *treeRoot = getRootTree();
 
 	printf("Resulat : %s\n",getElementValue(treeRoot,NULL));
-
+	//Attention la fct getElementValue() a été commentée
+	*/
 	
 
 }

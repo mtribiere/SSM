@@ -13,19 +13,277 @@ Referer-header = "Referer" ":" OWS Referer OWS
 				authority = [ userinfo "@" ] host [ ":" port ] 
 					userinfo = * ( unreserved / pct-encoded / sub-delims / ":" ) 
 					host = IP-literal / IPv4address / reg-name
-						IPv4address = dec-octet "." dec-octet "." dec-octet "." dec-octet
-							dec-octet = "25" %x30-35 / "2" %x30-34 DIGIT / "1" 2 DIGIT / %x31-39 DIGIT / DIGIT
 						IP-literal = "[" ( IPv6address / IPvFuture ) "]" 
 							IPv6address = 6 ( h16 ":" ) ls32 / "::" 5 ( h16 ":" ) ls32 / [ h16 ] "::" 4 ( h16 ":" ) ls32 / [ h16 *1 ( ":" h16 ) ] "::" 3 ( h16 ":" ) ls32 / [ h16 *2 ( ":" h16 ) ] "::" 2 ( h16 ":" ) ls32 / [ h16 *3 ( ":" h16 ) ] "::" h16 ":" ls32 / [ h16 *4 ( ":" h16 ) ] "::" ls32 / [ h16 *5 ( ":" h16 ) ] "::" h16 / [ h16 *6 ( ":" h16 ) ] "::" 
-								ls32 = ( h16 ":" h16 ) / IPv4address	  
-									h16 = 1*4 HEXDIG
-							IPvFuture = "v" 1* HEXDIG "." 1* ( unreserved / sub-delims / ":" ) 
 */
 
+int ls32(const char *s, Node* node){
+	//Remplir le node
+	strcpy(node->name,"ls32");
+	int toReturn = TRUE;
 
+	functionArray functions;
+	(functions.functions[0]) = h16;
+	(functions.functions[1]) = colon;
+	(functions.functions[2]) = h16;
+
+	functions.optionnal = NULL;
+	functions.functionCount = 3;
+	functions.isOrFunction = FALSE;
+
+	//Executer etoile
+	(node->childCount) = 0;
+	(node->contentSize) = 0;
+	etoile(functions,s,1,1,node);
+
+	if(node->childCount == 0){
+		(functions.functions[0]) = IPv4address;
+		functions.functionCount = 1;
+		functions.isOrFunction = TRUE;
+
+		etoile(functions,s,1,1,node);
+
+		if(node->childCount == 0)
+			toReturn = FALSE;
+	}
+
+	return toReturn;
+}
+
+int h16(const char *s, Node* node){
+	//Remplir le node
+	strcpy(node->name,"h16");
+	int toReturn = TRUE;
+
+	functionArray functions;
+	(functions.functions[0]) = HEXDIG;
+
+	functions.functionCount = 1;
+	functions.isOrFunction = TRUE;
+
+	//Executer etoile
+	(node->childCount) = 0;
+	(node->contentSize) = 0;
+	etoile(functions,s,1,4,node);
+
+	if(node->childCount == 0)
+		toReturn = FALSE;
+
+	return toReturn;
+}
+
+int IPv4address(const char *s, Node* node){
+	//Remplir le node
+	strcpy(node->name,"IPv4address");
+	int toReturn = TRUE;
+
+	functionArray functions;
+	(functions.functions[0]) = decOctet;
+	(functions.functions[1]) = dot;
+	(functions.functions[2]) = decOctet;
+	(functions.functions[3]) = dot;
+	(functions.functions[4]) = decOctet;
+	(functions.functions[5]) = dot;
+	(functions.functions[6]) = decOctet;
+
+	functions.optionnal = NULL;
+	functions.functionCount = 7;
+	functions.isOrFunction = FALSE;
+
+	//Executer etoile
+	(node->childCount) = 0;
+	(node->contentSize) = 0;
+	etoile(functions,s,1,1,node);
+
+	if(node->childCount == 0)
+		toReturn = FALSE;
+
+	return toReturn;
+}
+
+int twentyFive(const char *s, Node* node){
+	int toReturn = regexTest(s,"^25",2);
+    if(node != NULL)
+    {
+		strcpy(node->name,"25");
+		node->content = s;
+		node->contentSize = 2;
+		node->childCount = 0;
+    }
+    return toReturn;
+}
+
+int one(const char *s, Node* node){
+	int toReturn = regexTest(s,"^1",1);
+    if(node != NULL)
+    {
+		strcpy(node->name,"1");
+		node->content = s;
+		node->contentSize = 1;
+		node->childCount = 0;
+    }
+    return toReturn;
+}
+
+int two(const char *s, Node* node){
+	int toReturn = regexTest(s,"^2",1);
+    if(node != NULL)
+    {
+		strcpy(node->name,"2");
+		node->content = s;
+		node->contentSize = 1;
+		node->childCount = 0;
+    }
+    return toReturn;
+}
+
+int DIGITtoFive(const char* s, Node* node) {
+	int toReturn = regexTest(s,"^[0-5]",1);
+    if(node != NULL)
+    {
+		strcpy(node->name,"%x30-35");
+		node->content = s;
+		node->contentSize = 1;
+		node->childCount = 0;
+    }
+    return toReturn;
+}
+
+int DIGITtoFour(const char* s, Node* node) {
+	int toReturn = regexTest(s,"^[0-4]",1);
+    if(node != NULL)
+    {
+		strcpy(node->name,"%x30-34");
+		node->content = s;
+		node->contentSize = 1;
+		node->childCount = 0;
+    }
+    return toReturn;
+}
+
+int DIGITwithoutZero(const char* s, Node* node) {
+	int toReturn = regexTest(s,"^[1-9]",1);
+    if(node != NULL)
+    {
+		strcpy(node->name,"%x31-39");
+		node->content = s;
+		node->contentSize = 1;
+		node->childCount = 0;
+    }
+    return toReturn;
+}
+
+int decOctet(const char *s, Node* node){
+	//Remplir le node
+	strcpy(node->name,"dec-octet");
+	int toReturn = TRUE;
+
+	functionArray functions;
+	(functions.functions[0]) = twentyFive;
+	(functions.functions[1]) = DIGITtoFive;
+
+	functions.optionnal = NULL;
+	functions.functionCount = 2;
+	functions.isOrFunction = FALSE;
+
+	//Executer etoile
+	(node->childCount) = 0;
+	(node->contentSize) = 0;
+	etoile(functions,s,1,1,node);
+
+	if(node->childCount == 0){
+		(functions.functions[0]) = two;
+		(functions.functions[1]) = DIGITtoFour;
+		(functions.functions[2]) = DIGIT;
+
+	functions.functionCount = 3;
+		etoile(functions,s,1,1,node);
+
+		if(node->childCount == 0){
+			(functions.functions[0]) = one;
+			(functions.functions[1]) = DIGIT;
+			(functions.functions[2]) = DIGIT;
+
+			etoile(functions,s,1,1,node);
+
+			if(node->childCount == 0){
+				(functions.functions[0]) = DIGITwithoutZero;
+				(functions.functions[1]) = DIGIT;
+
+				functions.functionCount = 2;
+				etoile(functions,s,1,1,node);
+				if(node->childCount == 0){
+					(functions.functions[0]) = DIGIT;
+
+					functions.functionCount = 1;
+					etoile(functions,s,1,1,node);
+					if(node->childCount == 0)
+						toReturn = FALSE;
+				}
+			}
+		}
+	}
+
+	return toReturn;
+}
+
+int v(const char *s, Node* node)
+{
+	int toReturn = regexTest(s,"^v",1);
+    if(node != NULL)
+    {
+		strcpy(node->name,"v");
+		node->content = s;
+		node->contentSize = 1;
+		node->childCount = 0;
+    }
+    return toReturn;
+}
 
 int IPvFuture(const char *s, Node* node){
-//A faire
+	//Remplir le node
+	strcpy(node->name,"IPvFuture");
+	int toReturn = FALSE;
+
+	functionArray functions;
+	(functions.functions[0]) = v;
+
+	functions.functionCount = 1;
+	functions.isOrFunction = TRUE;
+
+	//Executer etoile
+	(node->childCount) = 0;
+	(node->contentSize) = 0;
+	etoile(functions,s,1,1,node);
+
+	if(node->childCount > 0)
+	{
+		int backChildCount = node->childCount;
+		(functions.functions[0]) = HEXDIG;
+		etoile(functions,s,1,-1,node);
+
+		if(node->childCount - backChildCount > 0)
+		{
+			backChildCount = node->childCount;
+			(functions.functions[0]) = dot;
+			etoile(functions,s,1,1,node);
+
+			if(node->childCount - backChildCount > 0)
+			{
+				backChildCount = node->childCount;
+				(functions.functions[0]) = unreserved;
+				(functions.functions[1]) = subDelims;
+				(functions.functions[2]) = colon;
+
+				functions.functionCount = 3;
+				etoile(functions,s,1,-1,node);
+
+				if(node->childCount - backChildCount > 0)
+					toReturn = TRUE;
+			}
+		}
+	}
+	return toReturn;
 }
 
 int regName(const char *s, Node* node){

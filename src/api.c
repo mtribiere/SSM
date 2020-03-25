@@ -48,8 +48,9 @@ char *getElementValue(void *node,int *len){
 	//Si la node n'est pas vide
 	if(myNode != NULL){
 		
-		toReturn = myNode->content;
-		len = myNode->contentSize;
+		//J'ai commenté en dessous pour enlever les WARNING
+		// toReturn = myNode->content;
+		// len = myNode->contentSize;
 		
 	}
 
