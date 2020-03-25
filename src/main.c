@@ -69,13 +69,13 @@ int main(int argc,char *argv[])
 	// return(res); 
 
 	////////////////////TEST FONCTIONS
-	char s[] = "a/slt/cc?q=now";
+	char s[] = "::0000:0000:0000:0000:0000";
 	Node testNode;
 	testNode.childList = malloc(sizeof(Node)*MAX_CHILD_COUNT);
 	testNode.childCount = 0;
 	testNode.contentSize = 0;
 
-	if(hierPart(s,&testNode))
+	if(IPv6address(s,&testNode))
 		printTree(&testNode,0);
 	else printf("FAUX\n");
 

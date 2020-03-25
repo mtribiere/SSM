@@ -136,4 +136,6 @@ void removeNode(Node* node)
 	(node->childCount) = 0;
 	free(node->childList);
 	node = NULL;
+
+	free(node);
 }

@@ -126,33 +126,40 @@ void etoile(functionArray functions, const char *s, int min, int max,Node *node)
 		
 			///////Executer toutes les fonctions
 			int isCorrect = TRUE;
+
 			//Creer une fonction temporaire et un node temporaire
 			int (*tmpFunction)(const char *,Node *);
-			Node *tmpNode;
-			tmpNode = malloc(sizeof(Node) * functions.functionCount);
+			Node **tmpNodes;
+			tmpNodes = malloc(sizeof(Node*) * functions.functionCount);
+
 			for(int i = 0;i<functions.functionCount && isCorrect == TRUE;i++){
+
 				//Recuperer la bonne fonction
 				tmpFunction = (functions.functions)[i];
-				
-				((&tmpNode[i])->childList) = malloc(sizeof(Node)*MAX_CHILD_COUNT);
-				(&tmpNode[i])->childCount = 0;
 
+				//Creer l'espace memoire pour la node
+				tmpNodes[i] = malloc(sizeof(Node));
+				(tmpNodes[i])->contentSize = 0;
+				(tmpNodes[i])->childList = malloc(sizeof(Node)*MAX_CHILD_COUNT);
+				(tmpNodes[i])->childCount = 0;
 
 				//Executer la fonction
-				functionReturn = (*tmpFunction)(s+totalSize,(&tmpNode[i]));
+				functionReturn = (*tmpFunction)(s+totalSize,(tmpNodes[i]));
 				
 				if(!optionnal(functions, i))
 					isCorrect = functionReturn;
 
 				//Si une fonction optionnelle n'est pas correcte
 				if(!functionReturn && isCorrect)
-					(&tmpNode[i])->contentSize = 0;
+					(tmpNodes[i])->contentSize = 0;
 				//Si une fonction obligatoire n'est pas correcte
 				else if(!isCorrect)
-					removeNode(tmpNode);
+					for(int toFreeIndex = 0;toFreeIndex < i;toFreeIndex++)
+						removeNode(tmpNodes[toFreeIndex]);
+
 				//Sinon on continue
 				else
-					totalSize = totalSize + (&tmpNode[i])->contentSize;
+					totalSize = totalSize + (tmpNodes[i])->contentSize;
 				
 			}
 			//Si les fonctions sont correctes
@@ -160,9 +167,9 @@ void etoile(functionArray functions, const char *s, int min, int max,Node *node)
 				//Inserer le node fils
 				for(int i = 0; i < functions.functionCount; i++)
 				{
-					if((&tmpNode[i])->contentSize != 0)
+					if((tmpNodes[i])->contentSize != 0)
 					{
-						(node->childList)[node->childCount] = (&tmpNode[i]);
+						(node->childList)[node->childCount] = tmpNodes[i];
 						(node->childCount)++;
 					}
 				}
@@ -187,8 +194,7 @@ void etoile(functionArray functions, const char *s, int min, int max,Node *node)
 		//Liberer les enfants créés
 		for(int i = (node->childCount)-1;i>=backChildCount;i--)
 		{
-			//free((node->childList)[i]); //CA MARCHE PLUS SINON
-			(node->childList)[i] = NULL;
+			removeNode((node->childList)[i]);
 		}
 
 		//Remettre le nombre d'enfants à son état initial
