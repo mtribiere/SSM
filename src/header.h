@@ -28,6 +28,10 @@ int IPv6address(const char *s, Node* node);
 int IPliteral(const char *s, Node* node);
 int host(const char *s, Node* node);
 int userinfo(const char *s, Node* node);
+int authority(const char *s, Node* node);
+int relativePart(const char *s, Node* node);
+int partialURI(const char *s, Node* node);
+int hierPart(const char *s, Node* node);
 
 int acceptExt(const char *s, Node* node);
 int acceptParams(const char *s, Node* node);

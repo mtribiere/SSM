@@ -69,13 +69,13 @@ int main(int argc,char *argv[])
 	// return(res); 
 
 	////////////////////TEST FONCTIONS
-	char s[] = "qds:+%3f";
+	char s[] = "a/slt/cc?q=now";
 	Node testNode;
 	testNode.childList = malloc(sizeof(Node)*MAX_CHILD_COUNT);
 	testNode.childCount = 0;
 	testNode.contentSize = 0;
 
-	if(userinfo(s,&testNode))
+	if(hierPart(s,&testNode))
 		printTree(&testNode,0);
 	else printf("FAUX\n");
 

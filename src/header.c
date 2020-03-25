@@ -7,11 +7,206 @@ Referer-header = "Referer" ":" OWS Referer OWS
 	Referer = absolute-URI / partial-URI 
 		absolute-URI = scheme ":" hier-part [ "?" query ] 
 			scheme = ALPHA * ( ALPHA / DIGIT / "+" / "-" / "." ) 	
-			hier-part = "//" authority path-abempty / path-absolute / path-rootless / path-empty 
-		partial-URI = relative-part [ "?" query ] 
-			relative-part = "//" authority path-abempty / path-absolute / path-noscheme / path-empty
-				authority = [ userinfo "@" ] host [ ":" port ] 
 */
+
+int doubleSlash(const char *s, Node* node)
+{
+	int toReturn = regexTest(s,"^//",2);
+    if(node != NULL)
+    {
+		strcpy(node->name,"//");
+		node->content = s;
+		node->contentSize = 2;
+		node->childCount = 0;
+    }
+    return toReturn;
+}
+
+int hierPart(const char *s, Node* node){
+	//Remplir le node
+	strcpy(node->name,"hier-part");
+	int toReturn = TRUE;
+
+	functionArray functions;
+	(functions.functions[0]) = doubleSlash; 
+	(functions.functions[1]) = authority;
+	(functions.functions[2]) = pathAbempty;
+
+	functions.functionCount = 3;
+	functions.isOrFunction = FALSE;
+
+	//Executer etoile
+	(node->childCount) = 0;
+	(node->contentSize) = 0;
+	etoile(functions,s,1,1,node);
+
+	if(node->childCount == 0){
+		(functions.functions[0]) = pathAbsolute; 
+		(functions.functions[1]) = pathRootless;
+		(functions.functions[2]) = pathEmpty;
+		functions.isOrFunction = TRUE;
+
+		etoile(functions,s,1,1,node);
+
+		if(node->childCount == 0)
+			toReturn = FALSE;
+	}
+
+	return toReturn;
+}
+
+int interrogationQuery(const char *s, Node* node){
+	//Remplir le node
+	strcpy(node->name,"/!\\ A changer");
+	int toReturn = TRUE;
+
+	functionArray functions;
+	(functions.functions[0]) = interrogation; 
+	(functions.functions[1]) = query;
+
+	functions.optionnal = NULL;
+	functions.functionCount = 2;
+	functions.isOrFunction = FALSE;
+
+	//Executer etoile
+	(node->childCount) = 0;
+	(node->contentSize) = 0;
+	etoile(functions,s,1,1,node);
+
+	if(node->childCount == 0)
+		toReturn = FALSE;
+	return toReturn;
+}
+
+int partialURI(const char *s, Node* node){
+	//Remplir le node
+	strcpy(node->name,"partial-URI");
+	int toReturn = TRUE;
+
+	functionArray functions;
+	functions.optionnal = malloc(MAX_FUNCTION_NUMBER*sizeof(int));
+  	memset(functions.optionnal,MAX_FUNCTION_NUMBER,MAX_FUNCTION_NUMBER*sizeof(int));
+	(functions.functions[0]) = relativePart; 
+	(functions.functions[1]) = interrogationQuery; functions.optionnal[0] = 1;
+
+	functions.functionCount = 2;
+	functions.isOrFunction = FALSE;
+
+	//Executer etoile
+	(node->childCount) = 0;
+	(node->contentSize) = 0;
+	etoile(functions,s,1,1,node);
+
+	if(node->childCount == 0)
+		toReturn = FALSE;
+	return toReturn;
+}
+
+int relativePart(const char *s, Node* node){
+	//Remplir le node
+	strcpy(node->name,"relative-part");
+	int toReturn = TRUE;
+
+	functionArray functions;
+	(functions.functions[0]) = doubleSlash; 
+	(functions.functions[1]) = authority;
+	(functions.functions[2]) = pathAbempty;
+
+	functions.functionCount = 3;
+	functions.isOrFunction = FALSE;
+
+	//Executer etoile
+	(node->childCount) = 0;
+	(node->contentSize) = 0;
+	etoile(functions,s,1,1,node);
+
+	if(node->childCount == 0){
+		(functions.functions[0]) = pathAbsolute; 
+		(functions.functions[1]) = pathNoscheme;
+		(functions.functions[2]) = pathEmpty;
+		functions.isOrFunction = TRUE;
+
+		etoile(functions,s,1,1,node);
+
+		if(node->childCount == 0)
+			toReturn = FALSE;
+	}
+
+	return toReturn;
+}
+
+
+int userinfoAt(const char *s, Node* node){
+	//Remplir le node
+	strcpy(node->name,"/!\\ A changer");
+	int toReturn = TRUE;
+
+	functionArray functions;
+	(functions.functions[0]) = userinfo; 
+	(functions.functions[1]) = at;
+
+	functions.functionCount = 2;
+	functions.isOrFunction = FALSE;
+
+	//Executer etoile
+	(node->childCount) = 0;
+	(node->contentSize) = 0;
+	etoile(functions,s,1,1,node);
+
+	if(node->childCount == 0)
+		toReturn = FALSE;
+
+	return toReturn;
+}
+
+int colonPort(const char *s, Node* node){
+	//Remplir le node
+	strcpy(node->name,"/!\\ A changer");
+	int toReturn = TRUE;
+
+	functionArray functions;
+	(functions.functions[0]) = colon; 
+	(functions.functions[1]) = port;
+
+	functions.functionCount = 2;
+	functions.isOrFunction = FALSE;
+
+	//Executer etoile
+	(node->childCount) = 0;
+	(node->contentSize) = 0;
+	etoile(functions,s,1,1,node);
+
+	if(node->childCount == 0)
+		toReturn = FALSE;
+
+	return toReturn;
+}
+
+int authority(const char *s, Node* node){
+	//Remplir le node
+	strcpy(node->name,"authority");
+	int toReturn = TRUE;
+
+	functionArray functions;
+	functions.optionnal = malloc(MAX_FUNCTION_NUMBER*sizeof(int));
+  	memset(functions.optionnal,MAX_FUNCTION_NUMBER,MAX_FUNCTION_NUMBER*sizeof(int));
+	(functions.functions[0]) = userinfoAt; functions.optionnal[0] = 0;
+	(functions.functions[1]) = host;
+	(functions.functions[2]) = colonPort; functions.optionnal[1] = 2;
+
+	functions.functionCount = 3;
+	functions.isOrFunction = FALSE;
+
+	//Executer etoile
+	(node->childCount) = 0;
+	(node->contentSize) = 0;
+	etoile(functions,s,1,1,node);
+
+	if(node->childCount == 0)
+		toReturn = FALSE;
+
+	return toReturn;
+}
 
 int userinfo(const char *s, Node* node){
 	//Remplir le node
