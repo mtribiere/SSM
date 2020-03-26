@@ -1,13 +1,154 @@
 #include "header.h"
 
-//headers supportés = {Referer-header, Accept-header, Content-Type-header, Cookie-header, Accept-Language-header, Expect-header}
+//headers supportés = Referer-header, Accept-header, Content-Type-header, Cookie-header, Accept-Language-header, Expect-header
 
-/*
-Referer-header = "Referer" ":" OWS Referer OWS 
-	Referer = absolute-URI / partial-URI 
-		absolute-URI = scheme ":" hier-part [ "?" query ] 
-			scheme = ALPHA * ( ALPHA / DIGIT / "+" / "-" / "." ) 	
-*/
+//REFERER HEADER
+
+int refererHeader(const char *s, Node* node){
+	//Remplir le node
+	strcpy(node->name,"Referer-header");
+	int toReturn = TRUE;
+
+	functionArray functions;
+	(functions.functions[0]) = refererHeaderName;
+	(functions.functions[1]) = colon;
+	(functions.functions[2]) = OWS;
+	(functions.functions[3]) = referer;
+	(functions.functions[4]) = OWS;
+
+	functions.functionCount = 5;
+	functions.isOrFunction = FALSE;
+	functions.optionnal = NULL;
+
+	//Executer etoile
+	(node->childCount) = 0;
+	(node->contentSize) = 0;
+	etoile(functions,s,1,1,node);
+
+	//Si le node n'a de fils, déclarer la node fausse
+	if(node->childCount == 0)
+		toReturn = FALSE;
+
+	return toReturn;
+}
+
+int refererHeaderName(const char *s, Node* node)
+{
+	int toReturn = regexTestInsensitive(s,"^Referer",7);
+    if(node != NULL)
+    {
+		strcpy(node->name,"Referer");
+		node->content = s; 
+		node->contentSize = 7;
+		node->childCount = 0;
+    }
+    return toReturn;
+}
+
+int referer(const char *s, Node* node){
+	//Remplir le node
+	strcpy(node->name,"Referer");
+	int toReturn = TRUE;
+
+	functionArray functions;
+	(functions.functions[0]) = absoluteURI; 
+	(functions.functions[1]) = partialURI;
+
+	functions.functionCount = 2;
+	functions.isOrFunction = TRUE;
+
+	//Executer etoile
+	(node->childCount) = 0;
+	(node->contentSize) = 0;
+	etoile(functions,s,1,1,node);
+
+	if(node->childCount == 0)
+		toReturn = FALSE;
+	return toReturn;
+}
+
+int interrogationQuery(const char *s, Node* node){
+	//Remplir le node
+	strcpy(node->name,"/!\\ A changer");
+	int toReturn = TRUE;
+
+	functionArray functions;
+	(functions.functions[0]) = interrogation; 
+	(functions.functions[1]) = query;
+
+	functions.optionnal = NULL;
+	functions.functionCount = 2;
+	functions.isOrFunction = FALSE;
+
+	//Executer etoile
+	(node->childCount) = 0;
+	(node->contentSize) = 0;
+	etoile(functions,s,1,1,node);
+
+	if(node->childCount == 0)
+		toReturn = FALSE;
+	return toReturn;
+}
+
+int absoluteURI(const char *s, Node* node){
+	//Remplir le node
+	strcpy(node->name,"absolute-URI");
+	int toReturn = TRUE;
+
+	functionArray functions;
+	functions.optionnal = malloc(MAX_FUNCTION_NUMBER*sizeof(int));
+  	memset(functions.optionnal,MAX_FUNCTION_NUMBER,MAX_FUNCTION_NUMBER*sizeof(int));
+	(functions.functions[0]) = scheme; 
+	(functions.functions[1]) = colon; 
+	(functions.functions[2]) = hierPart; 
+	(functions.functions[3]) = interrogationQuery; functions.optionnal[0] = 3;
+
+	functions.functionCount = 4;
+	functions.isOrFunction = FALSE;
+
+	//Executer etoile
+	(node->childCount) = 0;
+	(node->contentSize) = 0;
+	etoile(functions,s,1,1,node);
+
+	if(node->childCount == 0)
+		toReturn = FALSE;
+
+	return toReturn;
+}
+
+int scheme(const char *s, Node* node){
+	//Remplir le node
+	strcpy(node->name,"scheme");
+	int toReturn = TRUE;
+
+	functionArray functions;
+	(functions.functions[0]) = ALPHA; 
+
+	functions.functionCount = 1;
+	functions.isOrFunction = TRUE;
+
+	//Executer etoile
+	(node->childCount) = 0;
+	(node->contentSize) = 0;
+	etoile(functions,s,1,1,node);
+
+	if(node->childCount == 1){
+		(functions.functions[1]) = DIGIT;
+		(functions.functions[2]) = plus;
+		(functions.functions[3]) = minus;
+		(functions.functions[4]) = dot;
+
+		functions.functionCount = 5;
+		functions.isOrFunction = TRUE;
+		etoile(functions,s,0,-1,node);
+	}
+
+	if(node->childCount == 0)
+		toReturn = FALSE;
+
+	return toReturn;
+}
 
 int doubleSlash(const char *s, Node* node)
 {
@@ -52,29 +193,6 @@ int hierPart(const char *s, Node* node){
 			toReturn = FALSE;
 	}
 
-	return toReturn;
-}
-
-int interrogationQuery(const char *s, Node* node){
-	//Remplir le node
-	strcpy(node->name,"/!\\ A changer");
-	int toReturn = TRUE;
-
-	functionArray functions;
-	(functions.functions[0]) = interrogation; 
-	(functions.functions[1]) = query;
-
-	functions.optionnal = NULL;
-	functions.functionCount = 2;
-	functions.isOrFunction = FALSE;
-
-	//Executer etoile
-	(node->childCount) = 0;
-	(node->contentSize) = 0;
-	etoile(functions,s,1,1,node);
-
-	if(node->childCount == 0)
-		toReturn = FALSE;
 	return toReturn;
 }
 
@@ -1879,7 +1997,7 @@ int languageRangePart2(const char *s,Node *node){
 
 int contentTypeHeader(const char *s, Node* node){
 	//Remplir le node
-	strcpy(node->name,"Content-type-header");
+	strcpy(node->name,"Content-Type-header");
 	int toReturn = TRUE;
 
 	functionArray functions;
@@ -1937,12 +2055,7 @@ int mediaType(const char *s, Node* node){
 	(node->contentSize) = 0;
 	etoile(functions,s,1,1,node);
 
-	//Si le node n'a de fils, déclarer la node fausse
-	if(node->childCount == 0)
-		toReturn = FALSE;
-
-	//Si le node n'est pas déjà faux
-	if(toReturn == TRUE){
+	if(node->childCount == 3){
 		//Declarer l'ensemble des fonctions possibles
 		(functions.functions)[0] = OWS;
 		(functions.functions)[1] = semiColon;
@@ -1955,11 +2068,12 @@ int mediaType(const char *s, Node* node){
 
 		//Creer le(s) fils
 		etoile(functions,s,0,-1,node);
-
-		//Si etoile ne trouve pas de fils
-		if((node->childCount) - 3 <= 0)
-			toReturn = FALSE;
 	}
+
+	//Si le node n'a de fils, déclarer la node fausse
+	if(node->childCount == 0)
+		toReturn = FALSE;
+
 	return toReturn;
 }
 

@@ -32,6 +32,11 @@ int authority(const char *s, Node* node);
 int relativePart(const char *s, Node* node);
 int partialURI(const char *s, Node* node);
 int hierPart(const char *s, Node* node);
+int scheme(const char *s, Node* node);
+int absoluteURI(const char *s, Node* node);
+int referer(const char *s, Node* node);
+int refererHeaderName(const char *s, Node* node);
+int refererHeader(const char *s, Node* node);
 
 int acceptExt(const char *s, Node* node);
 int acceptParams(const char *s, Node* node);

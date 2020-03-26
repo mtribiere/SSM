@@ -107,7 +107,7 @@ int HTAB(const char* s, Node* node) {
     return toReturn;
 }
 int OCTET(const char* s, Node* node) {
-	int toReturn = regexTest(s,"^\0-ÿ",1);
+	int toReturn = regexTest(s,"^[\\x0-ÿ]",1);
     if(node != NULL)
     {
         strcpy(node->name,"OCTET");

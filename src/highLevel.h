@@ -4,6 +4,9 @@
 #include "parser.h"
 #include "header.h"
 
+int HTTPmessage(const char *s, Node* node);
+
+int messageBody(const char *s, Node* node);
 int HTTPname(const char *s, Node* node);
 int HTTPVersion(const char *s, Node* node);
 int pchar(const char *s, Node* node);
@@ -22,6 +25,8 @@ int fieldContent(const char *s, Node *node);
 int fieldValue(const char *s, Node *node);
 int fieldName(const char *s, Node *node);
 int headerField(const char *s, Node *node);
+int fieldVchar(const char *s, Node* node);
+int obsFold(const char *s, Node* node);
 int method(const char *s, Node* node);
 
 #endif

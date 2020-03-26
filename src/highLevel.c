@@ -3,6 +3,67 @@
 #include "parser.h"
 #include "tree.h"
 
+//HTTP-message = request-line * ( header-field CRLF ) CRLF [ message-body ] 
+int HTTPmessage(const char *s, Node* node)
+{
+	strcpy(node->name,"HTTP-message");
+    int toReturn = TRUE;
+
+    functionArray functions;
+    (functions.functions)[0] = requestLine;
+
+    functions.functionCount = 1;
+    functions.isOrFunction = TRUE;
+
+	(node->contentSize) = 0;
+	(node->childCount) = 0;
+    etoile(functions, s,1, 1, node);
+
+    if(node->childCount == 1){
+    	(functions.functions)[0] = headerField;
+    	(functions.functions)[1] = CRLF;
+
+	    functions.functionCount = 2;
+	    functions.isOrFunction = FALSE;
+	    functions.optionnal = NULL;
+
+	    etoile(functions, s,0, -1, node);
+	    if(node->childCount >= 1){
+	    	functions.optionnal = malloc(MAX_FUNCTION_NUMBER*sizeof(int));
+  			memset(functions.optionnal,MAX_FUNCTION_NUMBER,MAX_FUNCTION_NUMBER*sizeof(int));
+	    	(functions.functions)[0] = CRLF;
+	    	(functions.functions)[1] = messageBody;	functions.optionnal[0] = 1;
+
+		    functions.functionCount = 2;
+		    functions.isOrFunction = FALSE;
+		    etoile(functions, s,1, 1, node);
+	    }
+    }
+
+    if(node->childCount == 0)
+    	toReturn = FALSE;
+
+    return toReturn;
+}
+
+//message-body = *OCTET
+int messageBody(const char *s, Node* node){
+	strcpy(node->name,"message-body");
+    int toReturn = TRUE;
+
+    functionArray functions;
+    (functions.functions)[0] = OCTET;
+
+    functions.functionCount = 1;
+    functions.isOrFunction = TRUE;
+
+	(node->contentSize) = 0;
+	(node->childCount) = 0;
+    etoile(functions, s,0, -1, node);
+
+    return toReturn;
+}
+
 //HTTP-name = %x48.54.54.50
 int HTTPname(const char* s, Node* node) {
 	int toReturn = regexTest(s,"^HTTP",4);
@@ -371,27 +432,43 @@ int fieldVchar(const char *s, Node *node) {
 int fieldContent(const char *s, Node *node) {
 	strcpy(node->name, "field-content");
 	int toReturn = TRUE;
-	// int toReturnWithoutOptionnal = TRUE;
-	// int toReturnWithOptionnal = TRUE;
+	
 
 	functionArray chooseFrom;
 	chooseFrom.functions[0] = fieldVchar;
 
 	chooseFrom.functionCount = 1;
-	chooseFrom.isOrFunction = FALSE;
-	chooseFrom.optionnal = NULL;
+	chooseFrom.isOrFunction = TRUE;
 
 	(node->contentSize) = 0;
 	(node->childCount) = 0;
     etoile(chooseFrom,s,1,1,node);
 
-	if(node->childCount == 0)
-		toReturn = FALSE;
-	else
+	if(node->childCount == 1)
 	{
-		// Continuer a parser la commande
+		int backChildCount = node->childCount;
+		int backContentSize = node->contentSize;
+
+		chooseFrom.functions[0] = SP;
+		chooseFrom.functions[1] = HTAB;
+
+		chooseFrom.functionCount = 2;
+		etoile(chooseFrom,s,1,-1,node);
+		if(node->childCount - backChildCount > 0)
+		{
+			chooseFrom.functions[0] = fieldVchar;
+			chooseFrom.functionCount = 1;
+			etoile(chooseFrom,s,1,1,node);
+		}
+		if(node->childCount - backChildCount == 0)
+		{
+			node->childCount = backChildCount;
+			node->contentSize = backContentSize;
+		}
 	}
 
+	if(node->childCount == 0)
+		toReturn = FALSE;
 	return toReturn;
 }
 
@@ -401,39 +478,23 @@ int fieldValue(const char *s, Node *node) {
 
 	functionArray chooseFrom;
 	chooseFrom.functions[0] = fieldContent;
-	// chooseFrom.functions[1] = obsFold;
+	chooseFrom.functions[1] = obsFold;
 
 	chooseFrom.functionCount = 2;
 	chooseFrom.isOrFunction = TRUE;
-	chooseFrom.optionnal = NULL;
 
 	(node->contentSize) = 0;
 	(node->childCount) = 0;
-    etoile(chooseFrom,s,1,-1,node);
+    etoile(chooseFrom,s,0,-1,node);
 
-	if(node->childCount == 0)
-		toReturn = FALSE;
 	return toReturn;
 }
 
-int fieldName(const char *s, Node *node) {
-	strcpy(node->name, "field-name");
-	int toReturn = TRUE;
-
-	functionArray chooseFrom;
-	chooseFrom.functions[0] = token;
-
-	chooseFrom.functionCount = 1;
-	chooseFrom.isOrFunction = FALSE;
-	chooseFrom.optionnal = NULL;
-
-	(node->contentSize) = 0;
-	(node->childCount) = 0;
-    etoile(chooseFrom,s,1,-1,node);
-
-	if(node->childCount == 0)
-		toReturn = FALSE;
-	return toReturn;
+int fieldName(const char *s, Node* node)
+{
+    int toReturn = token(s, node);
+    strcpy(node->name,"field-name");
+    return toReturn;
 }
 
 int headerField(const char *s, Node *node) {
@@ -441,19 +502,63 @@ int headerField(const char *s, Node *node) {
 	int toReturn = TRUE;
 
 	functionArray chooseFrom;
-	chooseFrom.functions[0] = fieldName;
-	chooseFrom.functions[1] = colon;
-	chooseFrom.functions[2] = OWS;
-	chooseFrom.functions[3] = fieldValue;
-	chooseFrom.functions[4] = OWS;
+	chooseFrom.functions[0] = refererHeader;
+	chooseFrom.functions[1] = acceptHeader;
+	chooseFrom.functions[2] = contentTypeHeader;
+	chooseFrom.functions[3] = cookieHeader;
+	chooseFrom.functions[4] = acceptLanguageHeader;
+	chooseFrom.functions[5] = expectHeader;
 
-	chooseFrom.functionCount = 5;
-	chooseFrom.isOrFunction = FALSE;
-	chooseFrom.optionnal = NULL;
+	chooseFrom.functionCount = 6;
+	chooseFrom.isOrFunction = TRUE;
 
 	(node->contentSize) = 0;
 	(node->childCount) = 0;
     etoile(chooseFrom,s,1,1,node);
+
+    if(node->childCount == 0){
+    	functionArray functions;
+		(functions.functions[0]) = fieldName;
+		(functions.functions[1]) = colon;
+		(functions.functions[2]) = OWS;
+		(functions.functions[3]) = fieldValue;
+		(functions.functions[4]) = OWS;
+
+		functions.functionCount = 5;
+		functions.isOrFunction = FALSE;
+		functions.optionnal = NULL;
+
+		//Executer etoile
+		etoile(functions,s,1,1,node);
+    }
+
+	if(node->childCount == 0)
+		toReturn = FALSE;
+	return toReturn;
+}
+
+//obs-fold = CRLF 1* ( SP / HTAB )
+int obsFold(const char *s, Node* node){
+	strcpy(node->name, "obs-fold");
+	int toReturn = TRUE;
+
+	functionArray chooseFrom;
+	chooseFrom.functions[0] = CRLF;
+
+	chooseFrom.functionCount = 1;
+	chooseFrom.isOrFunction = TRUE;
+
+	(node->contentSize) = 0;
+	(node->childCount) = 0;
+    etoile(chooseFrom,s,1,1,node);
+
+    if(node->childCount == 1){
+    	chooseFrom.functions[0] = SP;
+    	chooseFrom.functions[1] = HTAB;
+    	chooseFrom.functionCount = 2;
+
+    	etoile(chooseFrom,s,1,-1,node);
+    }
 
 	if(node->childCount == 0)
 		toReturn = FALSE;
