@@ -1,44 +1,5 @@
 #include "tree.h"
-
-Node* createNode(const char name[NAMESIZE]) {
-//Crée un noeud à partir de son nom dans un arbre, renvoie un pointeur vers ce noeud
-	Node* node = (Node*)malloc(sizeof(Node));
-	if(node == NULL)
-	{
-		perror("Problème d'allocation de mémoire");
-		exit(EXIT_FAILURE);
-	} 
-	strcpy(node->name, name);
-	node->childCount = 0;
-	node->childList = NULL;
-	return node;
-}
-
-void createChild(Node* parent, int count, const char names[][NAMESIZE]) {
-	//Crée le nombre de fils indiqué au noeud dans l'arbre en utilisant la liste de nom donnée.
-	//Renvoie une liste de pointeurs vers les fils créés.
-	parent->childList = (Node **)malloc(sizeof(Node*) * count);
-	if(parent->childList == NULL)
-	{
-		perror("Problème d'allocation de mémoire");
-		exit(EXIT_FAILURE);
-	} 
-	if(names != NULL)
-	{
-		for(int i = parent->childCount; i < count; i++)
-		{
-			parent->childList[i] = createNode(names[i]);
-			parent->childCount++;
-		}
-	}
-	//sinon les fils ne sont pas initialisés
-	
-}
-
-void addChild(Node* parent, const char name[NAMESIZE])
-{
-	parent->childList[parent->childCount++] = createNode(name);
-}
+#include "api.h"
 
 void printNode(Node* node,int deep)
 {
@@ -53,16 +14,6 @@ void printNode(Node* node,int deep)
 	printf("Content\t:\t");
 	printStringWithLimit(node->content,node->contentSize);
 	printf("\n");
-/*
-	for(int i = 0;i<deep;i++)
-		printf("\t");
-	printf("ContentSize\t:\t%d\n", node->contentSize);
-		
-	for(int i = 0;i<deep;i++)
-		printf("\t");
-	printf("ChildCount\t:\t%d\n", node->childCount);
-	printf("\n\n");
-	*/
 }
 
 void printTree(Node* root,int deep)
@@ -79,6 +30,16 @@ void printTree(Node* root,int deep)
 void printStringWithLimit(const char *s,int limit){
 	for(int i = 0;i<limit;i++)
 		printf("%c",s[i]);
+}
+
+//Affiche le contenu d'une liste chainée de token
+void printTokenChain(_Token *chain){
+	
+	if(chain != NULL){
+		printTokenChain(chain->next);
+		printNode((Node *) (chain->node),0);
+	}
+
 }
 
 int treeLength(Node** root)
@@ -98,44 +59,59 @@ int treeLength(Node** root)
 	}
 }
 
-void searchFunction(Node** root, const char name[NAMESIZE], Node** foundList) {
-//Cette fonction n'est pas faite pour être appelée toute seule
-//Recherche toutes les occurences d'une node avec le nom name dans l'arbre ayant pour racine root
-//Remplit le tableau foundList avec toutes les nodes correspondantes
-	Node* explorer = *root;
-	int i = 0;
-	if(!strcmp(name, explorer->name))
-		foundList[count++] = explorer;
-	while(i < explorer->childCount)
-	{
-		searchFunction(explorer->childList + i, name, foundList);
-		i++;
+//Fonction qui recherche les nodes dans l'arbre avec un nom
+void searchByName(Node* root, _Token **returnChain ,const char *name)
+{
+	//Si le noeud à le bon nom
+	if(strcmp(name,(root->name)) == 0){
+		insertHead(returnChain,root);
 	}
+
+	//Parmis les fils chercher si certains ont le bon nom
+	for(int i = 0;i<(root->childCount);i++){
+		searchByName((root->childList)[i],returnChain,name);
+	}
+
 }
 
-Node** searchByName(Node** root, const char name[NAMESIZE])
-//Utilise searchFunction() pour renvoyer un tableau de nodes appartenant à l'arbre de racine root et ayant pour nom name
-{
-	count = 0;
-	Node** foundList = calloc(treeLength(root), sizeof(Node*));
-	if(foundList == NULL)
-	{
-		perror("Problème d'allocation de mémoire");
-		exit(EXIT_FAILURE);
-	} 
-	searchFunction(root, name, foundList);
-	foundList = realloc(foundList, sizeof(Node*) * (count + 1));
-	return foundList;
+//Insertion d'un node en tête d'une liste chainée de token
+void insertHead(_Token **head, Node *toInsertNode){
+
+	//Creer l'element a inserer
+	_Token *toInsert = malloc(sizeof(_Token));
+	(toInsert->node) = (void *) toInsertNode;
+	(toInsert->next) = NULL;
+
+	//Si la liste est vide
+	if(*head == NULL){
+	
+		*head = toInsert;
+	
+	}else{ //Sinon on insere avant le premier element
+
+		(toInsert->next) = *head;
+		*head = toInsert;
+
+	}
+
 }
 
 void removeNode(Node* node)
 //Libère la mémoire du noeud donné
-//Attention, on a pas node == NULL après avoir appelé cette fonction ...
 {
+	//Si le node est déjà supprimé
 	if(node == NULL) return;
-	(node->childCount) = 0;
-	free(node->childList);
-	node = NULL;
 
+	//Liberer les enfants
+	for(int i = 0;i<(node->childCount);i++){
+		removeNode((node->childList)[i]);
+	}
+	(node->childCount) = 0;
+	
+	//Liberer le tableau des enfants
+	free(node->childList);
+
+	//Librer le node
 	free(node);
+	node = NULL;
 }

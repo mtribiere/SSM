@@ -4,6 +4,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include "api.h"
 
 #define FALSE 0
 #define TRUE 1
@@ -19,21 +20,18 @@ typedef struct Node {
 	int childCount;
 } Node;
 
-Node* createNode(const char name[NAMESIZE]);
-void createChild(Node* parent, int count, const char names[][NAMESIZE]);
-void addChild(Node* parent, const char name[NAMESIZE]);
 void removeNode(Node* node);
 
 void searchFunction(Node** root, const char name[NAMESIZE], Node** foundList);
-int count;
-Node** searchByName(Node** root, const char name[NAMESIZE]);
-
-
+void searchByName(Node* root, _Token **returnChain ,const char *name);
+void insertHead(_Token **head, Node *toInsertNode);
 
 int treeLength(Node** root);
 
 void printNode(Node* node,int deep);
 void printTree(Node* root,int deep);
 void printStringWithLimit(const char *s,int limit);
+
+void printTokenChain(_Token *chain);
 
 #endif
