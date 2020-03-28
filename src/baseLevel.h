@@ -38,7 +38,7 @@ int minus(const char* s, Node* node);
 int chineseHat(const char* s, Node* node);
 int underScore(const char* s, Node* node);
 int inverseQuote(const char* s, Node* node);
-int pipe(const char* s, Node* node);
+int _pipe(const char* s, Node* node);
 int tilt(const char* s, Node* node);
 int tiret(const char* s, Node* node);
 int openParenthese(const char* s, Node* node);

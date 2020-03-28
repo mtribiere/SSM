@@ -107,7 +107,7 @@ int HTAB(const char* s, Node* node) {
     return toReturn;
 }
 int OCTET(const char* s, Node* node) {
-	int toReturn = regexTest(s,"^[\\x0-ÿ]",1);
+	int toReturn = (regexTest(s,"^[-ÿ]",1) /*|| s[0] == '\0'*/);
     if(node != NULL)
     {
         strcpy(node->name,"OCTET");
@@ -190,7 +190,7 @@ int percent(const char* s, Node* node) {
 }
 
 int exclamation(const char* s, Node* node) {
-	int toReturn = regexTest(s,"^!",1);
+	int toReturn = regexTest(s,"^\\!",1);
     if(node != NULL)
     {
         strcpy(node->name,"!");
@@ -325,7 +325,7 @@ int inverseQuote(const char* s, Node* node) {
     return toReturn;
 }
 
-int pipe(const char* s, Node* node) {
+int _pipe(const char* s, Node* node) {
 	int toReturn = regexTest(s,"^\\|",1);
     if(node != NULL)
     {
@@ -472,11 +472,7 @@ int closeBracket(const char* s, Node* node) {
 
 
 int backSlash(const char *s,Node* node){
-
-	int toReturn = TRUE;
-	if(s[0] != 92)
-		toReturn = FALSE;
-
+	int toReturn = regexTest(s,"^\\\\",1);
     if(node != NULL)
     {
 		strcpy(node->name,"\\");

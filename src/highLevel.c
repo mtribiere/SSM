@@ -6,7 +6,7 @@
 //HTTP-message = request-line * ( header-field CRLF ) CRLF [ message-body ] 
 int HTTPmessage(const char *s, Node* node)
 {
-	strcpy(node->name,"HTTP-message");
+	strcpy(node->name,"HTTP_message");
     int toReturn = TRUE;
 
     functionArray functions;
@@ -29,6 +29,7 @@ int HTTPmessage(const char *s, Node* node)
 
 	    etoile(functions, s,0, -1, node);
 	    if(node->childCount >= 1){
+	    	int backChildCount = node->childCount;
 	    	functions.optionnal = malloc(MAX_FUNCTION_NUMBER*sizeof(int));
   			memset(functions.optionnal,MAX_FUNCTION_NUMBER,MAX_FUNCTION_NUMBER*sizeof(int));
 	    	(functions.functions)[0] = CRLF;
@@ -37,10 +38,12 @@ int HTTPmessage(const char *s, Node* node)
 		    functions.functionCount = 2;
 		    functions.isOrFunction = FALSE;
 		    etoile(functions, s,1, 1, node);
+		    if(node->childCount - backChildCount < 1)
+		    	toReturn = FALSE;
 	    }
     }
 
-    if(node->childCount == 0)
+    if(node->childCount < 2)
     	toReturn = FALSE;
 
     return toReturn;
@@ -48,7 +51,7 @@ int HTTPmessage(const char *s, Node* node)
 
 //message-body = *OCTET
 int messageBody(const char *s, Node* node){
-	strcpy(node->name,"message-body");
+	strcpy(node->name,"message_body");
     int toReturn = TRUE;
 
     functionArray functions;
@@ -69,7 +72,7 @@ int HTTPname(const char* s, Node* node) {
 	int toReturn = regexTest(s,"^HTTP",4);
     if(node != NULL)
     {
-		strcpy(node->name,"HTTP-name");
+		strcpy(node->name,"HTTP_name");
 		node->content = s;
 		node->contentSize = 4;
 		node->childCount = 0;
@@ -79,7 +82,7 @@ int HTTPname(const char* s, Node* node) {
 
 //HTTP-version = HTTP-name "/" DIGIT "." DIGIT
 int HTTPVersion(const char *s, Node* node){
-	strcpy(node->name,"HTTP-version");
+	strcpy(node->name,"HTTP_version");
     int toReturn = TRUE;
 
     functionArray functions;
@@ -105,7 +108,7 @@ int HTTPVersion(const char *s, Node* node){
 
 //pct-encoded = "%" HEXDIG HEXDIG
 int pct_encoded(const char *s,Node *node){
-    strcpy(node->name,"pct-encoded");
+    strcpy(node->name,"pct_encoded");
     int toReturn = TRUE;
 
     functionArray functions;
@@ -185,7 +188,7 @@ int segment(const char *s, Node* node){
 int absolutePath(const char *s, Node* node)
 {
 	//Remplir le node
-	strcpy(node->name,"absolute-path");
+	strcpy(node->name,"absolute_path");
 	int toReturn = TRUE;
 
 	functionArray chooseFrom;
@@ -232,7 +235,7 @@ int query(const char *s, Node* node) {
 //origin-form = absolute-path [ "?" query ]
 int originForm(const char *s, Node* node) {
 	//Remplir le node
-	strcpy(node->name,"origin-form");
+	strcpy(node->name,"origin_form");
 	int toReturn = TRUE;
 
 	functionArray functions;
@@ -257,7 +260,7 @@ int originForm(const char *s, Node* node) {
 //request-line = method SP origin-form SP HTTP-version CRLF
 int requestLine(const char *s, Node* node){
 	//Remplir le node
-	strcpy(node->name,"request-line");
+	strcpy(node->name,"request_line");
 	int toReturn = TRUE;
 
 	functionArray functions;
@@ -285,7 +288,7 @@ int requestLine(const char *s, Node* node){
 int subDelims(const char *s, Node* node){
 
 	//Copier le nom
-	strcpy(node->name,"sub-delims");
+	strcpy(node->name,"sub_delims");
 	int toReturn  = TRUE;
 
 	//Creer le tableau des fonctions
@@ -338,13 +341,15 @@ int tchar(const char* s, Node* node) {
 	chooseFrom.functions[8] = &chineseHat;
 	chooseFrom.functions[9] = &underScore;
 	chooseFrom.functions[10] = &inverseQuote;
-	chooseFrom.functions[11] = &pipe;
+	chooseFrom.functions[11] = &_pipe;
 	chooseFrom.functions[12] = &tilt;
 	chooseFrom.functions[13] = &DIGIT;
 	chooseFrom.functions[14] = &ALPHA;
+	chooseFrom.functions[15] = &percent;
+	chooseFrom.functions[16] = &and;
 
 	chooseFrom.isOrFunction = TRUE;
-	chooseFrom.functionCount = 15;
+	chooseFrom.functionCount = 17;
 
 	//Executer la fonction etoile
 	(node->contentSize) = 0;
@@ -409,7 +414,7 @@ int token(const char *s, Node* node){
 }
 
 int fieldVchar(const char *s, Node *node) {
-	strcpy(node->name, "field-vchar");
+	strcpy(node->name, "field_vchar");
 	int toReturn = TRUE;
 
 	functionArray chooseFrom;
@@ -430,7 +435,7 @@ int fieldVchar(const char *s, Node *node) {
 }
 
 int fieldContent(const char *s, Node *node) {
-	strcpy(node->name, "field-content");
+	strcpy(node->name, "field_content");
 	int toReturn = TRUE;
 	
 
@@ -473,7 +478,7 @@ int fieldContent(const char *s, Node *node) {
 }
 
 int fieldValue(const char *s, Node *node) {
-	strcpy(node->name, "field-value");
+	strcpy(node->name, "field_value");
 	int toReturn = TRUE;
 
 	functionArray chooseFrom;
@@ -492,13 +497,30 @@ int fieldValue(const char *s, Node *node) {
 
 int fieldName(const char *s, Node* node)
 {
-    int toReturn = token(s, node);
-    strcpy(node->name,"field-name");
+    	//Remplir le node
+	strcpy(node->name,"field_name");
+	int toReturn = TRUE;
+
+	functionArray functions;
+	(functions.functions[0]) = token;
+
+	functions.functionCount = 1;
+	functions.isOrFunction = TRUE;
+
+	//Executer etoile
+	(node->childCount) = 0;
+	(node->contentSize) = 0;
+	etoile(functions,s,1,1,node);
+
+	//Si le node n'a de fils, déclarer la node fausse
+	if(node->childCount == 0)
+		toReturn = FALSE;
+	
     return toReturn;
 }
 
 int headerField(const char *s, Node *node) {
-	strcpy(node->name, "header-field");
+	strcpy(node->name, "header_field");
 	int toReturn = TRUE;
 
 	functionArray chooseFrom;
@@ -539,7 +561,7 @@ int headerField(const char *s, Node *node) {
 
 //obs-fold = CRLF 1* ( SP / HTAB )
 int obsFold(const char *s, Node* node){
-	strcpy(node->name, "obs-fold");
+	strcpy(node->name, "obs_fold");
 	int toReturn = TRUE;
 
 	functionArray chooseFrom;
@@ -566,7 +588,24 @@ int obsFold(const char *s, Node* node){
 }
 
 int method(const char *s, Node* node) {
-    int toReturn = token(s, node);
-    strcpy(node->name,"method");
+   	//Remplir le node
+	strcpy(node->name,"method");
+	int toReturn = TRUE;
+
+	functionArray functions;
+	(functions.functions[0]) = token;
+
+	functions.functionCount = 1;
+	functions.isOrFunction = TRUE;
+
+	//Executer etoile
+	(node->childCount) = 0;
+	(node->contentSize) = 0;
+	etoile(functions,s,1,1,node);
+
+	//Si le node n'a de fils, déclarer la node fausse
+	if(node->childCount == 0)
+		toReturn = FALSE;
+	
     return toReturn;
 }

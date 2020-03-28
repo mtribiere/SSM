@@ -30,7 +30,8 @@ int parseur(char *req, int len){
 	treeRoot->childCount = 0;
 	treeRoot->contentSize = 0;
 
-	HTTPmessage(req,treeRoot);
+	if(!HTTPmessage(req,treeRoot))
+		printf("Erreur de syntaxe\n");
 
 	//Si l'arbre n'a pas été créé
 	if(treeRoot == NULL){

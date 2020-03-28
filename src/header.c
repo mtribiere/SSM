@@ -6,7 +6,7 @@
 
 int refererHeader(const char *s, Node* node){
 	//Remplir le node
-	strcpy(node->name,"Referer-header");
+	strcpy(node->name,"Referer_header");
 	int toReturn = TRUE;
 
 	functionArray functions;
@@ -69,7 +69,7 @@ int referer(const char *s, Node* node){
 
 int interrogationQuery(const char *s, Node* node){
 	//Remplir le node
-	strcpy(node->name,"/!\\ A changer");
+	//strcpy(node->name,"/!\\ A changer");
 	int toReturn = TRUE;
 
 	functionArray functions;
@@ -92,7 +92,7 @@ int interrogationQuery(const char *s, Node* node){
 
 int absoluteURI(const char *s, Node* node){
 	//Remplir le node
-	strcpy(node->name,"absolute-URI");
+	strcpy(node->name,"absolute_URI");
 	int toReturn = TRUE;
 
 	functionArray functions;
@@ -165,7 +165,7 @@ int doubleSlash(const char *s, Node* node)
 
 int hierPart(const char *s, Node* node){
 	//Remplir le node
-	strcpy(node->name,"hier-part");
+	strcpy(node->name,"hier_part");
 	int toReturn = TRUE;
 
 	functionArray functions;
@@ -175,6 +175,7 @@ int hierPart(const char *s, Node* node){
 
 	functions.functionCount = 3;
 	functions.isOrFunction = FALSE;
+	functions.optionnal = NULL;
 
 	//Executer etoile
 	(node->childCount) = 0;
@@ -198,7 +199,7 @@ int hierPart(const char *s, Node* node){
 
 int partialURI(const char *s, Node* node){
 	//Remplir le node
-	strcpy(node->name,"partial-URI");
+	strcpy(node->name,"partial_URI");
 	int toReturn = TRUE;
 
 	functionArray functions;
@@ -222,7 +223,7 @@ int partialURI(const char *s, Node* node){
 
 int relativePart(const char *s, Node* node){
 	//Remplir le node
-	strcpy(node->name,"relative-part");
+	strcpy(node->name,"relative_part");
 	int toReturn = TRUE;
 
 	functionArray functions;
@@ -256,7 +257,7 @@ int relativePart(const char *s, Node* node){
 
 int userinfoAt(const char *s, Node* node){
 	//Remplir le node
-	strcpy(node->name,"/!\\ A changer");
+	//strcpy(node->name,"/!\\ A changer");
 	int toReturn = TRUE;
 
 	functionArray functions;
@@ -265,6 +266,7 @@ int userinfoAt(const char *s, Node* node){
 
 	functions.functionCount = 2;
 	functions.isOrFunction = FALSE;
+	functions.optionnal = NULL;
 
 	//Executer etoile
 	(node->childCount) = 0;
@@ -279,7 +281,7 @@ int userinfoAt(const char *s, Node* node){
 
 int colonPort(const char *s, Node* node){
 	//Remplir le node
-	strcpy(node->name,"/!\\ A changer");
+	//strcpy(node->name,"/!\\ A changer");
 	int toReturn = TRUE;
 
 	functionArray functions;
@@ -288,6 +290,7 @@ int colonPort(const char *s, Node* node){
 
 	functions.functionCount = 2;
 	functions.isOrFunction = FALSE;
+	functions.optionnal = NULL;
 
 	//Executer etoile
 	(node->childCount) = 0;
@@ -373,7 +376,7 @@ int host(const char *s, Node* node){
 
 int IPliteral(const char *s, Node* node){
 	//Remplir le node
-	strcpy(node->name,"IP-literal");
+	strcpy(node->name,"IP_literal");
 	int toReturn = TRUE;
 
 	functionArray functions;
@@ -425,7 +428,7 @@ void checkls32(functionArray functions, const char *s, Node* node)
 
 int colonh16(const char *s, Node* node){
 	//Remplir le node
-	strcpy(node->name,"/!\\ A changer");
+	//strcpy(node->name,"/!\\ A changer");
 	int toReturn = TRUE;
 
 	functionArray functions;
@@ -819,7 +822,7 @@ int DIGITtoFive(const char* s, Node* node) {
 	int toReturn = regexTest(s,"^[0-5]",1);
     if(node != NULL)
     {
-		strcpy(node->name,"%x30-35");
+		strcpy(node->name,"%x30_35");
 		node->content = s;
 		node->contentSize = 1;
 		node->childCount = 0;
@@ -831,7 +834,7 @@ int DIGITtoFour(const char* s, Node* node) {
 	int toReturn = regexTest(s,"^[0-4]",1);
     if(node != NULL)
     {
-		strcpy(node->name,"%x30-34");
+		strcpy(node->name,"%x30_34");
 		node->content = s;
 		node->contentSize = 1;
 		node->childCount = 0;
@@ -843,7 +846,7 @@ int DIGITwithoutZero(const char* s, Node* node) {
 	int toReturn = regexTest(s,"^[1-9]",1);
     if(node != NULL)
     {
-		strcpy(node->name,"%x31-39");
+		strcpy(node->name,"%x31_39");
 		node->content = s;
 		node->contentSize = 1;
 		node->childCount = 0;
@@ -853,7 +856,7 @@ int DIGITwithoutZero(const char* s, Node* node) {
 
 int decOctet(const char *s, Node* node){
 	//Remplir le node
-	strcpy(node->name,"dec-octet");
+	strcpy(node->name,"dec_octet");
 	int toReturn = TRUE;
 
 	functionArray functions;
@@ -966,7 +969,7 @@ int IPvFuture(const char *s, Node* node){
 
 int regName(const char *s, Node* node){
 	//Remplir le node
-	strcpy(node->name,"reg-name");
+	strcpy(node->name,"reg_name");
 	int toReturn = TRUE;
 
 	functionArray functions;
@@ -1006,7 +1009,7 @@ int port(const char *s, Node* node){
 
 int pathAbempty(const char *s, Node* node){
 	//Remplir le node
-	strcpy(node->name,"path-abempty");
+	strcpy(node->name,"path_abempty");
 	int toReturn = TRUE;
 
 	functionArray functions;
@@ -1027,7 +1030,7 @@ int pathAbempty(const char *s, Node* node){
 
 int pathAbsolute(const char *s, Node* node){
 	//Remplir le node
-	strcpy(node->name,"path-absolute");
+	strcpy(node->name,"path_absolute");
 	int toReturn = TRUE;
 
 	functionArray functions;
@@ -1052,7 +1055,7 @@ int pathAbsolute(const char *s, Node* node){
 
 int pathRootless(const char *s, Node* node){
 	//Remplir le node
-	strcpy(node->name,"path-rootless");
+	strcpy(node->name,"path_rootless");
 	int toReturn = FALSE;
 
 	functionArray functions;
@@ -1088,7 +1091,7 @@ int pathRootless(const char *s, Node* node){
 
 int pathEmpty(const char *s, Node* node){
 	//Remplir le node
-	strcpy(node->name,"path-empty");
+	strcpy(node->name,"path_empty");
 	
 	node->childCount = 0;
 	node->contentSize = 0;
@@ -1098,7 +1101,7 @@ int pathEmpty(const char *s, Node* node){
 
 int pathNoscheme(const char *s, Node* node){
 	//Remplir le node
-	strcpy(node->name,"path-noscheme");
+	strcpy(node->name,"path_noscheme");
 	int toReturn = FALSE;
 
 	functionArray functions;
@@ -1134,7 +1137,7 @@ int pathNoscheme(const char *s, Node* node){
 
 int segmentNz(const char *s, Node* node){
 	//Remplir le node
-	strcpy(node->name,"segment-nz");
+	strcpy(node->name,"segment_nz");
 	int toReturn = TRUE;
 
 	functionArray functions;
@@ -1157,7 +1160,7 @@ int segmentNz(const char *s, Node* node){
 
 int segmentNzNc(const char *s, Node* node){
 	//Remplir le node
-	strcpy(node->name,"segment-nz-nc");
+	strcpy(node->name,"segment_nz_nc");
 	int toReturn = TRUE;
 
 	functionArray functions;
@@ -1186,7 +1189,7 @@ int segmentNzNc(const char *s, Node* node){
 
 int acceptHeader(const char *s, Node* node){
 	//Remplir le node
-	strcpy(node->name,"Accept-header");
+	strcpy(node->name,"Accept_header");
 	int toReturn = TRUE;
 
 	functionArray functions;
@@ -1228,7 +1231,7 @@ int acceptHeaderName(const char *s, Node* node)
 //Problème de def ? En réalité, il n'y a jamais d'acceptParams car parameter de media-range prend le dessus
 // int mediaRangeAcceptParams(const char *s, Node* node){
 // 	//Remplir le node
-// 	strcpy(node->name,"/!\\ A changer");
+//// 	strcpy(node->name,"/!\\ A changer");
 // 	int toReturn = TRUE;
 
 // 	functionArray functions;
@@ -1270,6 +1273,8 @@ int accept(const char *s, Node* node){
 
 	if(node->childCount > 0)
 	{
+		int backChildCount = node->childCount;
+
 		functions.optionnal = malloc(MAX_FUNCTION_NUMBER*sizeof(int));
   		memset(functions.optionnal,MAX_FUNCTION_NUMBER,MAX_FUNCTION_NUMBER*sizeof(int));
 		(functions.functions[0]) = OWS;
@@ -1282,6 +1287,12 @@ int accept(const char *s, Node* node){
 
 		//Executer etoile
 		etoile(functions,s,0,-1,node);
+
+		if(node->childCount - backChildCount == 0)
+		{
+			node->childCount = 0;
+			node->contentSize = 0;
+		}
 	}
 	//Toujours vrai car tout est optionnel
 	return toReturn;
@@ -1291,7 +1302,7 @@ int accept(const char *s, Node* node){
 //media-range = ( type "/" subtype ) * ( OWS ";" OWS parameter ) 			
 int mediaRange(const char *s, Node* node){
 	//Remplir le node
-	strcpy(node->name,"media-range");
+	strcpy(node->name,"media_range");
 	int toReturn = TRUE;
 
 	functionArray functions;
@@ -1301,12 +1312,12 @@ int mediaRange(const char *s, Node* node){
 
 	functions.functionCount = 3;
 	functions.isOrFunction = FALSE;
+	functions.optionnal = NULL;
 
 	//Executer etoile
 	(node->childCount) = 0;
 	(node->contentSize) = 0;
 	etoile(functions,s,1,1,node);
-
 	if(node->childCount > 0)
 	{
 		(functions.functions[0]) = OWS;
@@ -1328,7 +1339,7 @@ int mediaRange(const char *s, Node* node){
 
 int acceptParams(const char *s, Node* node){
 	//Remplir le node
-	strcpy(node->name,"accept-params");
+	strcpy(node->name,"accept_params");
 	int toReturn = TRUE;
 
 	functionArray functions;
@@ -1356,7 +1367,7 @@ int acceptParams(const char *s, Node* node){
 
 int equalTokenOrQuotedString(const char *s, Node* node){
 	//Remplir le node
-	strcpy(node->name,"/!\\ A changer");
+	//strcpy(node->name,"/!\\ A changer");
 	int toReturn = FALSE;
 
 	functionArray functions;
@@ -1389,7 +1400,7 @@ int equalTokenOrQuotedString(const char *s, Node* node){
 
 int acceptExt(const char *s, Node* node){
 	//Remplir le node
-	strcpy(node->name,"accept-ext");
+	strcpy(node->name,"accept_ext");
 	int toReturn = TRUE;
 
 	functionArray functions;
@@ -1420,7 +1431,7 @@ int acceptExt(const char *s, Node* node){
 
 int cookieHeader(const char *s, Node* node){
 	//Remplir le node
-	strcpy(node->name,"Cookie-header");
+	strcpy(node->name,"Cookie_header");
 	int toReturn = TRUE;
 
 	functionArray functions;
@@ -1461,7 +1472,7 @@ int cookieHeaderName(const char *s, Node* node)
 
 int cookieString(const char *s, Node* node)
 {
-	strcpy(node->name,"cookie-string");
+	strcpy(node->name,"cookie_string");
 	int toReturn = TRUE;
 
 	functionArray functions;
@@ -1507,7 +1518,7 @@ int cookieString(const char *s, Node* node)
 int cookiePair(const char *s, Node* node)
 {
 	//Remplir le node
-	strcpy(node->name,"cookie-pair");
+	strcpy(node->name,"cookie_pair");
 	int toReturn = TRUE;
 
 	functionArray functions;
@@ -1533,14 +1544,31 @@ int cookiePair(const char *s, Node* node)
 
 int cookieName(const char *s, Node* node)
 {
-    int toReturn = token(s, node);
-    strcpy(node->name,"cookie-name");
+	//Remplir le node
+	strcpy(node->name,"cookie_name");
+	int toReturn = TRUE;
+
+	functionArray functions;
+	(functions.functions[0]) = token;
+
+	functions.functionCount = 1;
+	functions.isOrFunction = TRUE;
+
+	//Executer etoile
+	(node->childCount) = 0;
+	(node->contentSize) = 0;
+	etoile(functions,s,1,1,node);
+
+	//Si le node n'a de fils, déclarer la node fausse
+	if(node->childCount == 0)
+		toReturn = FALSE;
+
     return toReturn;
 }
 
 int cookieValue(const char *s, Node* node){
 //Remplir le node
-	strcpy(node->name,"cookie-value");
+	strcpy(node->name,"cookie_value");
 	int toReturn = TRUE;
 
 	functionArray functionsQuote;
@@ -1592,7 +1620,7 @@ int rightBracketToTilde(const char *s, Node* node)
 	int toReturn = regexTest(s,"^[_-~]",1) || regexTest(s,"^\\]",1) || regexTest(s,"^\\^",1);
     if(node != NULL)
     {
-        strcpy(node->name,"%x5D-7E");
+        strcpy(node->name,"%x5D_7E");
         node->content = s; 
         node->contentSize = 1;
         node->childCount = 0;
@@ -1605,7 +1633,7 @@ int hastagToPlus(const char *s, Node* node)
 	int toReturn = regexTest(s,"^[#-']",1) || regexTest(s,"^\\(",1) | regexTest(s,"^\\)",1) || regexTest(s,"^\\*",1) || regexTest(s,"^\\+",1);
     if(node != NULL)
     {
-        strcpy(node->name,"%x23-2B");
+        strcpy(node->name,"%x23_2B");
         node->content = s; 
         node->contentSize = 1;
         node->childCount = 0;
@@ -1618,7 +1646,7 @@ int minusToColon(const char *s, Node* node)
 	int toReturn = regexTest(s,"^[.-9]",1) || regexTest(s,"^\\-",1) || regexTest(s,"^\\:",1);
     if(node != NULL)
     {
-        strcpy(node->name," %x2D-3A");
+        strcpy(node->name," %x2D_3A");
         node->content = s; 
         node->contentSize = 1;
         node->childCount = 0;
@@ -1631,7 +1659,7 @@ int lesserToLeftBracket(const char *s, Node* node)
 	int toReturn = regexTest(s,"^[<-Z]",1) || regexTest(s, "^\\[", 1);
     if(node != NULL)
     {
-        strcpy(node->name," %x3C-5B");
+        strcpy(node->name," %x3C_5B");
         node->content = s; 
         node->contentSize = 1;
         node->childCount = 0;
@@ -1641,7 +1669,7 @@ int lesserToLeftBracket(const char *s, Node* node)
 
 int cookieOctet(const char *s, Node* node){
 	//Remplir le node
-	strcpy(node->name,"cookie-octet");
+	strcpy(node->name,"cookie_octet");
 	int toReturn = TRUE;
 
 	functionArray functions;
@@ -1670,7 +1698,7 @@ int cookieOctet(const char *s, Node* node){
 
 int acceptLanguageHeader(const char *s, Node* node){
 	//Remplir le node
-	strcpy(node->name,"Accept-Language-header");
+	strcpy(node->name,"Accept_Language_header");
 	int toReturn = TRUE;
 
 	functionArray functions;
@@ -1701,7 +1729,7 @@ int acceptLanguageHeaderName(const char *s, Node* node)
 	int toReturn = regexTestInsensitive(s,"^Accept-Language",15);
     if(node != NULL)
     {
-		strcpy(node->name,"Accept-Language");
+		strcpy(node->name,"Accept_Language");
 		node->content = s; 
 		node->contentSize = 15;
 		node->childCount = 0;
@@ -1712,7 +1740,7 @@ int acceptLanguageHeaderName(const char *s, Node* node)
 
 int languageWeight(const char *s, Node* node){
 	//Remplir le node
-	strcpy(node->name,"A changer /!\\");
+	//strcpy(node->name,"A changer /!\\");
  	int toReturn = TRUE;
  	int backChildCount = (node->childCount);
  	int backContentSize = (node->contentSize);
@@ -1744,7 +1772,7 @@ int languageWeight(const char *s, Node* node){
 
 int acceptLanguage(const char *s, Node* node){
  	//Remplir le node
-  	strcpy(node->name,"Accept-Language");
+  	strcpy(node->name,"Accept_Language");
   	int toReturn = TRUE;
 
   	functionArray functions;
@@ -1896,7 +1924,7 @@ int qvalue(const char *s, Node* node){
 int languageRange(const char *s,Node *node){
 
 	//Remplir le node
-	strcpy(node->name,"language-range");
+	strcpy(node->name,"language_range");
 	int toReturn = TRUE ;
 
 	//PARTIE 0
@@ -1997,7 +2025,7 @@ int languageRangePart2(const char *s,Node *node){
 
 int contentTypeHeader(const char *s, Node* node){
 	//Remplir le node
-	strcpy(node->name,"Content-Type-header");
+	strcpy(node->name,"Content_Type_header");
 	int toReturn = TRUE;
 
 	functionArray functions;
@@ -2028,7 +2056,7 @@ int contentTypeHeaderName(const char *s, Node* node)
 	int toReturn = regexTestInsensitive(s,"^Content-Type",12);
     if(node != NULL)
     {
-		strcpy(node->name,"Content-Type");
+		strcpy(node->name,"Content_Type");
 		node->content = s; 
 		node->contentSize = 12;
 		node->childCount = 0;
@@ -2038,7 +2066,7 @@ int contentTypeHeaderName(const char *s, Node* node)
 
 int mediaType(const char *s, Node* node){
 	//Remplir le node
-	strcpy(node->name,"media-type");
+	strcpy(node->name,"media_type");
 	int toReturn = TRUE;
 
 	functionArray functions;
@@ -2081,7 +2109,7 @@ int mediaType(const char *s, Node* node){
 
 int expectHeader(const char *s, Node* node)
 {
-	strcpy(node->name,"Expect-header");
+	strcpy(node->name,"Expect_header");
     int toReturn = TRUE;
 
     functionArray chooseFrom;
@@ -2120,7 +2148,7 @@ int expect(const char *s, Node* node)
 	int toReturn = regexTest(s,"^100-continue",12);
     if(node != NULL)
     {
-		strcpy(node->name,"expect");
+		strcpy(node->name,"Expect");
 		node->content = s; 
 		node->contentSize = 12;
 		node->childCount = 0;
@@ -2132,24 +2160,57 @@ int expect(const char *s, Node* node)
 
 int type(const char *s, Node* node)
 {
-    int toReturn = token(s, node);
-    strcpy(node->name,"type");
+    	//Remplir le node
+	strcpy(node->name,"type");
+	int toReturn = TRUE;
+
+	functionArray functions;
+	(functions.functions[0]) = token;
+
+	functions.functionCount = 1;
+	functions.isOrFunction = TRUE;
+
+	//Executer etoile
+	(node->childCount) = 0;
+	(node->contentSize) = 0;
+	etoile(functions,s,1,1,node);
+
+	//Si le node n'a de fils, déclarer la node fausse
+	if(node->childCount == 0)
+		toReturn = FALSE;
     return toReturn;
 }
 
 int subtype(const char *s, Node* node)
 {
-    int toReturn = token(s, node);
-    strcpy(node->name,"subtype");
+   	//Remplir le node
+	strcpy(node->name,"subtype");
+	int toReturn = TRUE;
+
+	functionArray functions;
+	(functions.functions[0]) = token;
+
+	functions.functionCount = 1;
+	functions.isOrFunction = TRUE;
+
+	//Executer etoile
+	(node->childCount) = 0;
+	(node->contentSize) = 0;
+	etoile(functions,s,1,1,node);
+
+	//Si le node n'a de fils, déclarer la node fausse
+	if(node->childCount == 0)
+		toReturn = FALSE;
+	
     return toReturn;
 }
 
 int obsText(const char *s, Node* node)
 {
-	int toReturn = regexTest(s,"^[€-ÿ]",1);
+	int toReturn = regexTest(s,"^[^ -~]+",1);
     if(node != NULL)
     {
-        strcpy(node->name,"obs-text");
+        strcpy(node->name,"obs_text");
         node->content = s; 
         node->contentSize = 1;
         node->childCount = 0;
@@ -2162,7 +2223,7 @@ int hastagToLeftBracket(const char *s, Node* node)
 	int toReturn = regexTest(s,"^[#-Z]",1) || regexTest(s,"^\\[",1);
     if(node != NULL)
     {
-        strcpy(node->name,"%x23-5B");
+        strcpy(node->name,"%x23_5B");
         node->content = s; 
         node->contentSize = 1;
         node->childCount = 0;
@@ -2197,7 +2258,7 @@ int qdtext(const char *s, Node* node)
 
 int quotedString(const char *s, Node* node){
 	//Remplir le node
-	strcpy(node->name,"quoted-string");
+	strcpy(node->name,"quoted_string");
 	int toReturn = TRUE;
 
 	functionArray functions;
@@ -2209,35 +2270,30 @@ int quotedString(const char *s, Node* node){
 	(node->contentSize) = 0;
 	etoile(functions,s,1,1,node);
 
-	//Si le node n'a de fils, déclarer la node fausse
-	if(node->childCount == 0)
+	if((node->childCount) == 0)
 		toReturn = FALSE;
 
 	//Si le node n'est pas déjà faux
-	if(toReturn == TRUE){
+	else{
 		//Declarer l'ensemble des fonctions possibles
 		(functions.functions)[0] = qdtext;
 		(functions.functions)[1] = quotedPair;
 
 		functions.functionCount = 2;
-		functions.isOrFunction = TRUE;
 
 		//Creer le(s) fils
 		etoile(functions,s,0,-1,node);
 
-		//Si etoile ne trouve pas de fils
 		if((node->childCount) == 0)
 			toReturn = FALSE;
-
-		if(toReturn == TRUE){
+		else
+		{
 			//Declarer l'ensemble des fonctions possibles
 			(functions.functions)[0] = DQUOTE;
 
 			functions.functionCount = 1;
-			functions.isOrFunction = TRUE;
 
 			etoile(functions,s,1,1,node);
-
 			if((node->childCount) == 0)
 				toReturn = FALSE;
 		}
@@ -2248,7 +2304,7 @@ int quotedString(const char *s, Node* node){
 int quotedPair(const char *s,Node *node){
 	
 	//Remplir le node
-	strcpy(node->name,"quoted-pair");
+	strcpy(node->name,"quoted_pair");
 	int toReturn = TRUE;
 
 	///////Si premier caractère est un backslash

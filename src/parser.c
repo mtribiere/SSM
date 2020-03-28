@@ -4,9 +4,9 @@ int regexTest(const char* string, const char* regex, const int size)
 {
     int toReturn = FALSE;
 	regex_t preg;
-	char* str = malloc(sizeof(char) * size);
-	if(str == NULL) perror("Problème d'allocation de mémoire");
-	strncpy(str, string, size);
+	char* str = malloc(sizeof(char) * (size+1));
+	if(str == NULL) {perror("Problème d'allocation de mémoire"); exit(EXIT_FAILURE);}
+	strncpy(str, string, size + 1); str[size] = '\0';
     int err = regcomp (&preg, regex, REG_NOSUB  | REG_EXTENDED | REG_NEWLINE);
     if(!err)
     {
@@ -23,9 +23,9 @@ int regexTestInsensitive(const char* string, const char* regex, const int size)
 {
     int toReturn = FALSE;
 	regex_t preg;
-	char* str = malloc(sizeof(char) * size);
-	if(str == NULL) perror("Problème d'allocation de mémoire");
-	strncpy(str, string, size);
+	char* str = malloc(sizeof(char) * (size+1));
+	if(str == NULL) {perror("Problème d'allocation de mémoire"); exit(EXIT_FAILURE);}
+	strncpy(str, string, size + 1); str[size] = '\0';
     int err = regcomp (&preg, regex, REG_ICASE | REG_NOSUB  | REG_EXTENDED | REG_NEWLINE);
     if(!err)
     {
