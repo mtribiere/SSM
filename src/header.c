@@ -67,17 +67,17 @@ int referer(const char *s, Node* node){
 	return toReturn;
 }
 
-int interrogationQuery(const char *s, Node* node){
+int absoluteURI(const char *s, Node* node){
 	//Remplir le node
-	//strcpy(node->name,"/!\\ A changer");
+	strcpy(node->name,"absolute_URI");
 	int toReturn = TRUE;
 
 	functionArray functions;
-	(functions.functions[0]) = interrogation; 
-	(functions.functions[1]) = query;
+	(functions.functions[0]) = scheme; 
+	(functions.functions[1]) = colon; 
+	(functions.functions[2]) = hierPart; 
 
-	functions.optionnal = NULL;
-	functions.functionCount = 2;
+	functions.functionCount = 3;
 	functions.isOrFunction = FALSE;
 
 	//Executer etoile
@@ -85,30 +85,10 @@ int interrogationQuery(const char *s, Node* node){
 	(node->contentSize) = 0;
 	etoile(functions,s,1,1,node);
 
-	if(node->childCount == 0)
-		toReturn = FALSE;
-	return toReturn;
-}
+	(functions.functions[0]) = interrogation; 
+	(functions.functions[1]) = query; 
 
-int absoluteURI(const char *s, Node* node){
-	//Remplir le node
-	strcpy(node->name,"absolute_URI");
-	int toReturn = TRUE;
-
-	functionArray functions;
-	functions.optionnal = malloc(MAX_FUNCTION_NUMBER*sizeof(int));
-  	memset(functions.optionnal,MAX_FUNCTION_NUMBER,MAX_FUNCTION_NUMBER*sizeof(int));
-	(functions.functions[0]) = scheme; 
-	(functions.functions[1]) = colon; 
-	(functions.functions[2]) = hierPart; 
-	(functions.functions[3]) = interrogationQuery; functions.optionnal[0] = 3;
-
-	functions.functionCount = 4;
-	functions.isOrFunction = FALSE;
-
-	//Executer etoile
-	(node->childCount) = 0;
-	(node->contentSize) = 0;
+	functions.functionCount = 2;
 	etoile(functions,s,1,1,node);
 
 	if(node->childCount == 0)
@@ -203,17 +183,21 @@ int partialURI(const char *s, Node* node){
 	int toReturn = TRUE;
 
 	functionArray functions;
-	functions.optionnal = malloc(MAX_FUNCTION_NUMBER*sizeof(int));
-  	memset(functions.optionnal,MAX_FUNCTION_NUMBER,MAX_FUNCTION_NUMBER*sizeof(int));
+	functions.optionnal = NULL;
 	(functions.functions[0]) = relativePart; 
-	(functions.functions[1]) = interrogationQuery; functions.optionnal[0] = 1;
 
-	functions.functionCount = 2;
-	functions.isOrFunction = FALSE;
+	functions.functionCount = 1;
+	functions.isOrFunction = TRUE;
 
 	//Executer etoile
 	(node->childCount) = 0;
 	(node->contentSize) = 0;
+	etoile(functions,s,1,1,node);
+
+	(functions.functions[0]) = interrogation; 
+	(functions.functions[1]) = query;
+	functions.functionCount = 2;
+	functions.isOrFunction = FALSE;
 	etoile(functions,s,1,1,node);
 
 	if(node->childCount == 0)
@@ -254,14 +238,14 @@ int relativePart(const char *s, Node* node){
 	return toReturn;
 }
 
-
-int userinfoAt(const char *s, Node* node){
+int authority(const char *s, Node* node){
 	//Remplir le node
-	//strcpy(node->name,"/!\\ A changer");
+	strcpy(node->name,"authority");
 	int toReturn = TRUE;
 
 	functionArray functions;
-	(functions.functions[0]) = userinfo; 
+
+	(functions.functions[0]) = userinfo;
 	(functions.functions[1]) = at;
 
 	functions.functionCount = 2;
@@ -269,23 +253,18 @@ int userinfoAt(const char *s, Node* node){
 	functions.optionnal = NULL;
 
 	//Executer etoile
-	(node->childCount) = 0;
-	(node->contentSize) = 0;
+	node->childCount = 0;
+	node->contentSize = 0;
 	etoile(functions,s,1,1,node);
 
-	if(node->childCount == 0)
-		toReturn = FALSE;
+	(functions.functions[0]) = host;
+	functions.functionCount = 1;
+	functions.isOrFunction = TRUE;
 
-	return toReturn;
-}
+	//Executer etoile
+	etoile(functions,s,1,1,node);
 
-int colonPort(const char *s, Node* node){
-	//Remplir le node
-	//strcpy(node->name,"/!\\ A changer");
-	int toReturn = TRUE;
-
-	functionArray functions;
-	(functions.functions[0]) = colon; 
+	(functions.functions[0]) = colon;
 	(functions.functions[1]) = port;
 
 	functions.functionCount = 2;
@@ -293,34 +272,6 @@ int colonPort(const char *s, Node* node){
 	functions.optionnal = NULL;
 
 	//Executer etoile
-	(node->childCount) = 0;
-	(node->contentSize) = 0;
-	etoile(functions,s,1,1,node);
-
-	if(node->childCount == 0)
-		toReturn = FALSE;
-
-	return toReturn;
-}
-
-int authority(const char *s, Node* node){
-	//Remplir le node
-	strcpy(node->name,"authority");
-	int toReturn = TRUE;
-
-	functionArray functions;
-	functions.optionnal = malloc(MAX_FUNCTION_NUMBER*sizeof(int));
-  	memset(functions.optionnal,MAX_FUNCTION_NUMBER,MAX_FUNCTION_NUMBER*sizeof(int));
-	(functions.functions[0]) = userinfoAt; functions.optionnal[0] = 0;
-	(functions.functions[1]) = host;
-	(functions.functions[2]) = colonPort; functions.optionnal[1] = 2;
-
-	functions.functionCount = 3;
-	functions.isOrFunction = FALSE;
-
-	//Executer etoile
-	(node->childCount) = 0;
-	(node->contentSize) = 0;
 	etoile(functions,s,1,1,node);
 
 	if(node->childCount == 0)
@@ -428,7 +379,7 @@ void checkls32(functionArray functions, const char *s, Node* node)
 
 int colonh16(const char *s, Node* node){
 	//Remplir le node
-	//strcpy(node->name,"/!\\ A changer");
+	strcpy(node->name,":16");
 	int toReturn = TRUE;
 
 	functionArray functions;
@@ -481,6 +432,7 @@ int IPv6address(const char *s, Node* node){
 	(node->childCount) = 0;
 	(node->contentSize) = 0;
 	etoile(functions,s,6,6,node); //6 ( h16 ":" )
+	checkls32(functions, s, node);
 
 	if(node->childCount == 0){
 		(functions.functions[0]) = doubleColon;
@@ -1231,7 +1183,7 @@ int acceptHeaderName(const char *s, Node* node)
 //Problème de def ? En réalité, il n'y a jamais d'acceptParams car parameter de media-range prend le dessus
 // int mediaRangeAcceptParams(const char *s, Node* node){
 // 	//Remplir le node
-//// 	strcpy(node->name,"/!\\ A changer");
+// 	strcpy(node->name,"/!\\ A changer");
 // 	int toReturn = TRUE;
 
 // 	functionArray functions;
@@ -1273,8 +1225,6 @@ int accept(const char *s, Node* node){
 
 	if(node->childCount > 0)
 	{
-		int backChildCount = node->childCount;
-
 		functions.optionnal = malloc(MAX_FUNCTION_NUMBER*sizeof(int));
   		memset(functions.optionnal,MAX_FUNCTION_NUMBER,MAX_FUNCTION_NUMBER*sizeof(int));
 		(functions.functions[0]) = OWS;
@@ -1287,12 +1237,6 @@ int accept(const char *s, Node* node){
 
 		//Executer etoile
 		etoile(functions,s,0,-1,node);
-
-		if(node->childCount - backChildCount == 0)
-		{
-			node->childCount = 0;
-			node->contentSize = 0;
-		}
 	}
 	//Toujours vrai car tout est optionnel
 	return toReturn;
@@ -1365,21 +1309,35 @@ int acceptParams(const char *s, Node* node){
 	return toReturn;	
 }
 
-int equalTokenOrQuotedString(const char *s, Node* node){
+int acceptExt(const char *s, Node* node){
 	//Remplir le node
-	//strcpy(node->name,"/!\\ A changer");
-	int toReturn = FALSE;
+	strcpy(node->name,"accept_ext");
+	int toReturn = TRUE;
 
 	functionArray functions;
+	(functions.functions[0]) = OWS;
+	(functions.functions[1]) = semiColon;
+	(functions.functions[2]) = OWS;
+	(functions.functions[3]) = token;
+
+	functions.functionCount = 4;
+	functions.isOrFunction = FALSE;
+
+	//Executer etoile
+	(node->childCount) = 0;
+	(node->contentSize) = 0;
+	etoile(functions,s,1,1,node);
+
+
+	int backChildCount = node->childCount;
+
 	(functions.functions[0]) = equal;
 	functions.functionCount = 1;
 	functions.isOrFunction = TRUE;
 
-	(node->childCount) = 0;
-	(node->contentSize) = 0;
 	etoile(functions, s, 1, 1, node);
 
-	if(node->childCount >= 1)
+	if(node->childCount - backChildCount >= 1)
 	{
 		
 		(functions.functions[0]) = token;
@@ -1387,38 +1345,8 @@ int equalTokenOrQuotedString(const char *s, Node* node){
 		functions.functionCount = 2;
 		
 		//Executer etoile
-		// (node->childCount) = 0;
-		// (node->contentSize) = 0;
 		etoile(functions,s,1,1,node);
-
-		if(node->childCount >= 2)
-		//Si le node a au moins un fils, déclarer la node vraie
-			toReturn = TRUE;
 	}
-	return toReturn;
-}
-
-int acceptExt(const char *s, Node* node){
-	//Remplir le node
-	strcpy(node->name,"accept_ext");
-	int toReturn = TRUE;
-
-	functionArray functions;
-	functions.optionnal = malloc(MAX_FUNCTION_NUMBER*sizeof(int));
-  	memset(functions.optionnal,MAX_FUNCTION_NUMBER,MAX_FUNCTION_NUMBER*sizeof(int));
-	(functions.functions[0]) = OWS;
-	(functions.functions[1]) = semiColon;
-	(functions.functions[2]) = OWS;
-	(functions.functions[3]) = token;
-	(functions.functions[4]) = equalTokenOrQuotedString; functions.optionnal[0] = 4;
-
-	functions.functionCount = 5;
-	functions.isOrFunction = FALSE;
-
-	//Executer etoile
-	(node->childCount) = 0;
-	(node->contentSize) = 0;
-	etoile(functions,s,1,1,node);
 
 	//Si le node n'a de fils, déclarer la node fausse
 	if(node->childCount == 0)
@@ -1740,10 +1668,9 @@ int acceptLanguageHeaderName(const char *s, Node* node)
 
 int languageWeight(const char *s, Node* node){
 	//Remplir le node
-	//strcpy(node->name,"A changer /!\\");
+	strcpy(node->name,"language weight");
  	int toReturn = TRUE;
  	int backChildCount = (node->childCount);
- 	int backContentSize = (node->contentSize);
 
   	functionArray functions;
   	functions.optionnal = malloc(MAX_FUNCTION_NUMBER*sizeof(int));
@@ -1761,11 +1688,6 @@ int languageWeight(const char *s, Node* node){
 
   	if(node->childCount - backChildCount == 0)
   		toReturn = FALSE;	
-  	if(!toReturn)
-  	{
-  		(node->childCount) = backChildCount;
- 		(node->contentSize) = backContentSize;
-  	}
 
   	return toReturn;
 }

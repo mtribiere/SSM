@@ -44,7 +44,7 @@ int main(int argc,char *argv[])
 		
 		if(HTTPmessage(addr,testNode))
 			printTree(testNode,0);
-		else printf("SYNTAX ERROX\n");
+		else printf("/!\\ Erreur de syntaxe\n");
 		return 0;
     }
 
