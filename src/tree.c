@@ -4,7 +4,7 @@
 void printNode(Node* node,int deep)
 {
 	//Affiche les données contenues dans un noeud
-	printf("\n\n");
+	printf("\n");
 	for(int i = 0;i<deep;i++)
 		printf("\t");
 	printf("[Name\t:\t%s]\n", node->name);
@@ -13,7 +13,6 @@ void printNode(Node* node,int deep)
 		printf("\t");
 	printf("Content\t:\t");
 	printStringWithLimit(node->content,node->contentSize);
-	printf("\n");
 }
 
 void printTree(Node* root,int deep)
@@ -34,7 +33,7 @@ void printStringWithLimit(const char *s,int limit){
 
 //Affiche le contenu d'une liste chainée de token
 void printTokenChain(_Token *chain){
-	
+
 	if(chain != NULL){
 		printTokenChain(chain->next);
 		printNode((Node *) (chain->node),0);
@@ -84,9 +83,9 @@ void insertHead(_Token **head, Node *toInsertNode){
 
 	//Si la liste est vide
 	if(*head == NULL){
-	
+
 		*head = toInsert;
-	
+
 	}else{ //Sinon on insere avant le premier element
 
 		(toInsert->next) = *head;
@@ -107,7 +106,7 @@ void removeNode(Node* node)
 		removeNode((node->childList)[i]);
 	}
 	(node->childCount) = 0;
-	
+
 	//Liberer le tableau des enfants
 	free(node->childList);
 
