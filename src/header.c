@@ -79,6 +79,7 @@ int absoluteURI(const char *s, Node* node){
 
 	functions.functionCount = 3;
 	functions.isOrFunction = FALSE;
+	functions.optionnal = NULL;
 
 	//Executer etoile
 	(node->childCount) = 0;
@@ -217,7 +218,7 @@ int relativePart(const char *s, Node* node){
 
 	functions.functionCount = 3;
 	functions.isOrFunction = FALSE;
-
+	functions.optionnal = NULL;
 	//Executer etoile
 	(node->childCount) = 0;
 	(node->contentSize) = 0;
@@ -445,6 +446,7 @@ int IPv6address(const char *s, Node* node){
 			(functions.functions[1]) = colon;
 			functions.functionCount = 2;
 			functions.isOrFunction = FALSE;
+			functions.optionnal = NULL;
 			backChildCount = node->childCount;
 			etoile(functions,s,5,5,node); //5 ( h16 ":" )
 
@@ -464,13 +466,13 @@ int IPv6address(const char *s, Node* node){
 		functions.functionCount = 2;
 		functions.isOrFunction = FALSE;
 		etoile(functions,s,1,1,node); //[ h16 ] "::"
-
+		free(functions.optionnal);
 		if(node->childCount > 0){
-			if(functions.optionnal != NULL) {free(functions.optionnal); functions.optionnal = NULL;}
 			(functions.functions[0]) = h16;
 			(functions.functions[1]) = colon;
 			functions.functionCount = 2;
 			functions.isOrFunction = FALSE;
+			functions.optionnal = NULL;
 			backChildCount = node->childCount;
 			etoile(functions,s,4,4,node); //4 ( h16 ":" )
 
@@ -483,7 +485,6 @@ int IPv6address(const char *s, Node* node){
 		}
 	}
 	if(node->childCount == 0){
-		if(functions.optionnal != NULL) {free(functions.optionnal); functions.optionnal = NULL;}
 		functions.optionnal = malloc(MAX_FUNCTION_NUMBER*sizeof(int));
   		memset(functions.optionnal,MAX_FUNCTION_NUMBER,MAX_FUNCTION_NUMBER*sizeof(int));
   		(functions.functions[0]) = h16; functions.optionnal[0] = 0;
@@ -492,13 +493,13 @@ int IPv6address(const char *s, Node* node){
 		functions.functionCount = 3;
 		functions.isOrFunction = FALSE;
 		etoile(functions,s,1,1,node); //[ h16 *1 ( ":" h16 ) ] "::"
-
+		free(functions.optionnal);
 		if(node->childCount > 0){
-			if(functions.optionnal != NULL) {free(functions.optionnal); functions.optionnal = NULL;}
 			(functions.functions[0]) = h16;
 			(functions.functions[1]) = colon;
 			functions.functionCount = 2;
 			functions.isOrFunction = FALSE;
+			functions.optionnal = NULL;
 			backChildCount = node->childCount;
 			etoile(functions,s,3,3,node); //3 ( h16 ":" )
 
@@ -511,7 +512,6 @@ int IPv6address(const char *s, Node* node){
 		}
 	}
 	if(node->childCount == 0){
-		if(functions.optionnal != NULL) {free(functions.optionnal); functions.optionnal = NULL;}
 		functions.optionnal = malloc(MAX_FUNCTION_NUMBER*sizeof(int));
   		memset(functions.optionnal,MAX_FUNCTION_NUMBER,MAX_FUNCTION_NUMBER*sizeof(int));
   		(functions.functions[0]) = h16; functions.optionnal[0] = 0;
@@ -521,13 +521,13 @@ int IPv6address(const char *s, Node* node){
 		functions.functionCount = 4;
 		functions.isOrFunction = FALSE;
 		etoile(functions,s,1,1,node); //[ h16 *2 ( ":" h16 ) ] "::"
-
+		free(functions.optionnal);
 		if(node->childCount > 0){
-			if(functions.optionnal != NULL) {free(functions.optionnal); functions.optionnal = NULL;}
 			(functions.functions[0]) = h16;
 			(functions.functions[1]) = colon;
 			functions.functionCount = 2;
 			functions.isOrFunction = FALSE;
+			functions.optionnal = NULL;
 			backChildCount = node->childCount;
 			etoile(functions,s,2,2,node); //2 ( h16 ":" )
 
@@ -540,7 +540,6 @@ int IPv6address(const char *s, Node* node){
 		}
 	}
 	if(node->childCount == 0){
-		if(functions.optionnal != NULL) {free(functions.optionnal); functions.optionnal = NULL;}
 		functions.optionnal = malloc(MAX_FUNCTION_NUMBER*sizeof(int));
   		memset(functions.optionnal,MAX_FUNCTION_NUMBER,MAX_FUNCTION_NUMBER*sizeof(int));
   		(functions.functions[0]) = h16; functions.optionnal[0] = 0;
@@ -551,13 +550,13 @@ int IPv6address(const char *s, Node* node){
 		functions.functionCount = 5;
 		functions.isOrFunction = FALSE;
 		etoile(functions,s,1,1,node); //[ h16 *3 ( ":" h16 ) ] "::"
-
+		free(functions.optionnal);
 		if(node->childCount > 0){
-			if(functions.optionnal != NULL) {free(functions.optionnal); functions.optionnal = NULL;}
 			(functions.functions[0]) = h16;
 			(functions.functions[1]) = colon;
 			functions.functionCount = 2;
 			functions.isOrFunction = FALSE;
+			functions.optionnal = NULL;
 			backChildCount = node->childCount;
 			etoile(functions,s,1,1,node); // h16 ":"
 
@@ -570,7 +569,6 @@ int IPv6address(const char *s, Node* node){
 		}
 	}
 	if(node->childCount == 0){
-		if(functions.optionnal != NULL) {free(functions.optionnal); functions.optionnal = NULL;}
 		functions.optionnal = malloc(MAX_FUNCTION_NUMBER*sizeof(int));
   		memset(functions.optionnal,MAX_FUNCTION_NUMBER,MAX_FUNCTION_NUMBER*sizeof(int));
   		(functions.functions[0]) = h16; functions.optionnal[0] = 0;
@@ -583,7 +581,7 @@ int IPv6address(const char *s, Node* node){
 		functions.isOrFunction = FALSE;
 		backChildCount = node->childCount;
 		etoile(functions,s,1,1,node); //[ h16 *4 ( ":" h16 ) ] "::"
-
+		free(functions.optionnal);
 		if(node->childCount - backChildCount == 0)
 			{
 				(node->childCount) = 0;
@@ -592,7 +590,6 @@ int IPv6address(const char *s, Node* node){
 		checkls32(functions, s, node);
 	}
 	if(node->childCount == 0){
-		if(functions.optionnal != NULL) {free(functions.optionnal); functions.optionnal = NULL;}
 		functions.optionnal = malloc(MAX_FUNCTION_NUMBER*sizeof(int));
   		memset(functions.optionnal,MAX_FUNCTION_NUMBER,MAX_FUNCTION_NUMBER*sizeof(int));
   		(functions.functions[0]) = h16; functions.optionnal[0] = 0;
@@ -605,7 +602,7 @@ int IPv6address(const char *s, Node* node){
 		functions.functionCount = 7;
 		functions.isOrFunction = FALSE;
 		etoile(functions,s,1,1,node); //[ h16 *5 ( ":" h16 ) ] "::"
-
+		free(functions.optionnal);
 		if(node->childCount == 0){
 			(node->childCount) = 0;
 			(node->contentSize) = 0;
@@ -625,7 +622,6 @@ int IPv6address(const char *s, Node* node){
 		}
 	}
 	if(node->childCount == 0){
-		if(functions.optionnal != NULL) {free(functions.optionnal); functions.optionnal = NULL;}
 		functions.optionnal = malloc(MAX_FUNCTION_NUMBER*sizeof(int));
   		memset(functions.optionnal,MAX_FUNCTION_NUMBER,MAX_FUNCTION_NUMBER*sizeof(int));
   		(functions.functions[0]) = h16; functions.optionnal[0] = 0;
@@ -639,7 +635,7 @@ int IPv6address(const char *s, Node* node){
 		functions.functionCount = 8;
 		functions.isOrFunction = FALSE;
 		etoile(functions,s,1,1,node); //[ h16 *6 ( ":" h16 ) ] "::"
-
+		free(functions.optionnal);
 		if(node->childCount == 0){
 			(node->childCount) = 0;
 			(node->contentSize) = 0;
@@ -998,7 +994,7 @@ int pathAbsolute(const char *s, Node* node){
 	(node->childCount) = 0;
 	(node->contentSize) = 0;
 	etoile(functions,s,1,1,node);
-
+	free(functions.optionnal);
 	if(node->childCount == 0)
 		toReturn = FALSE;
 
@@ -1322,7 +1318,7 @@ int acceptExt(const char *s, Node* node){
 
 	functions.functionCount = 4;
 	functions.isOrFunction = FALSE;
-
+	functions.optionnal = NULL;
 	//Executer etoile
 	(node->childCount) = 0;
 	(node->contentSize) = 0;
@@ -1813,10 +1809,9 @@ int qvalue(const char *s, Node* node){
 	(node->childCount) = 0;
 	(node->contentSize) = 0;
 	etoile(functions,s,1,1,node);
-
+	free(functions.optionnal);
 	if(node->childCount == 0){
 		//On test l'autre partie du OU
-		free(functions.optionnal);
 
 		functions.optionnal = malloc(MAX_FUNCTION_NUMBER*sizeof(int));
 		memset(functions.optionnal,MAX_FUNCTION_NUMBER,MAX_FUNCTION_NUMBER*sizeof(int));
@@ -1834,7 +1829,7 @@ int qvalue(const char *s, Node* node){
 		(node->childCount) = 0;
 		(node->contentSize) = 0;
 		etoile(functions,s,1,1,node);
-
+		free(functions.optionnal);
 		if(node->childCount == 0)
 			toReturn = FALSE;
 	}

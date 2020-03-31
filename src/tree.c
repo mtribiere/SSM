@@ -102,15 +102,16 @@ void removeNode(Node* node)
 	if(node == NULL) return;
 
 	//Liberer les enfants
-	for(int i = 0;i<(node->childCount);i++){
+	for(int i = 0; i < (node->childCount); i++){
 		removeNode((node->childList)[i]);
 	}
 	(node->childCount) = 0;
 
 	//Liberer le tableau des enfants
 	free(node->childList);
+	node->childList = NULL;
 
-	//Librer le node
+	//Libérer le node
 	free(node);
 	node = NULL;
 }

@@ -40,6 +40,7 @@ int HTTPmessage(const char *s, Node* node)
 		    etoile(functions, s,1, 1, node);
 		    if(node->childCount - backChildCount < 1)
 		    	toReturn = FALSE;
+		    free(functions.optionnal);
 	    }
     }
 
@@ -239,7 +240,8 @@ int originForm(const char *s, Node* node) {
 	int toReturn = TRUE;
 
 	functionArray functions;
-	functions.optionnal = calloc(MAX_FUNCTION_NUMBER, sizeof(int));
+	functions.optionnal = malloc(MAX_FUNCTION_NUMBER*sizeof(int));
+  	memset(functions.optionnal,MAX_FUNCTION_NUMBER,MAX_FUNCTION_NUMBER*sizeof(int));
 	(functions.functions)[0] = absolutePath;
 	(functions.functions)[1] = interrogation; functions.optionnal[0] = 1;
 	(functions.functions)[2] = query; functions.optionnal[1] = 2;
@@ -253,7 +255,7 @@ int originForm(const char *s, Node* node) {
 
 	if(node->childList[0]->contentSize == 0)
 		toReturn = FALSE;
-
+	free(functions.optionnal);
 	return toReturn;
 }
 

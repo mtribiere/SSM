@@ -45,6 +45,7 @@ int main(int argc,char *argv[])
 		if(HTTPmessage(addr,testNode))
 			printTree(testNode,0);
 		else printf("/!\\ Erreur de syntaxe\n");
+		removeNode(testNode);
 		return 0;
     }
 
@@ -78,57 +79,4 @@ int main(int argc,char *argv[])
 	close(fi);
 	return(res); 
 	}
-
-	////////////////////TEST FONCTIONS
-	/*
-	char s[] = 	"GET /hello.txt HTTP/1.1\r\n"
-				"Referer: http://www.example.org/hypertext/Overview.html\r\n"
-				"Accept: audio/; q=0.2, audio/basic\r\n"		
-				"Content-Type: text/html\r\n"
-				"Cookie: SID=31d4d96e407aad42\r\n"
-				"Accept-Language: da, en-gb;q=0.8, en;q=0.7\r\n"
-				"Expect: 100-continue\r\n"
-				"\r\n"
-				"Slt";
-
-	//Bien penser à utiliser un pointeur pour le noeud de départ
-	Node *testNode = malloc(sizeof(Node));
-	testNode->childList = malloc(sizeof(Node)*MAX_CHILD_COUNT);
-	testNode->childCount = 0;
-	testNode->contentSize = 0;
-
-	if(HTTPmessage(s,testNode))
-		printTree(testNode,0);
-	else printf("FAUX\n");
-
-	removeNode(testNode);
-
-	return 0;*/
-
-	/////////////////TEST API
-	
-	// char s[] = 	"GET /hello.txt HTTP/1.1\r\n"
-	// 			"Referer: http://www.example.org/hypertext/Overview.html\r\n"
-	// 			"Accept: audio/*; q=0.2, audio/basic\r\n"		
-	// 			"Content-Type: text/html\r\n"
-	// 			"Cookie: SID=31d4d96e407aad42\r\n"
-	// 			"Accept-Language: da, en-gb;q=0.8, en;q=0.7\r\n"
-	// 			"Expect: 100-continue\r\n"
-	// 			"\r\n"
-	// 			"Slt";
-
-	// parseur(s,246);
-
-	// void *treeRoot = getRootTree();
-	
-	// _Token *searchResult = NULL;
-	// searchResult = searchTree(treeRoot,"media-range");
-
-	// printTokenChain(searchResult); //Non standard dans l'API
-
-	// purgeElement(&searchResult);
-	// purgeTree(treeRoot);
-
-	// return 0;
-
 }

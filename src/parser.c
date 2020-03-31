@@ -154,8 +154,10 @@ void etoile(functionArray functions, const char *s, int min, int max,Node *node)
 					(tmpNodes[i])->contentSize = 0;
 				//Si une fonction obligatoire n'est pas correcte
 				else if(!isCorrect)
-					for(int toFreeIndex = 0;toFreeIndex < i;toFreeIndex++)
+				{
+					for(int toFreeIndex = 0; toFreeIndex <= i; toFreeIndex++)
 						removeNode(tmpNodes[toFreeIndex]);
+				}
 
 				//Sinon on continue
 				else
@@ -172,6 +174,8 @@ void etoile(functionArray functions, const char *s, int min, int max,Node *node)
 						(node->childList)[node->childCount] = tmpNodes[i];
 						(node->childCount)++;
 					}
+					else
+						removeNode(tmpNodes[i]);
 				}
 
 				//Ajouter un aux nodes trouvées
@@ -182,10 +186,12 @@ void etoile(functionArray functions, const char *s, int min, int max,Node *node)
 					isMaxReached = TRUE;
 				}
 
-			}else{ //Si la fonction ET n'est pas correcte
-				falseFound = TRUE;
 			}
+			else //Si la fonction ET n'est pas correcte
+				falseFound = TRUE;
 
+			free(tmpNodes);
+			tmpNodes = NULL;
 		}
 	}
 	//Si un a trouvé un faux avant d'avoir le min
@@ -193,9 +199,7 @@ void etoile(functionArray functions, const char *s, int min, int max,Node *node)
 		
 		//Liberer les enfants créés
 		for(int i = (node->childCount)-1;i>=backChildCount;i--)
-		{
 			removeNode((node->childList)[i]);
-		}
 
 		//Remettre le nombre d'enfants à son état initial
 		(node->childCount) = backChildCount;
