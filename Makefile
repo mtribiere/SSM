@@ -8,9 +8,9 @@ SRC = $(wildcard $(SRC_DIR)/*.c)
 OBJ = $(SRC:$(SRC_DIR)/%.c=$(OBJ_DIR)/%.o)
 
 CPPFLAGS += -Iinclude -I$(SRC_DIR)
-CFLAGS += -Wall -g 
+CFLAGS += -Wall -g
 LDFLAGS += -Llib
-LDLIBS += -lm
+LDLIBS += -lm  -Lsrc/librequest-0.4 -lrequest 
 
 .PHONY: all clean
 
