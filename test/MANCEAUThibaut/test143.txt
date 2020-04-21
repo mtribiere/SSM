@@ -1,3 +1,0 @@
-GET / HTTP/1.0
-Accept-Language:,	  	 U  ;	q=1.0 ,			 	,Q-j7N	,txe-n ;	q=0. ,,				 	
-

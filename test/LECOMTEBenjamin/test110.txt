@@ -1,3 +1,0 @@
-GET / HTTP/1.0
-Cookie:	 					 	k'mx$eSIy="q$0fI"	 	
-

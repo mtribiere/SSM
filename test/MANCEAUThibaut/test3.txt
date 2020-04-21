@@ -1,3 +1,0 @@
-GET / HTTP/1.0
-Accept-Language:		 		 , 	 		d-P-bK-p-GIz
-

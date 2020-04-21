@@ -1,3 +1,0 @@
-GET / HTTP/1.0
-Content-Type: 0BQ5c/D		 
-

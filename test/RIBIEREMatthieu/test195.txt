@@ -1,3 +1,0 @@
-GET / HTTP/1.0
-Referer:	 			Z:/vl%C7/H.Q/Ms1Q7QSG:ji?B 
-

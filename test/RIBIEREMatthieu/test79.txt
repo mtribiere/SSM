@@ -1,3 +1,0 @@
-GET / HTTP/1.0
-Accept:	  G/gu	   	;T-Y="1\ˆ\¡+Ö\k\î" 	;  K$K="à\e";	 		 	 	  J8sd^sVm="äPž"	; 	twUW="‚\ d*\¸\=ý"	    				 ;^R#m="\y"		 	  ;    		q=1,		 		 
-

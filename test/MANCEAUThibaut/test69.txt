@@ -1,3 +1,0 @@
-GET / HTTP/1.0
-Accept-Language:, ,		 	, 		   	 				,	 	  			H-46W-Nww-mw-Vv
-

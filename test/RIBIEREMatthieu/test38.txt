@@ -1,3 +1,0 @@
-GET / HTTP/1.0
-Referer:/%F3C8g=%CC,;//%CCEQ%A1
-

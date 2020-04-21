@@ -1,3 +1,0 @@
-GET / HTTP/1.0
-Referer:	  !%EFRV%E3/J%7D%61Zjo;%33%AFPE@pYE&=g  		 
-

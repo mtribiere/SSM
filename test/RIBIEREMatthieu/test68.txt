@@ -1,3 +1,0 @@
-GET / HTTP/1.0
-Accept:	W582aLZ93/*  		;~'="" ;  	dy#YE~L=""
-

@@ -1,3 +1,0 @@
-GET / HTTP/1.0
-Content-Type:Y/mD	 ;   sV+l="\“\4\ª"	  		  			; 	'=&Qi	  					
-

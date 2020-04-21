@@ -1,3 +1,0 @@
-GET / HTTP/1.0
-Referer:  	%7E5w/)w/$zc-K2%02./N/%7Bl$/D
-

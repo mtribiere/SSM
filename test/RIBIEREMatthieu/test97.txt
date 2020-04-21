@@ -1,3 +1,0 @@
-GET / HTTP/1.0
-Referer:    //knsR@4.232.250.223:7/IP// 	
-

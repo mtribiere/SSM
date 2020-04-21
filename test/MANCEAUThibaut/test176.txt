@@ -1,3 +1,0 @@
-GET / HTTP/1.0
-Accept-Language:	 	,	,		 	Jf-UTF-T0O-EzwE-3E-PJ2oLK-KcJoSut-ppqjP 
-

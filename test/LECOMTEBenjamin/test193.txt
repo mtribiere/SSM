@@ -1,3 +1,0 @@
-GET / HTTP/1.0
-Content-Type:	I7'/P+D~`0~C#lO7		 	
-

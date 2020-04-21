@@ -1,3 +1,0 @@
-GET / HTTP/1.0
-Cookie:	 	  1=8)>b; yLD="^"	
-

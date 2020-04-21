@@ -1,3 +1,0 @@
-GET / HTTP/1.0
-Content-Type:		 guHi/52F 	;		R="\("  ;	    	 			Ia="\	r\\";	O="\Å\!\8˘{\Á"
-

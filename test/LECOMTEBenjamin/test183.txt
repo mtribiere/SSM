@@ -1,3 +1,0 @@
-GET / HTTP/1.0
-Cookie:		D6rr=zG'; 4Cd=<N; `f4obaFmv=MsS($f	
-

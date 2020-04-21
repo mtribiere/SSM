@@ -1,4 +1,0 @@
-GET / HTTP/1.0
-Referer: 	 //[vFD1.:]/xC//%0BF?o  
-Accept:  		
-

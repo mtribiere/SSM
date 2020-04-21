@@ -1,3 +1,0 @@
-GET / HTTP/1.0
-Accept-Language:	 	  , ,,	 		,,	  ,	 ,				, 	 	 	 ,			    ,	   	,, ,	 ,					 cz-U-A-Ev6-XWj	;   		     	 	 q=0	
-

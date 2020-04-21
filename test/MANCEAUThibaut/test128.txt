@@ -1,3 +1,0 @@
-GET / HTTP/1.0
-Accept-Language:,	,	,,H-q-iF-s-Cj-2L-353-i-vUv-VB  		 
-

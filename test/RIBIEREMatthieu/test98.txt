@@ -1,3 +1,0 @@
-GET / HTTP/1.0
-Referer:	  X+GJO9gusK:%AB/wU9a1%3A/5%5E/Np
-

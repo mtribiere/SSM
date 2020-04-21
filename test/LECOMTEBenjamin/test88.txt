@@ -1,3 +1,0 @@
-GET / HTTP/1.0
-Cookie:d0wX+kPqvEx43F=$; v=; 9`e="Zrl>_d#"; k= 		   				 
-

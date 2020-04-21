@@ -1,3 +1,0 @@
-GET / HTTP/1.0
-Accept-Language:  ,,	,	 	, 	 ,	W-g-hNStuP-de 	 		   		;							  		  q=0 
-

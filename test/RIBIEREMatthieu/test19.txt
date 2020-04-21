@@ -1,3 +1,0 @@
-GET / HTTP/1.0
-Referer:  	r1VGGb:9%41+O 	      	 	 
-

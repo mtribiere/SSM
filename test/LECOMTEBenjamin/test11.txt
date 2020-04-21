@@ -1,3 +1,0 @@
-GET / HTTP/1.0
-Cookie: 	t="N"; F=; i=P}; UJx="+"; bxs&=17	 
-

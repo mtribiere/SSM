@@ -1,3 +1,0 @@
-GET / HTTP/1.0
-Accept-Language:, 	m-ruQukG2-dtW-d-m;q=0 
-

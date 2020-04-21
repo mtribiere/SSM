@@ -1,3 +1,0 @@
-GET / HTTP/1.0
-Referer:wP://'Esx(b@[v45E.n]:2/N
-

@@ -1,3 +1,0 @@
-GET / HTTP/1.0
-Referer:wu6oX://g0tup%C7nMxOyO:/f/*X$1pmmJ-8S/_zaJN?	 	 	  			  						
-

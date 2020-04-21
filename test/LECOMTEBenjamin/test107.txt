@@ -1,3 +1,0 @@
-GET / HTTP/1.0
-Cookie:    	2="X"; `!nAl+C=UTj; !D*kn=F1j  
-

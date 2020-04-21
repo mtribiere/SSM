@@ -1,3 +1,0 @@
-GET / HTTP/1.0
-Content-Type: 			 			 fC/xd$U_ 		 	 ;	!7w=""		
-

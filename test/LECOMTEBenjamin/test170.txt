@@ -1,4 +1,0 @@
-GET / HTTP/1.0
-Cookie:  m=p; R=u; `*06M="'Hq<"; #WpZ.="x"	 
-Content-Type: 	 	    `./nD	 
-

@@ -1,3 +1,0 @@
-GET / HTTP/1.0
-Referer: pj:/S=/LV/*L	
-

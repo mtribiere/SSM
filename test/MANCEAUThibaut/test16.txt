@@ -1,3 +1,0 @@
-GET / HTTP/1.0
-Accept-Language:,		 			  	 			OPOMsY-6 ,, 	,	, 	  	 	  Pc-2n2
-

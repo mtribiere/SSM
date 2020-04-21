@@ -1,5 +1,0 @@
-GET / HTTP/1.0
-Referer: /mUgl/A
-Referer:  						 		 d/
-Referer:			CrG:%0Aalv+?-_@KI
-

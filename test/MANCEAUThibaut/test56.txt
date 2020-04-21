@@ -1,3 +1,0 @@
-GET / HTTP/1.0
-Accept-Language:		  	  	  , dj-B-mkvNJs-wl ;	 q=0 ,	
-

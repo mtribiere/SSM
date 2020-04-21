@@ -1,3 +1,0 @@
-GET / HTTP/1.0
-Accept-Language: 	Y-U-l3-Lyz-P-xNL6-5d-Mt   	
-

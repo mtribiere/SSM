@@ -1,4 +1,0 @@
-GET / HTTP/1.0
-Content-Type:			 		4-/|;		-="\Aä\{"
-Cookie:aTzh~=""; b=i; MY=<l	
-
