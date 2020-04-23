@@ -24,9 +24,8 @@ $(OBJ_DIR)/%.o: $(SRC_DIR)/%.c
 
 clean:
 	$(RM) $(OBJ)
+	$(RM) $(EXE)
 
 test: $(EXE)
-	./$(EXE)
+	export LD_LIBRARY_PATH=. && ./$(EXE) 
 
-setup: 
-	export LD_LIBRARY_PATH=.
