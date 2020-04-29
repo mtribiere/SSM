@@ -110,11 +110,7 @@ int code(_Token* root, char* reponse, int* taille, int* erreur)
 			*erreur = 1;
 			code = 411;
 
-<<<<<<< HEAD
 		} else{
-=======
-		} else{ 
->>>>>>> 28f0ee54817bb3c30336a5921dac6c104461b561
 			node = field->node;
 
 			//Liberer la réponse
@@ -234,7 +230,7 @@ char* findRessource(const char* URI, int* erreur)
 	char* ligne = malloc(500*sizeof(char));
 	Site *s = NULL;
 	Site *t = NULL;
-	printf("SITES\n");
+	//printf("SITES\n");
 	while (fgets(ligne, 500, fichierConf) != NULL) {
 		if (ligne[0] != '\t') {
 
@@ -283,9 +279,9 @@ char* findRessource(const char* URI, int* erreur)
 	ptr2 = strtok(ptr2, ":");
 
 	while(s != NULL && strcmp(ptr2, s->fqdn) != 0) {
-		printf("HOST: %s\n", ptr2);
-		printf("%s\n",s->fqdn);
-		printf("%s\n",s->dossier);
+		//printf("HOST: %s\n", ptr2);
+		//printf("%s\n",s->fqdn);
+		//printf("%s\n",s->dossier);
 		s = s->next;
 	}
 
@@ -295,7 +291,7 @@ char* findRessource(const char* URI, int* erreur)
 		strcpy(dossier,"www"); // dossier par défaut
 	}
 	else {
-		printf("Trouve !");
+		//printf("Trouve !");
 		strcpy(dossier, s->dossier);
 	}
 

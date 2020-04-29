@@ -41,11 +41,7 @@ int main(int argc, char *argv[])
 			root = getRootTree();
 
 			//Contruire la réponse
-<<<<<<< HEAD
-			buildResponse(root, reponse, &tailleRequete, &close);
-=======
 			buildResponse(root, reponse, &tailleRequete,&close);
->>>>>>> 28f0ee54817bb3c30336a5921dac6c104461b561
 
 			//Envoyer la réponse au client
 			writeDirectClient(requete->clientId,reponse,tailleRequete);
