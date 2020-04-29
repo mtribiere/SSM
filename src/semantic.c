@@ -2,11 +2,13 @@
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
+#include <magic.h>
 #include "httpparser.h"
 #include "libparser/api.h"
 #include "semantic.h"
 
 #define MAX_URI_SIZE 5000
+#define MAX_MIME_SIZE 100
 
 void buildResponse(_Token* root, char* reponse, int* taille, int* close)
 //A partir de l'arbre de dérivation syntaxique, construit la réponse HTTP à envoyer
@@ -16,9 +18,13 @@ void buildResponse(_Token* root, char* reponse, int* taille, int* close)
 	if(!erreur)
 	//ajouter des headers, un message-body ...
 	{
+		//Normaliser l'URI
 		char* URI = normalisationURI(root);
-
+		
+		//Convertir l'URI en chemin local
 		char* target = findRessource(URI, &erreur);
+
+		//Si erreur
 		if(erreur)
 		{
 			*taille = strlen(target);
@@ -359,18 +365,21 @@ char* writeRessource(const char* target, int* taille, int* erreur)
 	return ressource;
 }
 
-char* MIMEtype(const char* ressource)
+char* MIMEtype(const char* ressource){
 //Retourne une chaîne de caractère contenant le type MIME de la ressource demandée
-{
-	char* query = strrchr(ressource, (int)'?');
+
+	//Rechercher l'extention
+ 	char* query = strchr(ressource, (int)'?');
 	if(query != NULL)
 		*query = '\0';
+
 	char* extension = strrchr(ressource, (int)'.');
 	printf("%s\n", extension);
 
-	char* mime = malloc(sizeof(char) * 40);
+	//Chercher la type MIME
+	char* mime = malloc(sizeof(char) * MAX_MIME_SIZE);
 
-	if(extension == NULL) strcpy(mime, "text/plain"); //Ajouter libmagic
+	if(extension == NULL) strcpy(mime, "text/plain");
 	else
 	{
 		extension++;
@@ -389,10 +398,30 @@ char* MIMEtype(const char* ressource)
 		else if(!strcmp(extension, "ttf" )) 		strcpy(mime, "font/ttf");
 		else if(!strcmp(extension, "woff" )) 		strcpy(mime, "font/woff");
 		else if(!strcmp(extension, "woff2" )) 		strcpy(mime, "font/woff2");
-		else 										strcpy(mime, "text/plain");
+		else{ //Si echec consulter libmagic
+
+			//Ouvrir la librairie
+			magic_t cookie = magic_open(MAGIC_MIME);
+
+			//Si erreur
+			if(cookie == NULL || magic_load(cookie,NULL) != 0){
+				magic_close(cookie);
+				printf("Erreur de la libmagic\n");
+				exit(1); // A changer
+			}
+
+				//Chercher le type de fichier
+				strcpy(mime,magic_file(cookie, ressource));	
+
+				//Liberer la librairie
+				magic_close(cookie);
+
+		} 										
 	}
-	return mime;
-}
+
+	printf("Extension : %s\n",mime);
+	return mime; 
+} 
 
 void addHeader(char* reponse, const char* headerField, const char* headerValue, int* taille)
 //Ajoute l'entête indiquée et son contenu à la réponse en cours de construction
