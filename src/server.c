@@ -20,6 +20,7 @@ int main(int argc, char *argv[])
 	message *requete; 
 	int tailleRequete = 0;
 	int res; 
+	int close = 1;
 
 	while ( 1 ) {
 		char* reponse = calloc(sizeof(char), sizeof(char) * 50000000); //Voir pour mieux régler la taille
@@ -35,27 +36,35 @@ int main(int argc, char *argv[])
 
 			root = getRootTree(); 
 
-			buildResponse(root, reponse, &tailleRequete);
+			buildResponse(root, reponse, &tailleRequete, &close);
+
+			//printf("%s\n", reponse);
 
 			writeDirectClient(requete->clientId,reponse,tailleRequete); 
-
+			
 			tailleRequete = 0;
 			free(reponse);
-			
-			purgeTree(root); 
+			purgeTree(root);
+
+
 		}
 		else //Syntaxe incorrecte
 		{
 			strcpy(reponse, codeMessage(400));
 			writeDirectClient(requete->clientId,reponse,strlen(reponse));
+			close = 1;
+
 			free(reponse);
 		}
 
+		// on ne se sert plus de requete a partir de maintenant, on peut donc liberer... 
+		freeRequest(requete); 
 
-		endWriteDirectClient(requete->clientId); 
-		requestShutdownSocket(requete->clientId); 
-	// on ne se sert plus de requete a partir de maintenant, on peut donc liberer... 
-	freeRequest(requete); 
+		endWriteDirectClient(requete->clientId);
+		if(!close)
+		{ 
+			requestShutdownSocket(requete->clientId); 
+		}
 	}
 	return (1);
 }

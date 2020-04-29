@@ -6,7 +6,7 @@
 #include "libparser/api.h" 
 #include "semantic.h"
 
-void buildResponse(_Token* root, char* reponse, int* taille)
+void buildResponse(_Token* root, char* reponse, int* taille, int* close)
 //A partir de l'arbre de dérivation syntaxique, construit la réponse HTTP à envoyer
 {
 	int erreur = 0;
@@ -24,6 +24,9 @@ void buildResponse(_Token* root, char* reponse, int* taille)
 		}
 		else
 		{
+			//AJOUTER LE HEADER CONNECTION
+			*close = connexion(root, reponse, taille);
+
 			//AJOUTER LE HEADER Content-Type
 			char* mime = MIMEtype(target);
 			addHeader(reponse, "Content-Type", mime, taille);
@@ -32,6 +35,7 @@ void buildResponse(_Token* root, char* reponse, int* taille)
 			reponse[(*taille)++] = '\n';
 
 			int tailleDebut = *taille;
+			//SAUF SI C'EST UN HEAD ?
 			char* ressource = writeRessource(target, taille, &erreur);
 			if(erreur)
 			{
@@ -49,8 +53,6 @@ void buildResponse(_Token* root, char* reponse, int* taille)
 		free(target);
 	}	
 
-	//Si Connection: close alors Connection:close
-	//Sinon Connection: keep-alive
 }
 
 int code(_Token* root, char* reponse, int* taille, int* erreur)
@@ -166,7 +168,7 @@ char* normalisationURI(_Token* root)
 	}
 	node->len = j;
 	j = 0;
-	for(i = 0; i < node->len; i++) //Dot segment removal
+	for(i = 0; i < node->len; i++) //Dot segment removal <- A VERIFIER QUE CA MARCHE
 	{
 		if(URI[i] == '.')
 		{
@@ -265,10 +267,15 @@ char* writeRessource(const char* target, int* taille, int* erreur)
 char* MIMEtype(const char* ressource)
 //Retourne une chaîne de caractère contenant le type MIME de la ressource demandée
 {
-	char* extension = strchr(ressource, (int)'.');
+	char* query = strrchr(ressource, (int)'?');
+	if(query != NULL)
+		*query = '\0';
+	char* extension = strrchr(ressource, (int)'.');
+	printf("%s\n", extension);
+
 	char* mime = malloc(sizeof(char) * 40);
 
-	if(extension == NULL) strcpy(mime, "text/plain");
+	if(extension == NULL) strcpy(mime, "text/plain"); //VERIFIER AVEC FILE DE UNIX ?
 	else
 	{
 		extension++;
@@ -284,6 +291,10 @@ char* MIMEtype(const char* ressource)
 		else if(!strcmp(extension, "js"  ))  strcpy(mime, "application/javascript");
 		else if(!strcmp(extension, "mp4" ))  strcpy(mime, "video/mp4");
 		else if(!strcmp(extension, "ico" ))  strcpy(mime, "image/x-icon");
+		else if(!strcmp(extension, "ttf" ))  strcpy(mime, "font/ttf");
+		else if(!strcmp(extension, "woff" ))  strcpy(mime, "font/woff");
+		else if(!strcmp(extension, "woff2" ))  strcpy(mime, "font/woff2");
+		else strcpy(mime, "text/plain");
 	}
 	return mime;
 }
@@ -301,9 +312,8 @@ int headerUnique(_Token* root)
 {
 	int valide = 1;
 	char* headerName[13] = {"Connection_header", "Content_Length_header", "Content_Type_header", "Cookie_header", "Transfer_Encoding-header", "Expect_header", "Host_header", "Accept_header", "Accept_Charset_header", "Accept_Encoding_header", "Accept_Language_header", "Referer_header", "User_Agent_header"};
-	// + "field_name"
+	// + Gérer "field_name" ?
 	_Token* field;
-	Lnode* node;
 
 	for(int i = 0; i < 13; i++)
 	{
@@ -316,4 +326,34 @@ int headerUnique(_Token* root)
 	}
 	
 	return valide;
+}
+
+int connexion(_Token* root, char* reponse, int* taille)
+//1 si close, 0 sinon
+{
+	_Token* field;
+	Lnode* node;
+	int close = 0;
+	char keep[] = "keep-alive";
+
+	field = searchTree(root, "Connection");
+	if(field != NULL)
+	{
+		node = field->node;
+		//Si on a un "Connection: close"
+		for(int i = 0; i < node->len; i++)
+		{
+			if(node->value[i] != keep[i])
+			{
+				printf("close\n");
+				close = 1;
+			}
+		}
+	}
+	if(close == 0)
+		addHeader(reponse, "Connection", "keep-alive", taille);
+	else
+		addHeader(reponse, "Connection", "close", taille); //Vérifier si ça fonctionne bien
+
+	return close;
 }
