@@ -1,9 +1,9 @@
-#include <stdio.h> 
-#include <stdlib.h> 
-#include <string.h> 
-#include <unistd.h> 
-#include "httpparser.h" 
-#include "libparser/api.h" 
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <unistd.h>
+#include "httpparser.h"
+#include "libparser/api.h"
 #include "semantic.h"
 
 void buildResponse(_Token* root, char* reponse, int* taille)
@@ -47,7 +47,7 @@ void buildResponse(_Token* root, char* reponse, int* taille)
 			free(mime);
 		}
 		free(target);
-	}	
+	}
 
 	//Si Connection: close alors Connection:close
 	//Sinon Connection: keep-alive
@@ -73,7 +73,7 @@ int code(_Token* root, char* reponse, int* taille, int* erreur)
 		*erreur = 1;
 		code = 400;
 	}
-	
+
 	field = searchTree(root, "method"); //Méthode différente de GET,HEAD ou POST
 	node = field->node;
 	if(strncmp(node->value, "GET", node->len) && strncmp(node->value, "HEAD", node->len) && strncmp(node->value, "POST", node->len))
@@ -96,7 +96,7 @@ int code(_Token* root, char* reponse, int* taille, int* erreur)
 		{
 			*erreur = 1;
 			code = 411;
-		} else{ 
+		} else{
 			node = field->node;
 			int length = strtol(node->value, NULL, 10);
 			field = searchTree(root, "message_body");
@@ -149,7 +149,7 @@ char* normalisationURI(_Token* root)
 	char tmp[2];
 	for(i = 0; i < node->len; i++) //Suppresion des caractères encodés
 	{
-		if(URI[i] == '%') 
+		if(URI[i] == '%')
 		{
 			tmp[0] = URI[++i];
 			tmp[1] = URI[++i];
@@ -185,10 +185,12 @@ char* normalisationURI(_Token* root)
 	return URI;
 }
 
+
+
 char* findRessource(const char* URI, int* erreur)
 //A partir d'une URI, trouve la ressource associée dans les répertoires du serveur
 {
-	
+
 	char* target = malloc(500); //Changer la taille
 	if(target == NULL)
 	{
@@ -196,12 +198,81 @@ char* findRessource(const char* URI, int* erreur)
 		return codeMessage(500); /* 500 (Internal Server Error) */
 	}
 
+	FILE* fichierConf = fopen("sites.conf", "r");
+	char* ligne = malloc(500*sizeof(char));
+	Site *s = NULL;
+	Site *t = NULL;
+	printf("SITES\n");
+	while (fgets(ligne, 500, fichierConf) != NULL) {
+		if (ligne[0] != '\t') {
+
+			char *ptr = strtok(ligne, " ");
+			char* fqdn = malloc(sizeof(char)*500);
+			strcpy(fqdn, ptr);
+			ptr = strtok(NULL, " ");
+			char* dossier = malloc(sizeof(char)*500);
+			strcpy(dossier, ptr);
+
+			int c = 0;
+			while (dossier[c] != '\0') {
+				if ((dossier[c] == '\n') || (dossier[c] == '\r')) {
+					dossier[c] = '\0';
+				}
+				c++;
+			}
+
+			t = malloc(sizeof(t));
+			t->fqdn = fqdn;
+			t->dossier = dossier;
+
+			t->next = s;
+			s = t;
+		}
+	}
+	fclose(fichierConf);
+
+
+	_Token *root;
+	root = getRootTree();
+	_Token *host;
+	host = searchTree(root, "Host");
+	Lnode* a = host->node;
+	char *el = a->value;
+
+	char* elem = malloc(sizeof(char)*500);
+	for (int i = 0; i < a->len; i++) {
+		elem[i] = el[i];
+	}
+
 	//+ regarder champ Host, + query ?
 
-	strcpy(target, "www");
-	strcpy(target + 3, URI);
+	char *ptr2;
+	ptr2 = strtok(elem, " ");
+	ptr2 = strtok(ptr2, ":");
 
-	if(!strcmp(target, "www/"))
+	while(s != NULL && strcmp(ptr2, s->fqdn) != 0) {
+		printf("HOST: %s\n", ptr2);
+		printf("%s\n",s->fqdn);
+		printf("%s\n",s->dossier);
+		s = s->next;
+	}
+
+	char* dossier = malloc(sizeof(char)*20);
+	char* dossierSlash = malloc(sizeof(char)*20);
+	if (s == NULL) {
+		strcpy(dossier,"www");
+	}
+	else {
+		printf("Trouve !");
+		strcpy(dossier, s->dossier);
+	}
+
+	strcpy(dossierSlash, dossier);
+	strcpy(dossierSlash+strlen(dossier), "/");
+	strcpy(target, dossier);
+	strcpy(target + strlen(dossier), URI);
+
+	if(!strcmp(target, dossierSlash))
 		strcat(target, "index.html");
 	//Faire pareil pour .php ?
 
@@ -223,13 +294,13 @@ char* writeRessource(const char* target, int* taille, int* erreur)
 	}
 
 	file = fopen(target, "rb");
-	if(file == NULL) 
+	if(file == NULL)
 	{
 		*erreur = 1;
 		printf("Ouïe\n");
 		/*Codes d'erreur
 	  Les droits ne sont pas remplis : 401 (Unauthorized)*/
-      
+
 	}
 
 	fseek(file, 0, SEEK_END);

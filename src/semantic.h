@@ -1,6 +1,12 @@
 #ifndef ___SEMANTIC___
 #define ___SEMANTIC___
 
+typedef struct _site {
+	char *fqdn;
+	char *dossier;
+	struct _site *next;
+} Site;
+
 void buildResponse(_Token* root, char* reponse, int* taille);
 
 int code(_Token* root, char* reponse, int* taille, int* erreur);
