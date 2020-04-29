@@ -1,6 +1,8 @@
 #ifndef ___SEMANTIC___
 #define ___SEMANTIC___
 
+#define MAX_RESPONSE_SIZE 500000000
+
 typedef struct _site {
 	char *fqdn;
 	char *dossier;

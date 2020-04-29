@@ -53,9 +53,9 @@ void buildResponse(_Token* root, char* reponse, int* taille, int* close)
 				strcpy(reponse, ressource);
 			} else
 			{
-				for(int i = tailleDebut; i < *taille; i++)
+				for(int i = tailleDebut; i < (*taille); i++)
 					reponse[i] = ressource[i - tailleDebut];
-					free(ressource);
+				free(ressource);
 			}
 
 			free(mime);
@@ -374,7 +374,6 @@ char* MIMEtype(const char* ressource){
 		*query = '\0';
 
 	char* extension = strrchr(ressource, (int)'.');
-	printf("%s\n", extension);
 
 	//Chercher la type MIME
 	char* mime = malloc(sizeof(char) * MAX_MIME_SIZE);
@@ -429,6 +428,7 @@ void addHeader(char* reponse, const char* headerField, const char* headerValue, 
 	sprintf(reponse, "%s%s: %s\r\n", reponse, headerField, headerValue);
 
 	*taille += strlen(headerField) + 4 + strlen(headerValue);
+
 }
 
 int headerUnique(_Token* root)

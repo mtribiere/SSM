@@ -15,8 +15,6 @@
 
 #include "semantic.h"
 
-#define MAX_RESPONSE_SIZE 500000000
-
 int main(int argc, char *argv[])
 {
 	message *requete;
