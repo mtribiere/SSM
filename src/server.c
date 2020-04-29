@@ -15,15 +15,17 @@
 
 #include "semantic.h"
 
+#define MAX_RESPONSE_SIZE 500000000
+
 int main(int argc, char *argv[])
 {
-	//export LD_LIBRARY_PATH=.
 	message *requete;
 	int tailleRequete = 0;
 	int res;
+	int close = 1;
 
 	while ( 1 ) {
-		char* reponse = calloc(sizeof(char), sizeof(char) * 50000000); //Voir pour mieux régler la taille
+		char* reponse = calloc(sizeof(char), sizeof(char) * MAX_RESPONSE_SIZE); //Voir pour mieux régler la taille
 		// on attend la reception d'une requete HTTP requete pointera vers une ressource allouée par librequest.
 		if ((requete=getRequest(8080)) == NULL )
 		{
@@ -33,36 +35,38 @@ int main(int argc, char *argv[])
 		//printf(requete->buf);
 
 		if ((res=parseur(requete->buf,requete->len))) { //Si la syntaxe est correcte
-			_Token *root;
 
+			//Creer l'arbre sythaxique
+			_Token *root;
 			root = getRootTree();
 
-			buildResponse(root, reponse, &tailleRequete);
+			//Contruire la réponse
+			buildResponse(root, reponse, &tailleRequete, &close);
 
-			/*for(int i = 0; i <tailleRequete; i++)
-				printf("%c", reponse[i]);
-			printf("\n\n\n\n\n");
-			*/
-
+			//Envoyer la réponse au client
 			writeDirectClient(requete->clientId,reponse,tailleRequete);
 
+			//Liberer la mémorie
 			tailleRequete = 0;
 			free(reponse);
-
 			purgeTree(root);
 		}
 		else //Syntaxe incorrecte
 		{
+			//Envoyer un message d'erreur
 			strcpy(reponse, codeMessage(400));
 			writeDirectClient(requete->clientId,reponse,strlen(reponse));
+
+			//Liberer la mémoire
 			free(reponse);
 		}
 
-
+		//Se deconnecter du client
 		endWriteDirectClient(requete->clientId);
 		requestShutdownSocket(requete->clientId);
-	// on ne se sert plus de requete a partir de maintenant, on peut donc liberer...
-	freeRequest(requete);
+
+		// on ne se sert plus de requete a partir de maintenant, on peut donc liberer...
+		freeRequest(requete);
 	}
 	return (1);
 }

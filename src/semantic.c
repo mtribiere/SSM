@@ -6,7 +6,9 @@
 #include "libparser/api.h"
 #include "semantic.h"
 
-void buildResponse(_Token* root, char* reponse, int* taille)
+#define MAX_URI_SIZE 5000
+
+void buildResponse(_Token* root, char* reponse, int* taille, int* close)
 //A partir de l'arbre de dérivation syntaxique, construit la réponse HTTP à envoyer
 {
 	int erreur = 0;
@@ -24,15 +26,21 @@ void buildResponse(_Token* root, char* reponse, int* taille)
 		}
 		else
 		{
+			//AJOUTER LE HEADER CONNECTION
+			*close = connexion(root, reponse, taille);
+
 			//AJOUTER LE HEADER Content-Type
 			char* mime = MIMEtype(target);
 			addHeader(reponse, "Content-Type", mime, taille);
 
+			//Passer au body de la réponse
 			reponse[(*taille)++] = '\r';
 			reponse[(*taille)++] = '\n';
 
+			//Recuperer la resource
 			int tailleDebut = *taille;
 			char* ressource = writeRessource(target, taille, &erreur);
+
 			if(erreur)
 			{
 				*taille = strlen(ressource);
@@ -41,16 +49,14 @@ void buildResponse(_Token* root, char* reponse, int* taille)
 			{
 				for(int i = tailleDebut; i < *taille; i++)
 					reponse[i] = ressource[i - tailleDebut];
-
-				free(ressource);
 			}
+
+			free(ressource);
 			free(mime);
 		}
 		free(target);
 	}
 
-	//Si Connection: close alors Connection:close
-	//Sinon Connection: keep-alive
 }
 
 int code(_Token* root, char* reponse, int* taille, int* erreur)
@@ -74,8 +80,15 @@ int code(_Token* root, char* reponse, int* taille, int* erreur)
 		code = 400;
 	}
 
+	//Liberer la réponse
+	purgeElement(&field);
+
 	field = searchTree(root, "method"); //Méthode différente de GET,HEAD ou POST
 	node = field->node;
+
+	//Liberer la réponse
+	purgeElement(&field);
+
 	if(strncmp(node->value, "GET", node->len) && strncmp(node->value, "HEAD", node->len) && strncmp(node->value, "POST", node->len))
 	{
 		*erreur = 1;
@@ -96,11 +109,20 @@ int code(_Token* root, char* reponse, int* taille, int* erreur)
 		{
 			*erreur = 1;
 			code = 411;
+
 		} else{
 			node = field->node;
+
+			//Liberer la réponse
+			purgeElement(&field);
+
 			int length = strtol(node->value, NULL, 10);
 			field = searchTree(root, "message_body");
 			node = field->node;
+
+			//Liberer la réponse
+			purgeElement(&field);
+
 			if(length != node->len - 3) //Mauvais Content-Length, -3 car le parseur renvoie la mauvaise valeur ??
 			{
 				*erreur = 1;
@@ -110,6 +132,12 @@ int code(_Token* root, char* reponse, int* taille, int* erreur)
 				code = 201;
 			}
 		}
+	}
+
+	else if(!headerUnique(root))
+	{
+		*erreur = 1;
+		code = 400;
 	}
 
 	//Refuser si plusieurs fois le même header
@@ -160,7 +188,7 @@ char* normalisationURI(_Token* root)
 	}
 	node->len = j;
 	j = 0;
-	for(i = 0; i < node->len; i++) //Dot segment removal
+	for(i = 0; i < node->len; i++) //Dot segment removal <- A VERIFIER QUE CA MARCHE
 	{
 		if(URI[i] == '.')
 		{
@@ -191,7 +219,7 @@ char* findRessource(const char* URI, int* erreur)
 //A partir d'une URI, trouve la ressource associée dans les répertoires du serveur
 {
 
-	char* target = malloc(500); //Changer la taille
+	char* target = malloc(MAX_URI_SIZE);
 	if(target == NULL)
 	{
 		*erreur = 1;
@@ -260,7 +288,7 @@ char* findRessource(const char* URI, int* erreur)
 	char* dossier = malloc(sizeof(char)*20);
 	char* dossierSlash = malloc(sizeof(char)*20);
 	if (s == NULL) {
-		strcpy(dossier,"www");
+		strcpy(dossier,"www"); // dossier par défaut
 	}
 	else {
 		printf("Trouve !");
@@ -303,15 +331,18 @@ char* writeRessource(const char* target, int* taille, int* erreur)
 
 	}
 
+	//Definir la taille du fichier
 	fseek(file, 0, SEEK_END);
 	fileLength = ftell(file);
 	ressource = malloc(sizeof(char) * (fileLength + 1));
+
 	if(ressource == NULL)
 	{
 		*erreur = 1;
 		free(ressource);
 		return codeMessage(500); /* 500 (Internal Server Error) */
 	}
+
 	rewind(file);
 	if(fread(ressource, 1, fileLength, file) != fileLength)
 	{
@@ -319,6 +350,7 @@ char* writeRessource(const char* target, int* taille, int* erreur)
 		free(ressource);
 		return codeMessage(500); /* 500 (Internal Server Error) */
 	}
+
 	*taille += fileLength;
 	ressource[fileLength] = '\0';
 
@@ -330,25 +362,34 @@ char* writeRessource(const char* target, int* taille, int* erreur)
 char* MIMEtype(const char* ressource)
 //Retourne une chaîne de caractère contenant le type MIME de la ressource demandée
 {
-	char* extension = strchr(ressource, (int)'.');
+	char* query = strrchr(ressource, (int)'?');
+	if(query != NULL)
+		*query = '\0';
+	char* extension = strrchr(ressource, (int)'.');
+	printf("%s\n", extension);
+
 	char* mime = malloc(sizeof(char) * 40);
 
-	if(extension == NULL) strcpy(mime, "text/plain");
+	if(extension == NULL) strcpy(mime, "text/plain"); //Ajouter libmagic
 	else
 	{
 		extension++;
-		if     (!strcmp(extension, "jpg" ))  strcpy(mime, "image/jpeg");
-		else if(!strcmp(extension, "jpeg"))  strcpy(mime, "image/jpeg");
-		else if(!strcmp(extension, "png" ))  strcpy(mime, "image/png");
-		else if(!strcmp(extension, "gif" ))  strcpy(mime, "image/gif");
-		else if(!strcmp(extension, "html"))  strcpy(mime, "text/html; charset=UTF-8");
-		else if(!strcmp(extension, "php" ))  strcpy(mime, "text/html; charset=UTF-8");
-		else if(!strcmp(extension, "pdf" ))  strcpy(mime, "application/pdf");
-		else if(!strcmp(extension, "txt" ))  strcpy(mime, "text/plain");
-		else if(!strcmp(extension, "css" ))  strcpy(mime, "text/css");
-		else if(!strcmp(extension, "js"  ))  strcpy(mime, "application/javascript");
-		else if(!strcmp(extension, "mp4" ))  strcpy(mime, "video/mp4");
-		else if(!strcmp(extension, "ico" ))  strcpy(mime, "image/x-icon");
+		if     (!strcmp(extension, "jpg" ))  		strcpy(mime, "image/jpeg");
+		else if(!strcmp(extension, "jpeg")) 		strcpy(mime, "image/jpeg");
+		else if(!strcmp(extension, "png" )) 		strcpy(mime, "image/png");
+		else if(!strcmp(extension, "gif" )) 		strcpy(mime, "image/gif");
+		else if(!strcmp(extension, "html")) 		strcpy(mime, "text/html; charset=UTF-8");
+		else if(!strcmp(extension, "php" )) 		strcpy(mime, "text/html; charset=UTF-8");
+		else if(!strcmp(extension, "pdf" ))  		strcpy(mime, "application/pdf");
+		else if(!strcmp(extension, "txt" ))  		strcpy(mime, "text/plain");
+		else if(!strcmp(extension, "css" )) 		strcpy(mime, "text/css");
+		else if(!strcmp(extension, "js"  )) 		strcpy(mime, "application/javascript");
+		else if(!strcmp(extension, "mp4" )) 		strcpy(mime, "video/mp4");
+		else if(!strcmp(extension, "ico" )) 		strcpy(mime, "image/x-icon");
+		else if(!strcmp(extension, "ttf" )) 		strcpy(mime, "font/ttf");
+		else if(!strcmp(extension, "woff" )) 		strcpy(mime, "font/woff");
+		else if(!strcmp(extension, "woff2" )) 		strcpy(mime, "font/woff2");
+		else 										strcpy(mime, "text/plain");
 	}
 	return mime;
 }
@@ -359,4 +400,55 @@ void addHeader(char* reponse, const char* headerField, const char* headerValue, 
 	sprintf(reponse, "%s%s: %s\r\n", reponse, headerField, headerValue);
 
 	*taille += strlen(headerField) + 4 + strlen(headerValue);
+}
+
+int headerUnique(_Token* root)
+//0 si il y a plusieurs fois le même header, 1 sinon
+{
+	int valide = 1;
+	char* headerName[13] = {"Connection_header", "Content_Length_header", "Content_Type_header", "Cookie_header", "Transfer_Encoding-header", "Expect_header", "Host_header", "Accept_header", "Accept_Charset_header", "Accept_Encoding_header", "Accept_Language_header", "Referer_header", "User_Agent_header"};
+	// + Gérer "field_name" ?
+	_Token* field;
+
+	for(int i = 0; i < 13; i++)
+	{
+		field = searchTree(root, headerName[i]);
+
+		if(field != NULL && field->next != NULL)
+		{
+			valide = 0;
+		}
+	}
+
+	return valide;
+}
+
+int connexion(_Token* root, char* reponse, int* taille)
+//1 si close, 0 sinon
+{
+	_Token* field;
+	Lnode* node;
+	int close = 0;
+	char keep[] = "keep-alive";
+
+	field = searchTree(root, "Connection");
+	if(field != NULL)
+	{
+		node = field->node;
+		//Si on a un "Connection: close"
+		for(int i = 0; i < node->len; i++)
+		{
+			if(node->value[i] != keep[i])
+			{
+				printf("close\n");
+				close = 1;
+			}
+		}
+	}
+	if(close == 0)
+		addHeader(reponse, "Connection", "keep-alive", taille);
+	else
+		addHeader(reponse, "Connection", "close", taille); //Vérifier si ça fonctionne bien
+
+	return close;
 }
