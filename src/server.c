@@ -40,7 +40,7 @@ int main(int argc, char *argv[])
 			root = getRootTree(); 
 
 			//Contruire la réponse
-			buildResponse(root, reponse, &tailleRequete);
+			buildResponse(root, reponse, &tailleRequete,&close);
 
 			//Envoyer la réponse au client
 			writeDirectClient(requete->clientId,reponse,tailleRequete); 

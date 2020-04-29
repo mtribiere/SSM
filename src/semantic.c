@@ -49,9 +49,9 @@ void buildResponse(_Token* root, char* reponse, int* taille, int* close)
 			{
 				for(int i = tailleDebut; i < *taille; i++)
 					reponse[i] = ressource[i - tailleDebut];
+					free(ressource);
 			}
 
-			free(ressource);
 			free(mime);
 		}
 		free(target);
@@ -109,7 +109,7 @@ int code(_Token* root, char* reponse, int* taille, int* erreur)
 		{
 			*erreur = 1;
 			code = 411;
-			
+
 		} else{ 
 			node = field->node;
 			
