@@ -6,6 +6,8 @@
 #include "libparser/api.h" 
 #include "semantic.h"
 
+#define MAX_URI_SIZE 500
+
 void buildResponse(_Token* root, char* reponse, int* taille, int* close)
 //A partir de l'arbre de dérivation syntaxique, construit la réponse HTTP à envoyer
 {
@@ -31,12 +33,14 @@ void buildResponse(_Token* root, char* reponse, int* taille, int* close)
 			char* mime = MIMEtype(target);
 			addHeader(reponse, "Content-Type", mime, taille);
 
+			//Passer au body de la réponse
 			reponse[(*taille)++] = '\r';
 			reponse[(*taille)++] = '\n';
 
+			//Recuperer la resource
 			int tailleDebut = *taille;
-			//SAUF SI C'EST UN HEAD ?
 			char* ressource = writeRessource(target, taille, &erreur);
+			
 			if(erreur)
 			{
 				*taille = strlen(ressource);
@@ -45,9 +49,9 @@ void buildResponse(_Token* root, char* reponse, int* taille, int* close)
 			{
 				for(int i = tailleDebut; i < *taille; i++)
 					reponse[i] = ressource[i - tailleDebut];
-
-				free(ressource);
 			}
+
+			free(ressource);
 			free(mime);
 		}
 		free(target);
@@ -76,8 +80,15 @@ int code(_Token* root, char* reponse, int* taille, int* erreur)
 		code = 400;
 	}
 	
+	//Liberer la réponse
+	purgeElement(&field);
+
 	field = searchTree(root, "method"); //Méthode différente de GET,HEAD ou POST
 	node = field->node;
+
+	//Liberer la réponse
+	purgeElement(&field);
+
 	if(strncmp(node->value, "GET", node->len) && strncmp(node->value, "HEAD", node->len) && strncmp(node->value, "POST", node->len))
 	{
 		*erreur = 1;
@@ -98,11 +109,20 @@ int code(_Token* root, char* reponse, int* taille, int* erreur)
 		{
 			*erreur = 1;
 			code = 411;
+			
 		} else{ 
 			node = field->node;
+			
+			//Liberer la réponse
+			purgeElement(&field);
+			
 			int length = strtol(node->value, NULL, 10);
 			field = searchTree(root, "message_body");
 			node = field->node;
+
+			//Liberer la réponse
+			purgeElement(&field);
+			
 			if(length != node->len - 3) //Mauvais Content-Length, -3 car le parseur renvoie la mauvaise valeur ??
 			{
 				*erreur = 1;
@@ -197,7 +217,7 @@ char* findRessource(const char* URI, int* erreur)
 //A partir d'une URI, trouve la ressource associée dans les répertoires du serveur
 {
 	
-	char* target = malloc(500); //Changer la taille
+	char* target = malloc(MAX_URI_SIZE);
 	if(target == NULL)
 	{
 		*erreur = 1;
@@ -209,9 +229,9 @@ char* findRessource(const char* URI, int* erreur)
 	strcpy(target, "www");
 	strcpy(target + 3, URI);
 
+	//Si aucune page présisé
 	if(!strcmp(target, "www/"))
-		strcat(target, "index.html");
-	//Faire pareil pour .php ?
+		strcat(target, "index.html"); //Afficher l'index
 
 	return target;
 }
@@ -240,15 +260,18 @@ char* writeRessource(const char* target, int* taille, int* erreur)
       
 	}
 
+	//Definir la taille du fichier
 	fseek(file, 0, SEEK_END);
 	fileLength = ftell(file);
 	ressource = malloc(sizeof(char) * (fileLength + 1));
+
 	if(ressource == NULL)
 	{
 		*erreur = 1;
 		free(ressource);
 		return codeMessage(500); /* 500 (Internal Server Error) */
 	}
+
 	rewind(file);
 	if(fread(ressource, 1, fileLength, file) != fileLength)
 	{
@@ -256,6 +279,7 @@ char* writeRessource(const char* target, int* taille, int* erreur)
 		free(ressource);
 		return codeMessage(500); /* 500 (Internal Server Error) */
 	}
+
 	*taille += fileLength;
 	ressource[fileLength] = '\0';
 
@@ -275,26 +299,26 @@ char* MIMEtype(const char* ressource)
 
 	char* mime = malloc(sizeof(char) * 40);
 
-	if(extension == NULL) strcpy(mime, "text/plain"); //VERIFIER AVEC FILE DE UNIX ?
+	if(extension == NULL) strcpy(mime, "text/plain"); //Ajouter libmagic
 	else
 	{
 		extension++;
-		if     (!strcmp(extension, "jpg" ))  strcpy(mime, "image/jpeg");
-		else if(!strcmp(extension, "jpeg"))  strcpy(mime, "image/jpeg");
-		else if(!strcmp(extension, "png" ))  strcpy(mime, "image/png");
-		else if(!strcmp(extension, "gif" ))  strcpy(mime, "image/gif");
-		else if(!strcmp(extension, "html"))  strcpy(mime, "text/html; charset=UTF-8");
-		else if(!strcmp(extension, "php" ))  strcpy(mime, "text/html; charset=UTF-8");
-		else if(!strcmp(extension, "pdf" ))  strcpy(mime, "application/pdf");
-		else if(!strcmp(extension, "txt" ))  strcpy(mime, "text/plain");
-		else if(!strcmp(extension, "css" ))  strcpy(mime, "text/css");
-		else if(!strcmp(extension, "js"  ))  strcpy(mime, "application/javascript");
-		else if(!strcmp(extension, "mp4" ))  strcpy(mime, "video/mp4");
-		else if(!strcmp(extension, "ico" ))  strcpy(mime, "image/x-icon");
-		else if(!strcmp(extension, "ttf" ))  strcpy(mime, "font/ttf");
-		else if(!strcmp(extension, "woff" ))  strcpy(mime, "font/woff");
-		else if(!strcmp(extension, "woff2" ))  strcpy(mime, "font/woff2");
-		else strcpy(mime, "text/plain");
+		if     (!strcmp(extension, "jpg" ))  		strcpy(mime, "image/jpeg");
+		else if(!strcmp(extension, "jpeg")) 		strcpy(mime, "image/jpeg");
+		else if(!strcmp(extension, "png" )) 		strcpy(mime, "image/png");
+		else if(!strcmp(extension, "gif" )) 		strcpy(mime, "image/gif");
+		else if(!strcmp(extension, "html")) 		strcpy(mime, "text/html; charset=UTF-8");
+		else if(!strcmp(extension, "php" )) 		strcpy(mime, "text/html; charset=UTF-8");
+		else if(!strcmp(extension, "pdf" ))  		strcpy(mime, "application/pdf");
+		else if(!strcmp(extension, "txt" ))  		strcpy(mime, "text/plain");
+		else if(!strcmp(extension, "css" )) 		strcpy(mime, "text/css");
+		else if(!strcmp(extension, "js"  )) 		strcpy(mime, "application/javascript");
+		else if(!strcmp(extension, "mp4" )) 		strcpy(mime, "video/mp4");
+		else if(!strcmp(extension, "ico" )) 		strcpy(mime, "image/x-icon");
+		else if(!strcmp(extension, "ttf" )) 		strcpy(mime, "font/ttf");
+		else if(!strcmp(extension, "woff" )) 		strcpy(mime, "font/woff");
+		else if(!strcmp(extension, "woff2" )) 		strcpy(mime, "font/woff2");
+		else 										strcpy(mime, "text/plain");
 	}
 	return mime;
 }

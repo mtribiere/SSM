@@ -39,7 +39,6 @@ int main(int argc, char *argv[])
 			_Token *root;
 			root = getRootTree(); 
 
-<<<<<<< HEAD
 			//Contruire la réponse
 			buildResponse(root, reponse, &tailleRequete);
 
@@ -50,26 +49,12 @@ int main(int argc, char *argv[])
 			tailleRequete = 0;
 			free(reponse);	
 			purgeTree(root); 
-=======
-			buildResponse(root, reponse, &tailleRequete, &close);
-
-			//printf("%s\n", reponse);
-
-			writeDirectClient(requete->clientId,reponse,tailleRequete); 
-			
-			tailleRequete = 0;
-			free(reponse);
-			purgeTree(root);
-
-
->>>>>>> e2cc28cbaa3354aa1e0e4b8c4f379b917a7b9fdd
 		}
 		else //Syntaxe incorrecte
 		{
 			//Envoyer un message d'erreur 
 			strcpy(reponse, codeMessage(400));
 			writeDirectClient(requete->clientId,reponse,strlen(reponse));
-<<<<<<< HEAD
 
 			//Liberer la mémoire
 			free(reponse);
@@ -81,21 +66,6 @@ int main(int argc, char *argv[])
 
 		// on ne se sert plus de requete a partir de maintenant, on peut donc liberer... 
 		freeRequest(requete); 
-=======
-			close = 1;
-
-			free(reponse);
-		}
-
-		// on ne se sert plus de requete a partir de maintenant, on peut donc liberer... 
-		freeRequest(requete); 
-
-		endWriteDirectClient(requete->clientId);
-		if(!close)
-		{ 
-			requestShutdownSocket(requete->clientId); 
-		}
->>>>>>> e2cc28cbaa3354aa1e0e4b8c4f379b917a7b9fdd
 	}
 	return (1);
 }
