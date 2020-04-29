@@ -10,5 +10,6 @@ char* findRessource(const char* URI, int* erreur);
 char* writeRessource(const char* target, int* taille, int* erreur);
 char* MIMEtype(const char* ressource);
 void addHeader(char* reponse, const char* headerField, const char* headerValue, int* taille);
+int headerUnique(_Token* root);
 
 #endif

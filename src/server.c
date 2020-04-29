@@ -17,7 +17,6 @@
 
 int main(int argc, char *argv[])
 {
-	//export LD_LIBRARY_PATH=.
 	message *requete; 
 	int tailleRequete = 0;
 	int res; 
@@ -37,11 +36,6 @@ int main(int argc, char *argv[])
 			root = getRootTree(); 
 
 			buildResponse(root, reponse, &tailleRequete);
-
-			/*for(int i = 0; i <tailleRequete; i++)
-				printf("%c", reponse[i]);
-			printf("\n\n\n\n\n");
-			*/
 
 			writeDirectClient(requete->clientId,reponse,tailleRequete); 
 

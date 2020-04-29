@@ -112,6 +112,12 @@ int code(_Token* root, char* reponse, int* taille, int* erreur)
 		}
 	}
 
+	else if(!headerUnique(root))
+	{
+		*erreur = 1;
+		code = 400;
+	}
+
 	//Refuser si plusieurs fois le même header
 
 	strcpy(reponse, codeMessage(code));
@@ -288,4 +294,26 @@ void addHeader(char* reponse, const char* headerField, const char* headerValue, 
 	sprintf(reponse, "%s%s: %s\r\n", reponse, headerField, headerValue);
 
 	*taille += strlen(headerField) + 4 + strlen(headerValue);
+}
+
+int headerUnique(_Token* root)
+//0 si il y a plusieurs fois le même header, 1 sinon
+{
+	int valide = 1;
+	char* headerName[13] = {"Connection_header", "Content_Length_header", "Content_Type_header", "Cookie_header", "Transfer_Encoding-header", "Expect_header", "Host_header", "Accept_header", "Accept_Charset_header", "Accept_Encoding_header", "Accept_Language_header", "Referer_header", "User_Agent_header"};
+	// + "field_name"
+	_Token* field;
+	Lnode* node;
+
+	for(int i = 0; i < 13; i++)
+	{
+		field = searchTree(root, headerName[i]);
+		
+		if(field != NULL && field->next != NULL)
+		{
+			valide = 0;
+		}
+	}
+	
+	return valide;
 }
