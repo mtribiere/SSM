@@ -425,10 +425,18 @@ char* MIMEtype(const char* ressource){
 void addHeader(char* reponse, const char* headerField, const char* headerValue, int* taille)
 //Ajoute l'entête indiquée et son contenu à la réponse en cours de construction
 {
-	sprintf(reponse, "%s%s: %s\r\n", reponse, headerField, headerValue);
+	//Copier la reponse temporairement
+	char *temp = malloc(sizeof(char) * MAX_RESPONSE_SIZE);
+	strcpy(temp,reponse);
 
+	//Ajouter le header (Nescessaire pour respecter la doc)
+	sprintf(reponse, "%s%s: %s\r\n",temp,headerField,headerValue);
+	
+	//Ajouter la taille
 	*taille += strlen(headerField) + 4 + strlen(headerValue);
 
+	//Librer la mémoire
+	free(temp);
 }
 
 int headerUnique(_Token* root)
