@@ -25,7 +25,7 @@ void buildResponse(_Token* root, char* reponse, int* taille, int* close)
 	{
 		//Normaliser l'URI
 		char* URI = normalisationURI(root);
-		
+
 		//Convertir l'URI en chemin local
 		char* target = findRessource(URI, &erreur);
 
@@ -173,6 +173,7 @@ char* codeMessage(int code)
 		case(400): return "HTTP/1.1 400 Bad Request\r\nContent-Type: text/plain\r\n\r\n400 Bad Request";
 		case(404): return "HTTP/1.1 404 Not Found\r\nContent-Type: text/plain\r\n\r\n404 Not Found";
 		case(411): return "HTTP/1.1 411 Length Required\r\nContent-Type: text/plain\r\n\r\n411 Length Required";
+		case(418): return "HTTP/1.1 418 I m a teapot\r\nContent-Type: text/plain\r\n\r\n418 I'm a teapot";
 		case(501): return "HTTP/1.1 501 Not Implemented\r\nContent-Type: text/plain\r\n\r\n501 Not Implemented";
 		case(505): return "HTTP/1.1 505 HTTP Version Not Supported\r\nContent-Type: text/plain\r\n\r\n505 HTTP Version Not Supported";
 		default  : return "HTTP/1.1 500 Internal Server Error\r\nContent-Type: text/plain\r\n\r\n500 Internal Server Errror";
@@ -229,7 +230,128 @@ char* normalisationURI(_Token* root)
 	return URI;
 }
 
+// Charge la configuration contenue dans le fichier sites.conf
+// Stocke la
+void loadMultisitesConf()
+{
+	multisitesConf = NULL;
 
+	// On ouvre le fichier
+	FILE* fichierConf = fopen("sites.conf", "r");
+	if(fichierConf == NULL)
+	{
+		/* 500 (Internal Server Error) */
+	}
+
+	// On récupère la première ligne
+	char* ligne = malloc(500*sizeof(char));
+	if(ligne == NULL)
+	{
+		/* 500 (Internal Server Error) */
+	}
+
+	Site *site;
+
+	// On parcourt le fichier
+	while (fgets(ligne, 500, fichierConf) != NULL) {
+		// Si on enregistre un nouveau site
+		if (ligne[0] != '\t') {
+			// On malloc l'espace
+			site = malloc(sizeof(Site));
+			if(site == NULL)
+			{
+				/* 500 (Internal Server Error) */
+			}
+			//
+			char* e400 = malloc(sizeof(char)*50);
+			char* e404 = malloc(sizeof(char)*50);
+			char* e411 = malloc(sizeof(char)*50);
+			char* e418 = malloc(sizeof(char)*50);
+			char* e501 = malloc(sizeof(char)*50);
+			char* e505 = malloc(sizeof(char)*50);
+			site->e400 = e400;
+			site->e404 = e404;
+			site->e411 = e411;
+			site->e418 = e418;
+			site->e501 = e501;
+			site->e505 = e505;
+
+			// On malloc() les deux champs fqdn et dossier
+			char* fqdn = malloc(sizeof(char)*50);
+			if(fqdn == NULL)
+			{
+				/* 500 (Internal Server Error) */
+			}
+			char* dossier = malloc(sizeof(char)*50);
+			if(dossier == NULL)
+			{
+				/* 500 (Internal Server Error) */
+			}
+
+			// On parse la ligne
+			char *ptr = strtok(ligne, " ");
+			strcpy(fqdn, ptr);
+			ptr = strtok(NULL, " ");
+			strcpy(dossier, ptr);
+
+			// On retire les sauts à la ligne
+			int c = 0;
+			while (dossier[c] != '\0') {
+				if ((dossier[c] == '\n') || (dossier[c] == '\r')) {
+					dossier[c] = '\0';
+				}
+				c++;
+			}
+
+			// On enregistre les données parsées
+			site->fqdn = fqdn;
+			site->dossier = dossier;
+
+			site->next = multisitesConf;
+			multisitesConf = site;
+		}
+		// Si on enregistre un nouveau fichier d'erreur
+		else {
+			// On malloc() les deux champs code et fichier
+			char* code = malloc(sizeof(char)*50);
+			if(code == NULL)
+			{
+				/* 500 (Internal Server Error) */
+			}
+			char* fichier = malloc(sizeof(char)*50);
+			if(fichier == NULL)
+			{
+				/* 500 (Internal Server Error) */
+			}
+
+			// On parse la ligne
+			char *ptr = strtok(ligne, " ");
+			strcpy(code, ptr);
+			code++;
+			ptr = strtok(NULL, " ");
+			strcpy(fichier, ptr);
+
+			// On retire les sauts à la ligne
+			int c = 0;
+			while (fichier[c] != '\0') {
+				if ((fichier[c] == '\n') || (fichier[c] == '\r')) {
+					fichier[c] = '\0';
+				}
+				c++;
+			}
+
+			// On enregistre les données parsées
+			if (!strcmp(code, "400")) strcpy(multisitesConf->e400, fichier);
+			else if (!strcmp(code, "404")) strcpy(multisitesConf->e404, fichier);
+			else if (!strcmp(code, "411")) strcpy(multisitesConf->e411, fichier);
+			else if (!strcmp(code, "418")) strcpy(multisitesConf->e418, fichier);
+			else if (!strcmp(code, "501")) strcpy(multisitesConf->e501, fichier);
+			else if (!strcmp(code, "505")) strcpy(multisitesConf->e505, fichier);
+
+		}
+	}
+	fclose(fichierConf);
+}
 
 char* findRessource(const char* URI, int* erreur)
 //A partir d'une URI, trouve la ressource associée dans les répertoires du serveur
@@ -240,63 +362,6 @@ char* findRessource(const char* URI, int* erreur)
 		*erreur = 1;
 		return codeMessage(500); /* 500 (Internal Server Error) */
 	}
-
-	FILE* fichierConf = fopen("sites.conf", "r");
-	if(fichierConf == NULL)
-	{
-		*erreur = 1;
-		return codeMessage(500); /* 500 (Internal Server Error) */
-	}
-	char* ligne = malloc(500*sizeof(char));
-	if(ligne == NULL)
-	{
-		*erreur = 1;
-		return codeMessage(500); /* 500 (Internal Server Error) */
-	}
-	Site *s = NULL;
-	Site *t = NULL;
-	while (fgets(ligne, 500, fichierConf) != NULL) {
-		if (ligne[0] != '\t') {
-			char *ptr = strtok(ligne, " ");
-			char* fqdn = malloc(sizeof(char)*500);
-			if(fqdn == NULL)
-			{
-				*erreur = 1;
-				return codeMessage(500); /* 500 (Internal Server Error) */
-			}
-			strcpy(fqdn, ptr);
-			ptr = strtok(NULL, " ");
-			char* dossier = malloc(sizeof(char)*500);
-			if(dossier == NULL)
-			{
-				*erreur = 1;
-				return codeMessage(500); /* 500 (Internal Server Error) */
-			}
-			strcpy(dossier, ptr);
-
-			int c = 0;
-			while (dossier[c] != '\0') {
-				if ((dossier[c] == '\n') || (dossier[c] == '\r')) {
-					dossier[c] = '\0';
-				}
-				c++;
-			}
-
-			t = malloc(sizeof(t));
-			if(t == NULL)
-			{
-				*erreur = 1;
-				return codeMessage(500); /* 500 (Internal Server Error) */
-			}
-			t->fqdn = fqdn;
-			t->dossier = dossier;
-
-			t->next = s;
-			s = t;
-		}
-	}
-	fclose(fichierConf);
-
 
 	_Token *root;
 	root = getRootTree();
@@ -315,6 +380,8 @@ char* findRessource(const char* URI, int* erreur)
 	for (int i = 0; i < a->len; i++) {
 		elem[i] = el[i];
 	}
+
+	Site* s = multisitesConf;
 
 	char *ptr2;
 	ptr2 = strtok(elem, " ");
@@ -425,7 +492,7 @@ char* MIMEtype(const char* ressource){
 		else if(!strcmp(extension, "ttf" )) 		strcpy(mime, "font/ttf");
 		else if(!strcmp(extension, "woff" )) 		strcpy(mime, "font/woff");
 		else if(!strcmp(extension, "woff2" )) 		strcpy(mime, "font/woff2");
-	} 
+	}
 	if(extension == NULL || !strcmp(mime, "text/plain")){ //Si echec consulter libmagic
 		//Ouvrir la librairie
 		magic_t cookie = magic_open(MAGIC_MIME);
@@ -436,13 +503,13 @@ char* MIMEtype(const char* ressource){
 			printf("Erreur de la libmagic\n");
 		} else {
 			//Chercher le type de fichier
-			strcpy(mime,magic_file(cookie, ressource));		
+			strcpy(mime,magic_file(cookie, ressource));
 		}
 		//Liberer la librairie
 		magic_close(cookie);
-	} 				
-	return mime; 
-} 
+	}
+	return mime;
+}
 
 void addHeader(char* reponse, const char* headerField, const char* headerValue, int* taille)
 //Ajoute l'entête indiquée et son contenu à la réponse en cours de construction
@@ -453,7 +520,7 @@ void addHeader(char* reponse, const char* headerField, const char* headerValue, 
 
 	//Ajouter le header (Necessaire pour respecter la doc)
 	sprintf(reponse, "%s%s: %s\r\n",temp,headerField,headerValue);
-	
+
 	//Ajouter la taille
 	*taille += strlen(headerField) + 4 + strlen(headerValue);
 

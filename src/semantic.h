@@ -4,10 +4,19 @@
 #define MAX_RESPONSE_SIZE 500000000
 
 typedef struct _site {
-	char *fqdn;
-	char *dossier;
-	struct _site *next;
+	char* fqdn;
+	char* dossier;
+	char* e400;
+	char* e404;
+	char* e411;
+	char* e418;
+	char* e501;
+	char* e505;
+	struct _site* next;
 } Site;
+
+Site* multisitesConf;
+void loadMultisitesConf();
 
 void buildResponse(_Token* root, char* reponse, int* taille, int *close);
 

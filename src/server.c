@@ -22,6 +22,9 @@ int main(int argc, char *argv[])
 	int res;
 	int close = 1;
 
+	loadMultisitesConf();
+	// unloadMultiSitesConf pour décharger liste chainée
+
 	while ( 1 ) {
 		char* reponse = calloc(sizeof(char), sizeof(char) * MAX_RESPONSE_SIZE); //Voir pour mieux régler la taille
 		// on attend la reception d'une requete HTTP requete pointera vers une ressource allouée par librequest.
