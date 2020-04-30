@@ -24,53 +24,70 @@ void buildResponse(_Token* root, char* reponse, int* taille, int* close)
 	//ajouter des headers, un message-body ...
 	{
 		//Normaliser l'URI
-		char* URI = normalisationURI(root);
-
-		//Convertir l'URI en chemin local
-		char* target = findRessource(URI, &erreur);
-
+		char* URI = normalisationURI(root, &erreur);
 		//Si erreur
 		if(erreur)
 		{
-			*taille = strlen(target);
-			strcpy(reponse, target);
+			*taille = strlen(URI);
+			*close = 1;
+			strcpy(reponse, URI);
 		}
 		else
 		{
-			//AJOUTER LE HEADER CONNECTION
-			*close = connexion(root, reponse, taille);
+			//Convertir l'URI en chemin local
+			char* target = findRessource(URI, &erreur);
 
-			//AJOUTER LE HEADER Content-Type
-			char* mime = MIMEtype(target);
-			addHeader(reponse, "Content-Type", mime, taille);
-
-			//Passer au body de la réponse
-			reponse[(*taille)++] = '\r';
-			reponse[(*taille)++] = '\n';
-
-			//Recuperer la resource
-			int tailleDebut = *taille;
-			char* ressource = writeRessource(target, taille, &erreur);
-
+			//Si erreur
 			if(erreur)
 			{
-				*taille = strlen(ressource);
-				strcpy(reponse, ressource);
-			} else
-			{
-				for(int i = tailleDebut; i < (*taille); i++)
-					reponse[i] = ressource[i - tailleDebut];
-				free(ressource);
+				*close = 1;
+				*taille = strlen(target);
+				strcpy(reponse, target);
 			}
+			else
+			{
+				//AJOUTER LE HEADER CONNECTION
+				*close = connexion(root, reponse, taille);
 
-			free(mime);
+				//AJOUTER LE HEADER Content-Type
+				char* mime = MIMEtype(target);
+				addHeader(reponse, "Content-Type", mime, taille);
+
+				//Recuperer la resource
+				int tailleFichier;
+				char* ressource = writeRessource(target, &tailleFichier, &erreur);
+
+				if(erreur)
+				{
+					*close = 1;
+					*taille = strlen(ressource);
+					strcpy(reponse, ressource);
+				} 
+				else
+				{
+					char tailleString[10];
+					
+					//Taille du fichier dans un char[]
+					sprintf(tailleString, "%d", tailleFichier);
+					addHeader(reponse, "Content-Length", tailleString, taille);
+					
+					//Passer au body de la réponse
+					reponse[(*taille)++] = '\r';
+					reponse[(*taille)++] = '\n';
+
+					if(!erreur && !strncmp(node->value, "GET", node->len))
+					{
+						for(int i = *taille; i < (*taille + tailleFichier); i++)
+							reponse[i] = ressource[i - *taille];
+						free(ressource);
+						*taille += tailleFichier;
+					}
+
+					free(mime);
+				}
+			}
+			free(target);
 		}
-		free(target);
-	}
-	else if(!erreur && !strncmp(node->value, "POST", node->len))
-	{
-		reponse = strcat(reponse, "POST : 202 Accepted");
-		*taille += 19;
 	}
 	//Liberer la réponse
 	purgeElement(&field);
@@ -169,23 +186,28 @@ char* codeMessage(int code)
 	switch(code)
 	{
 		case(200): return "HTTP/1.1 200 OK\r\n";
-		case(202): return "HTTP/1.1 202 Accepted\r\nContent-Type: text/plain\r\n\r\n";
-		case(400): return "HTTP/1.1 400 Bad Request\r\nContent-Type: text/plain\r\n\r\n400 Bad Request";
-		case(404): return "HTTP/1.1 404 Not Found\r\nContent-Type: text/plain\r\n\r\n404 Not Found";
-		case(411): return "HTTP/1.1 411 Length Required\r\nContent-Type: text/plain\r\n\r\n411 Length Required";
-		case(418): return "HTTP/1.1 418 I m a teapot\r\nContent-Type: text/plain\r\n\r\n418 I'm a teapot";
-		case(501): return "HTTP/1.1 501 Not Implemented\r\nContent-Type: text/plain\r\n\r\n501 Not Implemented";
-		case(505): return "HTTP/1.1 505 HTTP Version Not Supported\r\nContent-Type: text/plain\r\n\r\n505 HTTP Version Not Supported";
-		default  : return "HTTP/1.1 500 Internal Server Error\r\nContent-Type: text/plain\r\n\r\n500 Internal Server Errror";
+		case(202): return "HTTP/1.1 202 Accepted\r\nContent-Length: 31\r\nContent-Type: text/plain\r\n\r\nPOST valide recu : 202 Accepted";
+		case(400): return "HTTP/1.1 400 Bad Request\r\nConnection: close\r\nContent-Type: text/plain\r\n\r\n400 Bad Request";
+		case(404): return "HTTP/1.1 404 Not Found\r\nConnection: close\r\nContent-Type: text/plain\r\n\r\n404 Not Found";
+		case(408): return "HTTP/1.1 408 Request Timeout\r\nConnection: close\r\nContent-Type: text/plain\r\n\r\n408 Request Timeout";
+		case(411): return "HTTP/1.1 411 Length Required\r\nConnection: close\r\nContent-Type: text/plain\r\n\r\n411 Length Required";
+		case(418): return "HTTP/1.1 418 I m a teapot\r\nConnection: close\r\nContent-Type: text/plain\r\n\r\n418 I'm a teapot";
+		case(501): return "HTTP/1.1 501 Not Implemented\r\nConnection: close\r\nContent-Type: text/plain\r\n\r\n501 Not Implemented";
+		case(505): return "HTTP/1.1 505 HTTP Version Not Supported\r\nConnection: close\r\nContent-Type: text/plain\r\n\r\n505 HTTP Version Not Supported";
+		default  : return "HTTP/1.1 500 Internal Server Error\r\nConnection: close\r\nContent-Type: text/plain\r\n\r\n500 Internal Server Errror";
 	}
 }
 
-char* normalisationURI(_Token* root)
+char* normalisationURI(_Token* root, int* erreur)
 //Normalise l'URI de la requête : enlève les encodages de type %XY et enlève les /./ /../ en trop
 {
 	_Token* URIfield = searchTree(root, "origin_form");
 	//Cas où l'on ne trouve pas
-	//500 ? 501 ? 400 ?
+	if(URIfield == NULL)
+	{
+		*erreur = 1;
+		return codeMessage(400);
+	}
 
 	Lnode* node = URIfield->node;
 	char* URI = node->value;
@@ -265,12 +287,14 @@ void loadMultisitesConf()
 			//
 			char* e400 = malloc(sizeof(char)*50);
 			char* e404 = malloc(sizeof(char)*50);
+			char* e408 = malloc(sizeof(char)*50);
 			char* e411 = malloc(sizeof(char)*50);
 			char* e418 = malloc(sizeof(char)*50);
 			char* e501 = malloc(sizeof(char)*50);
 			char* e505 = malloc(sizeof(char)*50);
 			site->e400 = e400;
 			site->e404 = e404;
+			site->e408 = e408;
 			site->e411 = e411;
 			site->e418 = e418;
 			site->e501 = e501;
@@ -343,6 +367,7 @@ void loadMultisitesConf()
 			// On enregistre les données parsées
 			if (!strcmp(code, "400")) strcpy(multisitesConf->e400, fichier);
 			else if (!strcmp(code, "404")) strcpy(multisitesConf->e404, fichier);
+			else if (!strcmp(code, "408")) strcpy(multisitesConf->e408, fichier);
 			else if (!strcmp(code, "411")) strcpy(multisitesConf->e411, fichier);
 			else if (!strcmp(code, "418")) strcpy(multisitesConf->e418, fichier);
 			else if (!strcmp(code, "501")) strcpy(multisitesConf->e501, fichier);
@@ -411,7 +436,7 @@ char* findRessource(const char* URI, int* erreur)
 	return target;
 }
 
-char* writeRessource(const char* target, int* taille, int* erreur)
+char* writeRessource(const char* target, int* tailleFichier, int* erreur)
 //A partir de l'emplacement de la ressource à envoyer, renvoie son contenu
 {
 	FILE* file;
@@ -452,7 +477,7 @@ char* writeRessource(const char* target, int* taille, int* erreur)
 		return codeMessage(500); /* 500 (Internal Server Error) */
 	}
 
-	*taille += fileLength;
+	*tailleFichier = fileLength;
 	ressource[fileLength] = '\0';
 
 	fclose(file);
@@ -565,10 +590,7 @@ int connexion(_Token* root, char* reponse, int* taille)
 		for(int i = 0; i < node->len; i++)
 		{
 			if(node->value[i] != keep[i])
-			{
-				printf("close\n");
 				close = 1;
-			}
 		}
 	}
 	if(close == 0)

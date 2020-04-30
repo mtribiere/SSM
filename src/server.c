@@ -4,6 +4,7 @@
 #include <sys/socket.h>
 #include <netinet/in.h>
 #include <arpa/inet.h>
+// #include <time.h>
 
 // for librequest
 #include "request.h"
@@ -20,7 +21,7 @@ int main(int argc, char *argv[])
 	message *requete;
 	int tailleRequete = 0;
 	int res;
-	int close = 1;
+	int close = 0;
 
 	loadMultisitesConf();
 	// unloadMultiSitesConf pour décharger liste chainée
@@ -33,23 +34,21 @@ int main(int argc, char *argv[])
 			free(reponse);
 			return -1;
 		}
-		//printf(requete->buf);
 
 		if ((res=parseur(requete->buf,requete->len))) { //Si la syntaxe est correcte
 
-			//Creer l'arbre sythaxique
+			//Creer l'arbre syntaxique
 			_Token *root;
 			root = getRootTree();
 
-			//Contruire la réponse
+			//Construire la réponse
 			buildResponse(root, reponse, &tailleRequete,&close);
 
 			//Envoyer la réponse au client
 			writeDirectClient(requete->clientId,reponse,tailleRequete);
 
-			//Liberer la mémorie
+			//Liberer la mémoire
 			tailleRequete = 0;
-			free(reponse);
 			purgeTree(root);
 		}
 		else //Syntaxe incorrecte
@@ -57,19 +56,19 @@ int main(int argc, char *argv[])
 			//Envoyer un message d'erreur
 			strcpy(reponse, codeMessage(400));
 			writeDirectClient(requete->clientId,reponse,strlen(reponse));
-
-			//Liberer la mémoire
-			free(reponse);
 		}
 
 		endWriteDirectClient(requete->clientId);
-
+		
 		//Se deconnecter du client
-		if(!close)
+		if(close)
 			requestShutdownSocket(requete->clientId);
 
+		//Liberer la mémoire
+		free(reponse);
 		// on ne se sert plus de requete a partir de maintenant, on peut donc liberer...
 		freeRequest(requete);
+		
 	}
 	return (1);
 }
