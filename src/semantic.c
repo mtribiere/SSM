@@ -13,9 +13,14 @@
 void buildResponse(_Token* root, char* reponse, int* taille, int* close)
 //A partir de l'arbre de dérivation syntaxique, construit la réponse HTTP à envoyer
 {
+	_Token* field;
+	Lnode* node;
 	int erreur = 0;
+
+	field = searchTree(root, "method");
+	node = field->node;
 	code(root,reponse, taille, &erreur);
-	if(!erreur)
+	if(!erreur && (!strncmp(node->value, "GET", node->len) || !strncmp(node->value, "HEAD", node->len)))
 	//ajouter des headers, un message-body ...
 	{
 		//Normaliser l'URI
@@ -62,7 +67,13 @@ void buildResponse(_Token* root, char* reponse, int* taille, int* close)
 		}
 		free(target);
 	}
-
+	else if(!erreur && !strncmp(node->value, "POST", node->len))
+	{
+		reponse = strcat(reponse, "POST : 202 Accepted");
+		*taille += 19;
+	}
+	//Liberer la réponse
+	purgeElement(&field);
 }
 
 int code(_Token* root, char* reponse, int* taille, int* erreur)
@@ -116,7 +127,7 @@ int code(_Token* root, char* reponse, int* taille, int* erreur)
 			*erreur = 1;
 			code = 411;
 
-		} else{
+		} else {
 			node = field->node;
 
 			//Liberer la réponse
@@ -129,13 +140,12 @@ int code(_Token* root, char* reponse, int* taille, int* erreur)
 			//Liberer la réponse
 			purgeElement(&field);
 
-			if(length != node->len - 3) //Mauvais Content-Length, -3 car le parseur renvoie la mauvaise valeur ??
+			if(length != node->len)
 			{
 				*erreur = 1;
 				code = 400;
 			} else { //Content-Length correct
-				*erreur = 1;
-				code = 201;
+				code = 202;
 			}
 		}
 	}
@@ -159,7 +169,7 @@ char* codeMessage(int code)
 	switch(code)
 	{
 		case(200): return "HTTP/1.1 200 OK\r\n";
-		case(201): return "HTTP/1.1 201 Accepted\r\nContent-Type: text/plain\r\n\r\n";
+		case(202): return "HTTP/1.1 202 Accepted\r\nContent-Type: text/plain\r\n\r\n";
 		case(400): return "HTTP/1.1 400 Bad Request\r\nContent-Type: text/plain\r\n\r\n400 Bad Request";
 		case(404): return "HTTP/1.1 404 Not Found\r\nContent-Type: text/plain\r\n\r\n404 Not Found";
 		case(411): return "HTTP/1.1 411 Length Required\r\nContent-Type: text/plain\r\n\r\n411 Length Required";
@@ -194,7 +204,7 @@ char* normalisationURI(_Token* root)
 	}
 	node->len = j;
 	j = 0;
-	for(i = 0; i < node->len; i++) //Dot segment removal <- A VERIFIER QUE CA MARCHE
+	for(i = 0; i < node->len; i++) //Dot segment removal
 	{
 		if(URI[i] == '.')
 		{
@@ -224,7 +234,6 @@ char* normalisationURI(_Token* root)
 char* findRessource(const char* URI, int* erreur)
 //A partir d'une URI, trouve la ressource associée dans les répertoires du serveur
 {
-
 	char* target = malloc(MAX_URI_SIZE);
 	if(target == NULL)
 	{
@@ -233,18 +242,36 @@ char* findRessource(const char* URI, int* erreur)
 	}
 
 	FILE* fichierConf = fopen("sites.conf", "r");
+	if(fichierConf == NULL)
+	{
+		*erreur = 1;
+		return codeMessage(500); /* 500 (Internal Server Error) */
+	}
 	char* ligne = malloc(500*sizeof(char));
+	if(ligne == NULL)
+	{
+		*erreur = 1;
+		return codeMessage(500); /* 500 (Internal Server Error) */
+	}
 	Site *s = NULL;
 	Site *t = NULL;
-	//printf("SITES\n");
 	while (fgets(ligne, 500, fichierConf) != NULL) {
 		if (ligne[0] != '\t') {
-
 			char *ptr = strtok(ligne, " ");
 			char* fqdn = malloc(sizeof(char)*500);
+			if(fqdn == NULL)
+			{
+				*erreur = 1;
+				return codeMessage(500); /* 500 (Internal Server Error) */
+			}
 			strcpy(fqdn, ptr);
 			ptr = strtok(NULL, " ");
 			char* dossier = malloc(sizeof(char)*500);
+			if(dossier == NULL)
+			{
+				*erreur = 1;
+				return codeMessage(500); /* 500 (Internal Server Error) */
+			}
 			strcpy(dossier, ptr);
 
 			int c = 0;
@@ -256,6 +283,11 @@ char* findRessource(const char* URI, int* erreur)
 			}
 
 			t = malloc(sizeof(t));
+			if(t == NULL)
+			{
+				*erreur = 1;
+				return codeMessage(500); /* 500 (Internal Server Error) */
+			}
 			t->fqdn = fqdn;
 			t->dossier = dossier;
 
@@ -270,34 +302,32 @@ char* findRessource(const char* URI, int* erreur)
 	root = getRootTree();
 	_Token *host;
 	host = searchTree(root, "Host");
+	//Si Host == NULL ??
 	Lnode* a = host->node;
 	char *el = a->value;
 
 	char* elem = malloc(sizeof(char)*500);
+	if(elem == NULL)
+	{
+		*erreur = 1;
+		return codeMessage(500); /* 500 (Internal Server Error) */
+	}
 	for (int i = 0; i < a->len; i++) {
 		elem[i] = el[i];
 	}
-
-	//+ regarder champ Host, + query ?
 
 	char *ptr2;
 	ptr2 = strtok(elem, " ");
 	ptr2 = strtok(ptr2, ":");
 
-	while(s != NULL && strcmp(ptr2, s->fqdn) != 0) {
-		//printf("HOST: %s\n", ptr2);
-		//printf("%s\n",s->fqdn);
-		//printf("%s\n",s->dossier);
+	while(s != NULL && strcmp(ptr2, s->fqdn) != 0)
 		s = s->next;
-	}
 
 	char* dossier = malloc(sizeof(char)*20);
 	char* dossierSlash = malloc(sizeof(char)*20);
 	if (s == NULL) {
 		strcpy(dossier,"www"); // dossier par défaut
-	}
-	else {
-		//printf("Trouve !");
+	} else {
 		strcpy(dossier, s->dossier);
 	}
 
@@ -308,8 +338,9 @@ char* findRessource(const char* URI, int* erreur)
 
 	if(!strcmp(target, dossierSlash))
 		strcat(target, "index.html");
-	//Faire pareil pour .php ?
+	//Faire pareil pour index.php ?
 
+	printf("Target : %s\n", target);
 	return target;
 }
 
@@ -331,10 +362,7 @@ char* writeRessource(const char* target, int* taille, int* erreur)
 	if(file == NULL)
 	{
 		*erreur = 1;
-		printf("Ouïe\n");
-		/*Codes d'erreur
-	  Les droits ne sont pas remplis : 401 (Unauthorized)*/
-
+		return codeMessage(500); /*500 (Internal Server Error)*/
 	}
 
 	//Definir la taille du fichier
@@ -377,9 +405,9 @@ char* MIMEtype(const char* ressource){
 
 	//Chercher la type MIME
 	char* mime = malloc(sizeof(char) * MAX_MIME_SIZE);
+	strcpy(mime, "text/plain");
 
-	if(extension == NULL) strcpy(mime, "text/plain");
-	else
+	if(extension != NULL)
 	{
 		extension++;
 		if     (!strcmp(extension, "jpg" ))  		strcpy(mime, "image/jpeg");
@@ -397,28 +425,22 @@ char* MIMEtype(const char* ressource){
 		else if(!strcmp(extension, "ttf" )) 		strcpy(mime, "font/ttf");
 		else if(!strcmp(extension, "woff" )) 		strcpy(mime, "font/woff");
 		else if(!strcmp(extension, "woff2" )) 		strcpy(mime, "font/woff2");
-		else{ //Si echec consulter libmagic
+	} 
+	if(extension == NULL || !strcmp(mime, "text/plain")){ //Si echec consulter libmagic
+		//Ouvrir la librairie
+		magic_t cookie = magic_open(MAGIC_MIME);
 
-			//Ouvrir la librairie
-			magic_t cookie = magic_open(MAGIC_MIME);
-
-			//Si erreur
-			if(cookie == NULL || magic_load(cookie,NULL) != 0){
-				magic_close(cookie);
-				printf("Erreur de la libmagic\n");
-				exit(1); // A changer
-			}
-
-				//Chercher le type de fichier
-				strcpy(mime,magic_file(cookie, ressource));	
-
-				//Liberer la librairie
-				magic_close(cookie);
-
-		} 										
-	}
-
-	printf("Extension : %s\n",mime);
+		//Si erreur
+		if(cookie == NULL || magic_load(cookie,NULL) != 0){
+			magic_close(cookie);
+			printf("Erreur de la libmagic\n");
+		} else {
+			//Chercher le type de fichier
+			strcpy(mime,magic_file(cookie, ressource));		
+		}
+		//Liberer la librairie
+		magic_close(cookie);
+	} 				
 	return mime; 
 } 
 
@@ -429,7 +451,7 @@ void addHeader(char* reponse, const char* headerField, const char* headerValue, 
 	char *temp = malloc(sizeof(char) * MAX_RESPONSE_SIZE);
 	strcpy(temp,reponse);
 
-	//Ajouter le header (Nescessaire pour respecter la doc)
+	//Ajouter le header (Necessaire pour respecter la doc)
 	sprintf(reponse, "%s%s: %s\r\n",temp,headerField,headerValue);
 	
 	//Ajouter la taille
