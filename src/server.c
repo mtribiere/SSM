@@ -59,7 +59,7 @@ int main(int argc, char *argv[])
 		}
 
 		endWriteDirectClient(requete->clientId);
-		
+
 		//Se deconnecter du client
 		if(close)
 			requestShutdownSocket(requete->clientId);
@@ -68,7 +68,7 @@ int main(int argc, char *argv[])
 		free(reponse);
 		// on ne se sert plus de requete a partir de maintenant, on peut donc liberer...
 		freeRequest(requete);
-		
+
 	}
 	return (1);
 }

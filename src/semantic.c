@@ -20,6 +20,8 @@ void buildResponse(_Token* root, char* reponse, int* taille, int* close)
 	field = searchTree(root, "method");
 	node = field->node;
 	code(root,reponse, taille, &erreur);
+
+	if (!erreur) {
 	if(!erreur && (!strncmp(node->value, "GET", node->len) || !strncmp(node->value, "HEAD", node->len)))
 	//ajouter des headers, un message-body ...
 	{
@@ -62,15 +64,15 @@ void buildResponse(_Token* root, char* reponse, int* taille, int* close)
 					*close = 1;
 					*taille = strlen(ressource);
 					strcpy(reponse, ressource);
-				} 
+				}
 				else
 				{
 					char tailleString[10];
-					
+
 					//Taille du fichier dans un char[]
 					sprintf(tailleString, "%d", tailleFichier);
 					addHeader(reponse, "Content-Length", tailleString, taille);
-					
+
 					//Passer au body de la réponse
 					reponse[(*taille)++] = '\r';
 					reponse[(*taille)++] = '\n';
@@ -91,6 +93,7 @@ void buildResponse(_Token* root, char* reponse, int* taille, int* close)
 	}
 	//Liberer la réponse
 	purgeElement(&field);
+}
 }
 
 int code(_Token* root, char* reponse, int* taille, int* erreur)
@@ -183,19 +186,138 @@ int code(_Token* root, char* reponse, int* taille, int* erreur)
 char* codeMessage(int code)
 //Selon le code à envoyer, forme la start-line
 {
+	char* toSend = malloc(sizeof(char)*50000);
+	int toSendSize = 0;
 	switch(code)
 	{
 		case(200): return "HTTP/1.1 200 OK\r\n";
 		case(202): return "HTTP/1.1 202 Accepted\r\nContent-Length: 31\r\nContent-Type: text/plain\r\n\r\nPOST valide recu : 202 Accepted";
-		case(400): return "HTTP/1.1 400 Bad Request\r\nConnection: close\r\nContent-Type: text/plain\r\n\r\n400 Bad Request";
-		case(404): return "HTTP/1.1 404 Not Found\r\nConnection: close\r\nContent-Type: text/plain\r\n\r\n404 Not Found";
-		case(408): return "HTTP/1.1 408 Request Timeout\r\nConnection: close\r\nContent-Type: text/plain\r\n\r\n408 Request Timeout";
-		case(411): return "HTTP/1.1 411 Length Required\r\nConnection: close\r\nContent-Type: text/plain\r\n\r\n411 Length Required";
-		case(418): return "HTTP/1.1 418 I m a teapot\r\nConnection: close\r\nContent-Type: text/plain\r\n\r\n418 I'm a teapot";
-		case(501): return "HTTP/1.1 501 Not Implemented\r\nConnection: close\r\nContent-Type: text/plain\r\n\r\n501 Not Implemented";
-		case(505): return "HTTP/1.1 505 HTTP Version Not Supported\r\nConnection: close\r\nContent-Type: text/plain\r\n\r\n505 HTTP Version Not Supported";
-		default  : return "HTTP/1.1 500 Internal Server Error\r\nConnection: close\r\nContent-Type: text/plain\r\n\r\n500 Internal Server Errror";
+		case(400):
+			strcpy(toSend, "HTTP/1.1 400 Bad Request\r\nConnection: close\r\nContent-Type: text/plain\r\n\r\n");
+			toSendSize+=strlen("HTTP/1.1 400 Bad Request\r\nConnection: close\r\nContent-Type: text/plain\r\n\r\n");
+		case(404):
+			strcpy(toSend, "HTTP/1.1 404 Not Found\r\nConnection: close\r\nContent-Type: text/plain\r\n\r\n");
+			toSendSize+=strlen("HTTP/1.1 404 Not Found\r\nConnection: close\r\nContent-Type: text/plain\r\n\r\n");
+		case(408):
+			strcpy(toSend, "HTTP/1.1 408 Request Timeout\r\nConnection: close\r\nContent-Type: text/plain\r\n\r\n");
+			toSendSize+=strlen("HTTP/1.1 408 Request Timeout\r\nConnection: close\r\nContent-Type: text/plain\r\n\r\n");
+		case(411):
+			strcpy(toSend, "HTTP/1.1 411 Length Required\r\nConnection: close\r\nContent-Type: text/plain\r\n\r\n");
+			toSendSize+=strlen("HTTP/1.1 411 Length Required\r\nConnection: close\r\nContent-Type: text/plain\r\n\r\n");
+		case(418):
+			strcpy(toSend, "HTTP/1.1 418 I m a teapot\r\nConnection: close\r\nContent-Type: text/plain\r\n\r\n");
+			toSendSize+=strlen("HTTP/1.1 418 I m a teapot\r\nConnection: close\r\nContent-Type: text/plain\r\n\r\n");
+		case(501):
+			strcpy(toSend, "HTTP/1.1 501 Not Implemented\r\nConnection: close\r\nContent-Type: text/plain\r\n\r\n");
+			toSendSize+=strlen("HTTP/1.1 501 Not Implemented\r\nConnection: close\r\nContent-Type: text/plain\r\n\r\n");
+		case(505):
+			strcpy(toSend, "HTTP/1.1 505 HTTP Version Not Supported\r\nConnection: close\r\nContent-Type: text/plain\r\n\r\n");
+			toSendSize+=strlen("HTTP/1.1 505 HTTP Version Not Supported\r\nConnection: close\r\nContent-Type: text/plain\r\n\r\n");
+		default  :
+			strcpy(toSend, "HTTP/1.1 500 Internal Server Error\r\nConnection: close\r\nContent-Type: text/plain\r\n\r\n");
+			toSendSize+=strlen("HTTP/1.1 500 Internal Server Error\r\nConnection: close\r\nContent-Type: text/plain\r\n\r\n");
 	}
+
+	_Token *root;
+	root = getRootTree();
+	_Token *host;
+	host = searchTree(root, "Host"); //Champ Host
+
+	int trouve = 0;
+
+	if(host != NULL) //Si il y a un champ Host
+	{
+
+		Lnode* a = host->node;
+		char *el = a->value; //Contenu du champ Host
+
+		char *ptr2;
+		ptr2 = strtok(el, ":");
+
+		Site* s = multisitesConf;
+
+		while (s != NULL) {
+			if (!strcmp(s->fqdn, ptr2)) { // Si on a trouvé la conf du bon site
+				switch(code) { // Si un fichier est présent, on recopie la valeur à la fin de toSend
+					case(400):
+						if (strcmp(s->e400, "")) {
+							trouve = 1;
+							strcpy(toSend+toSendSize, s->e400);
+						}
+						break;
+					case(404):
+						if (strcmp(s->e404, "")) {
+							trouve = 1;
+							strcpy(toSend+toSendSize, s->e404);
+						}
+						break;
+					case(408):
+						if (strcmp(s->e408, "")) {
+							trouve = 1;
+							strcpy(toSend+toSendSize, s->e408);
+						}
+						break;
+					case(411):
+						if (strcmp(s->e411, "")) {
+							trouve = 1;
+							strcpy(toSend+toSendSize, s->e411);
+						}
+						break;
+					case(418):
+						if (strcmp(s->e418, "")) {
+							trouve = 1;
+							strcpy(toSend+toSendSize, s->e418);
+						}
+						break;
+					case(501):
+						if (strcmp(s->e501, "")) {
+							trouve = 1;
+							strcpy(toSend+toSendSize, s->e501);
+						}
+						break;
+					case(505):
+						if (strcmp(s->e505, "")) {
+							trouve = 1;
+							strcpy(toSend+toSendSize, s->e505);
+						}
+						break;
+				}
+			}
+			s = s->next;
+		}
+	}
+
+	// Valeurs par défaut, si pas de champ HOST ou pas trouvé
+	if (!trouve) {
+		switch(code) {
+			case(400):
+				strcpy(toSend+toSendSize, "400 Bad Request");
+				break;
+			case(404):
+				strcpy(toSend+toSendSize, "404 Not Found");
+				break;
+			case(408):
+				strcpy(toSend+toSendSize, "408 Request Timeout");
+				break;
+			case(411):
+				strcpy(toSend+toSendSize, "411 Length Required");
+				break;
+			case(418):
+				strcpy(toSend+toSendSize, "418 I'm a teapot");
+				break;
+			case(501):
+				strcpy(toSend+toSendSize, "501 Not Implemented");
+				break;
+			case(505):
+				strcpy(toSend+toSendSize, "505 HTTP Version Not Supported");
+				break;
+			default:
+				strcpy(toSend+toSendSize, "500 Internal Server Error");
+				break;
+		}
+	}
+	printf("%s\n", toSend);
+	return(toSend);
 }
 
 char* normalisationURI(_Token* root, int* erreur)
@@ -305,13 +427,13 @@ void loadMultisitesConf()
 				exit(-1);
 			}
 			//
-			char* e400 = malloc(sizeof(char)*50);
-			char* e404 = malloc(sizeof(char)*50);
-			char* e408 = malloc(sizeof(char)*50);
-			char* e411 = malloc(sizeof(char)*50);
-			char* e418 = malloc(sizeof(char)*50);
-			char* e501 = malloc(sizeof(char)*50);
-			char* e505 = malloc(sizeof(char)*50);
+			char* e400 = calloc(sizeof(char),50);
+			char* e404 = calloc(sizeof(char),50);
+			char* e408 = calloc(sizeof(char),50);
+			char* e411 = calloc(sizeof(char),50);
+			char* e418 = calloc(sizeof(char),50);
+			char* e501 = calloc(sizeof(char),50);
+			char* e505 = calloc(sizeof(char),50);
 			site->e400 = e400;
 			site->e404 = e404;
 			site->e408 = e408;
@@ -409,7 +531,7 @@ void loadMultisitesConf()
 // 		free(dossier);
 
 // 		next = s->next;
-		
+
 // 		free(site);
 // 	}
 // }
@@ -432,7 +554,7 @@ char* findRessource(const char* URI, int* erreur)
 
 	if(host != NULL) //Si il y a un champ Host
 	{
-		Lnode* a = host->node; 
+		Lnode* a = host->node;
 		char *el = a->value; //Contenu du champ Host
 
 		char* elem = malloc(sizeof(char)*500);
@@ -477,7 +599,7 @@ char* findRessource(const char* URI, int* erreur)
 		if(!strcmp(target, "www/")) //Si l'URI est / , on rend www/index.html
 			strcat(target, "index.html");
 	}
-	
+
 	printf("Target : %s\n", target);
 	return target;
 }
