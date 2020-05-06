@@ -31,6 +31,7 @@ void end(int sig)
 
 int main(int argc, char *argv[])
 {
+	system("cat src/accueil");
 	message *requete;
 	int tailleRequete = 0;
 	int res;
