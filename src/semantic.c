@@ -102,6 +102,9 @@ int code(_Token* root, char* reponse, int* taille, int* erreur)
 
 	field = searchTree(root, "HTTP_version");
 	node = field->node;
+	//Liberer la réponse
+	purgeElement(&field);
+
 	if(node->value[5] != '1') //Version majeure différente de 1
 	{
 		*erreur = 1;
@@ -114,8 +117,6 @@ int code(_Token* root, char* reponse, int* taille, int* erreur)
 		code = 400;
 	}
 
-	//Liberer la réponse
-	purgeElement(&field);
 
 	field = searchTree(root, "method"); //Méthode différente de GET,HEAD ou POST
 	node = field->node;
@@ -177,6 +178,7 @@ int code(_Token* root, char* reponse, int* taille, int* erreur)
 
 	strcpy(reponse, codeMessage(code));
 	*taille += strlen(reponse);
+
 	return code;
 }
 
@@ -246,7 +248,7 @@ char* normalisationURI(_Token* root, int* erreur)
 	}
 
 	URI[j] = '\0';
-
+	purgeElement(&URIfield);
 	return URI;
 }
 
@@ -391,28 +393,30 @@ void loadMultisitesConf()
 	fclose(fichierConf);
 }
 
-// void unloadMultiSitesConf()
-// {
-// 	Site* s = multisitesConf;
-// 	Site* next;
-// 	while(s != NULL)
-// 	{
-// 		free(site->e400);
-// 		free(site->e404);
-// 		free(site->e408);
-// 		free(site->e411);
-// 		free(site->e418);
-// 		free(site->e501);
-// 		free(site->e505);
+void unloadMultiSitesConf()
+{
+	Site* s = multisitesConf;
+	Site* next;
+	while(s != NULL)
+	{
+		free(s->e400);
+		free(s->e404);
+		free(s->e408);
+		free(s->e411);
+		free(s->e418);
+		free(s->e501);
+		free(s->e505);
 
-// 		free(fdqn);
-// 		free(dossier);
+		free(s->fqdn);
+		free(s->dossier);
 
-// 		next = s->next;
+		next = s->next;
 		
-// 		free(site);
-// 	}
-// }
+		free(s);
+
+		s = next;
+	}
+}
 
 char* findRessource(const char* URI, int* erreur)
 //A partir d'une URI, trouve la ressource associée dans les répertoires du serveur
@@ -435,20 +439,10 @@ char* findRessource(const char* URI, int* erreur)
 		Lnode* a = host->node; 
 		char *el = a->value; //Contenu du champ Host
 
-		char* elem = malloc(sizeof(char)*500);
-		if(elem == NULL)
-		{
-			*erreur = 1;
-			return codeMessage(500); /* 500 (Internal Server Error) */
-		}
-		for (int i = 0; i < a->len; i++) {
-			elem[i] = el[i]; //Recopie du contenu du champ Host
-		}
-
 		Site* s = multisitesConf; //Tête de la liste chaînée
 
-		char *ptr2;
-		ptr2 = strtok(elem, " ");
+		char *ptr2 = NULL;
+		ptr2 = strtok(el, " ");
 		ptr2 = strtok(ptr2, ":"); //Récupération de la partie du type 127.0.0.1
 
 		while(s != NULL && strcmp(ptr2, s->fqdn) != 0) //Parcours de la liste chaînée jusqu'à trouver une correspondance
@@ -470,6 +464,9 @@ char* findRessource(const char* URI, int* erreur)
 		if(!strcmp(target, dossierSlash)) //Si l'URI est / , on rend www*/index.html
 			strcat(target, "index.html");
 
+		free(dossier);
+		free(dossierSlash);
+		purgeElement(&host);
 	} else {
 		strcpy(target, "www"); //S'il n'y a pas de champ Host, on renvoie la requête vers www/ (127.0.0.1)
 		strcpy(target + 3, URI);
@@ -613,6 +610,8 @@ int headerUnique(_Token* root)
 		{
 			valide = 0;
 		}
+
+		purgeElement(&field);
 	}
 
 	return valide;

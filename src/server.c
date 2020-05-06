@@ -4,7 +4,7 @@
 #include <sys/socket.h>
 #include <netinet/in.h>
 #include <arpa/inet.h>
-// #include <time.h>
+#include <signal.h>
 
 // for librequest
 #include "request.h"
@@ -16,6 +16,19 @@
 
 #include "semantic.h"
 
+
+void end(int sig)
+{
+	printf("\r================================================================\n");
+	printf("\r                         FERMETURE DU SERVEUR                   \n");
+	printf("\r================================================================\n");
+	if(reponse != NULL)
+		free(reponse);
+
+	unloadMultiSitesConf(); // pour décharger la liste chainée
+	exit(0);
+}
+
 int main(int argc, char *argv[])
 {
 	message *requete;
@@ -24,10 +37,10 @@ int main(int argc, char *argv[])
 	int close = 0;
 
 	loadMultisitesConf();
-	// unloadMultiSitesConf pour décharger liste chainée
+	signal(SIGINT, end);
 
 	while ( 1 ) {
-		char* reponse = calloc(sizeof(char), sizeof(char) * MAX_RESPONSE_SIZE); //Voir pour mieux régler la taille
+		reponse = calloc(sizeof(char), sizeof(char) * MAX_RESPONSE_SIZE); //Voir pour mieux régler la taille
 		// on attend la reception d'une requete HTTP requete pointera vers une ressource allouée par librequest.
 		if ((requete=getRequest(8080)) == NULL )
 		{
@@ -59,13 +72,14 @@ int main(int argc, char *argv[])
 		}
 
 		endWriteDirectClient(requete->clientId);
-		
+		//Liberer la mémoire
+		free(reponse);
+		reponse = NULL;
+
 		//Se deconnecter du client
 		if(close)
 			requestShutdownSocket(requete->clientId);
 
-		//Liberer la mémoire
-		free(reponse);
 		// on ne se sert plus de requete a partir de maintenant, on peut donc liberer...
 		freeRequest(requete);
 		

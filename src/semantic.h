@@ -1,7 +1,7 @@
 #ifndef ___SEMANTIC___
 #define ___SEMANTIC___
 
-#define MAX_RESPONSE_SIZE 500000000
+#define MAX_RESPONSE_SIZE 150000000
 
 typedef struct _site {
 	char* fqdn;
@@ -20,6 +20,7 @@ Site* multisitesConf;
 void loadMultisitesConf();
 void unloadMultiSitesConf();
 
+char* reponse;
 void buildResponse(_Token* root, char* reponse, int* taille, int *close);
 
 int code(_Token* root, char* reponse, int* taille, int* erreur);
