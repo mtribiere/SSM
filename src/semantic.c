@@ -102,7 +102,7 @@ int code(_Token* root, char* reponse, int* taille, int* erreur)
 
 	field = searchTree(root, "HTTP_version");
 	node = field->node;
-	if(node->value[5] != '1') //Version majeure différent de 1
+	if(node->value[5] != '1') //Version majeure différente de 1
 	{
 		*erreur = 1;
 		code = 505;
@@ -245,15 +245,13 @@ char* normalisationURI(_Token* root, int* erreur)
 			URI[j++] = URI[i];
 	}
 
-	// node->len = j;
-	// strcpy(node->value, URI);
 	URI[j] = '\0';
 
 	return URI;
 }
 
-// Charge la configuration contenue dans le fichier sites.conf
-// Stocke la
+//S'exécute avant que le serveur soit lancé
+// Charge la configuration contenue dans le fichier sites.conf dans une liste chaînée
 void loadMultisitesConf()
 {
 	multisitesConf = NULL;
@@ -261,18 +259,39 @@ void loadMultisitesConf()
 	// On ouvre le fichier
 	FILE* fichierConf = fopen("sites.conf", "r");
 	if(fichierConf == NULL)
+	//Lors d'une erreur, on ferme le serveur
+	//Pas besoin d'envoyer un 500 (Internal Server Error) car aucune connexion n'est ouverte
 	{
-		/* 500 (Internal Server Error) */
+		perror("Erreur lors de l'initialisation");
+		exit(-1);
 	}
 
 	// On récupère la première ligne
 	char* ligne = malloc(500*sizeof(char));
 	if(ligne == NULL)
 	{
-		/* 500 (Internal Server Error) */
+		perror("Erreur lors de l'initialisation");
+		exit(-1);
 	}
 
 	Site *site;
+
+
+	// On malloc() les deux champs code et fichier
+	char* code = malloc(sizeof(char)*50);
+	if(code == NULL)
+	{
+		perror("Erreur lors de l'initialisation");
+		exit(-1);
+	}
+	char* codeFree = code;
+	char* fichier = malloc(sizeof(char)*50);
+	if(fichier == NULL)
+	{
+		perror("Erreur lors de l'initialisation");
+		exit(-1);
+	}
+
 
 	// On parcourt le fichier
 	while (fgets(ligne, 500, fichierConf) != NULL) {
@@ -282,7 +301,8 @@ void loadMultisitesConf()
 			site = malloc(sizeof(Site));
 			if(site == NULL)
 			{
-				/* 500 (Internal Server Error) */
+				perror("Erreur lors de l'initialisation");
+				exit(-1);
 			}
 			//
 			char* e400 = malloc(sizeof(char)*50);
@@ -304,12 +324,14 @@ void loadMultisitesConf()
 			char* fqdn = malloc(sizeof(char)*50);
 			if(fqdn == NULL)
 			{
-				/* 500 (Internal Server Error) */
+				perror("Erreur lors de l'initialisation");
+				exit(-1);
 			}
 			char* dossier = malloc(sizeof(char)*50);
 			if(dossier == NULL)
 			{
-				/* 500 (Internal Server Error) */
+				perror("Erreur lors de l'initialisation");
+				exit(-1);
 			}
 
 			// On parse la ligne
@@ -336,17 +358,6 @@ void loadMultisitesConf()
 		}
 		// Si on enregistre un nouveau fichier d'erreur
 		else {
-			// On malloc() les deux champs code et fichier
-			char* code = malloc(sizeof(char)*50);
-			if(code == NULL)
-			{
-				/* 500 (Internal Server Error) */
-			}
-			char* fichier = malloc(sizeof(char)*50);
-			if(fichier == NULL)
-			{
-				/* 500 (Internal Server Error) */
-			}
 
 			// On parse la ligne
 			char *ptr = strtok(ligne, " ");
@@ -365,23 +376,49 @@ void loadMultisitesConf()
 			}
 
 			// On enregistre les données parsées
-			if (!strcmp(code, "400")) strcpy(multisitesConf->e400, fichier);
+			if      (!strcmp(code, "400")) strcpy(multisitesConf->e400, fichier);
 			else if (!strcmp(code, "404")) strcpy(multisitesConf->e404, fichier);
 			else if (!strcmp(code, "408")) strcpy(multisitesConf->e408, fichier);
 			else if (!strcmp(code, "411")) strcpy(multisitesConf->e411, fichier);
 			else if (!strcmp(code, "418")) strcpy(multisitesConf->e418, fichier);
 			else if (!strcmp(code, "501")) strcpy(multisitesConf->e501, fichier);
 			else if (!strcmp(code, "505")) strcpy(multisitesConf->e505, fichier);
-
 		}
 	}
+	free(codeFree);
+	free(fichier);
+	free(ligne);
 	fclose(fichierConf);
 }
+
+// void unloadMultiSitesConf()
+// {
+// 	Site* s = multisitesConf;
+// 	Site* next;
+// 	while(s != NULL)
+// 	{
+// 		free(site->e400);
+// 		free(site->e404);
+// 		free(site->e408);
+// 		free(site->e411);
+// 		free(site->e418);
+// 		free(site->e501);
+// 		free(site->e505);
+
+// 		free(fdqn);
+// 		free(dossier);
+
+// 		next = s->next;
+		
+// 		free(site);
+// 	}
+// }
 
 char* findRessource(const char* URI, int* erreur)
 //A partir d'une URI, trouve la ressource associée dans les répertoires du serveur
 {
 	char* target = malloc(MAX_URI_SIZE);
+	//Chemin vers la ressource recherchée
 	if(target == NULL)
 	{
 		*erreur = 1;
@@ -391,47 +428,56 @@ char* findRessource(const char* URI, int* erreur)
 	_Token *root;
 	root = getRootTree();
 	_Token *host;
-	host = searchTree(root, "Host");
-	//Si Host == NULL ??
-	Lnode* a = host->node;
-	char *el = a->value;
+	host = searchTree(root, "Host"); //Champ Host
 
-	char* elem = malloc(sizeof(char)*500);
-	if(elem == NULL)
+	if(host != NULL) //Si il y a un champ Host
 	{
-		*erreur = 1;
-		return codeMessage(500); /* 500 (Internal Server Error) */
-	}
-	for (int i = 0; i < a->len; i++) {
-		elem[i] = el[i];
-	}
+		Lnode* a = host->node; 
+		char *el = a->value; //Contenu du champ Host
 
-	Site* s = multisitesConf;
+		char* elem = malloc(sizeof(char)*500);
+		if(elem == NULL)
+		{
+			*erreur = 1;
+			return codeMessage(500); /* 500 (Internal Server Error) */
+		}
+		for (int i = 0; i < a->len; i++) {
+			elem[i] = el[i]; //Recopie du contenu du champ Host
+		}
 
-	char *ptr2;
-	ptr2 = strtok(elem, " ");
-	ptr2 = strtok(ptr2, ":");
+		Site* s = multisitesConf; //Tête de la liste chaînée
 
-	while(s != NULL && strcmp(ptr2, s->fqdn) != 0)
-		s = s->next;
+		char *ptr2;
+		ptr2 = strtok(elem, " ");
+		ptr2 = strtok(ptr2, ":"); //Récupération de la partie du type 127.0.0.1
 
-	char* dossier = malloc(sizeof(char)*20);
-	char* dossierSlash = malloc(sizeof(char)*20);
-	if (s == NULL) {
-		strcpy(dossier,"www"); // dossier par défaut
+		while(s != NULL && strcmp(ptr2, s->fqdn) != 0) //Parcours de la liste chaînée jusqu'à trouver une correspondance
+			s = s->next;
+
+		char* dossier = malloc(sizeof(char)*20);
+		char* dossierSlash = malloc(sizeof(char)*20);
+		if (s == NULL) { //S'il n'y a pas de correspondance, on renvoie la requête vers www/ (127.0.0.1)
+			strcpy(dossier,"www");
+		} else { //Sinon, on indique le dossier correspondant
+			strcpy(dossier, s->dossier);
+		}
+
+		strcpy(dossierSlash, dossier);
+		strcpy(dossierSlash+strlen(dossier), "/"); //Dossier trouvé avec un / à la fin
+		strcpy(target, dossier);
+		strcpy(target + strlen(dossier), URI); //"Dossier / URI"
+
+		if(!strcmp(target, dossierSlash)) //Si l'URI est / , on rend www*/index.html
+			strcat(target, "index.html");
+
 	} else {
-		strcpy(dossier, s->dossier);
+		strcpy(target, "www"); //S'il n'y a pas de champ Host, on renvoie la requête vers www/ (127.0.0.1)
+		strcpy(target + 3, URI);
+
+		if(!strcmp(target, "www/")) //Si l'URI est / , on rend www/index.html
+			strcat(target, "index.html");
 	}
-
-	strcpy(dossierSlash, dossier);
-	strcpy(dossierSlash+strlen(dossier), "/");
-	strcpy(target, dossier);
-	strcpy(target + strlen(dossier), URI);
-
-	if(!strcmp(target, dossierSlash))
-		strcat(target, "index.html");
-	//Faire pareil pour index.php ?
-
+	
 	printf("Target : %s\n", target);
 	return target;
 }
@@ -465,7 +511,6 @@ char* writeRessource(const char* target, int* tailleFichier, int* erreur)
 	if(ressource == NULL)
 	{
 		*erreur = 1;
-		free(ressource);
 		return codeMessage(500); /* 500 (Internal Server Error) */
 	}
 
@@ -485,9 +530,9 @@ char* writeRessource(const char* target, int* tailleFichier, int* erreur)
 	return ressource;
 }
 
-char* MIMEtype(const char* ressource){
+char* MIMEtype(const char* ressource)
 //Retourne une chaîne de caractère contenant le type MIME de la ressource demandée
-
+{
 	//Rechercher l'extention
  	char* query = strchr(ressource, (int)'?');
 	if(query != NULL)
@@ -558,7 +603,6 @@ int headerUnique(_Token* root)
 {
 	int valide = 1;
 	char* headerName[13] = {"Connection_header", "Content_Length_header", "Content_Type_header", "Cookie_header", "Transfer_Encoding-header", "Expect_header", "Host_header", "Accept_header", "Accept_Charset_header", "Accept_Encoding_header", "Accept_Language_header", "Referer_header", "User_Agent_header"};
-	// + Gérer "field_name" ?
 	_Token* field;
 
 	for(int i = 0; i < 13; i++)
@@ -594,9 +638,11 @@ int connexion(_Token* root, char* reponse, int* taille)
 		}
 	}
 	if(close == 0)
+	//Par défaut, on envoie "Connection: keep-alive"
 		addHeader(reponse, "Connection", "keep-alive", taille);
 	else
-		addHeader(reponse, "Connection", "close", taille); //Vérifier si ça fonctionne bien
+	//Si le client demande de fermer la connection, on envoie un "Connection: close"
+		addHeader(reponse, "Connection", "close", taille);
 
 	return close;
 }

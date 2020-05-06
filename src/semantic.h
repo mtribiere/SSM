@@ -2,7 +2,6 @@
 #define ___SEMANTIC___
 
 #define MAX_RESPONSE_SIZE 500000000
-#define TIMEOUT_TIME 2
 
 typedef struct _site {
 	char* fqdn;
@@ -19,6 +18,7 @@ typedef struct _site {
 
 Site* multisitesConf;
 void loadMultisitesConf();
+void unloadMultiSitesConf();
 
 void buildResponse(_Token* root, char* reponse, int* taille, int *close);
 
