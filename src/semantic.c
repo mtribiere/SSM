@@ -188,7 +188,7 @@ int code(_Token* root, char* reponse, int* taille, int* erreur)
 char* codeMessage(int code)
 //Selon le code à envoyer, forme la start-line
 {
-	char* toSend = malloc(sizeof(char)*50000);
+	char* toSend = malloc(sizeof(char)*500000);
 	int toSendSize = 0;
 	switch(code)
 	{
@@ -197,25 +197,32 @@ char* codeMessage(int code)
 		case(400):
 			strcpy(toSend, "HTTP/1.1 400 Bad Request\r\nConnection: close\r\nContent-Type: text/plain\r\n\r\n");
 			toSendSize+=strlen("HTTP/1.1 400 Bad Request\r\nConnection: close\r\nContent-Type: text/plain\r\n\r\n");
+			break;
 		case(404):
 			strcpy(toSend, "HTTP/1.1 404 Not Found\r\nConnection: close\r\nContent-Type: text/plain\r\n\r\n");
 			toSendSize+=strlen("HTTP/1.1 404 Not Found\r\nConnection: close\r\nContent-Type: text/plain\r\n\r\n");
+			break;
 		case(408):
 			strcpy(toSend, "HTTP/1.1 408 Request Timeout\r\nConnection: close\r\nContent-Type: text/plain\r\n\r\n");
 			toSendSize+=strlen("HTTP/1.1 408 Request Timeout\r\nConnection: close\r\nContent-Type: text/plain\r\n\r\n");
+			break;
 		case(411):
 			strcpy(toSend, "HTTP/1.1 411 Length Required\r\nConnection: close\r\nContent-Type: text/plain\r\n\r\n");
 			toSendSize+=strlen("HTTP/1.1 411 Length Required\r\nConnection: close\r\nContent-Type: text/plain\r\n\r\n");
+			break;
 		case(418):
 			strcpy(toSend, "HTTP/1.1 418 I m a teapot\r\nConnection: close\r\nContent-Type: text/plain\r\n\r\n");
 			toSendSize+=strlen("HTTP/1.1 418 I m a teapot\r\nConnection: close\r\nContent-Type: text/plain\r\n\r\n");
+			break;
 		case(501):
 			strcpy(toSend, "HTTP/1.1 501 Not Implemented\r\nConnection: close\r\nContent-Type: text/plain\r\n\r\n");
 			toSendSize+=strlen("HTTP/1.1 501 Not Implemented\r\nConnection: close\r\nContent-Type: text/plain\r\n\r\n");
+			break;
 		case(505):
 			strcpy(toSend, "HTTP/1.1 505 HTTP Version Not Supported\r\nConnection: close\r\nContent-Type: text/plain\r\n\r\n");
 			toSendSize+=strlen("HTTP/1.1 505 HTTP Version Not Supported\r\nConnection: close\r\nContent-Type: text/plain\r\n\r\n");
-		default  :
+			break;
+		default:
 			strcpy(toSend, "HTTP/1.1 500 Internal Server Error\r\nConnection: close\r\nContent-Type: text/plain\r\n\r\n");
 			toSendSize+=strlen("HTTP/1.1 500 Internal Server Error\r\nConnection: close\r\nContent-Type: text/plain\r\n\r\n");
 	}
@@ -237,7 +244,9 @@ char* codeMessage(int code)
 		ptr2 = strtok(el, ":");
 
 		Site* s = multisitesConf;
-
+		int sizeCustomFile;
+		char* customFile;
+		int ignored;
 		while (s != NULL) {
 			if (!strcmp(s->fqdn, ptr2)) { // Si on a trouvé la conf du bon site
 				switch(code) { // Si un fichier est présent, on recopie la valeur à la fin de toSend
