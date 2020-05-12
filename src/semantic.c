@@ -195,36 +195,36 @@ char* codeMessage(int code)
 		case(200): return "HTTP/1.1 200 OK\r\n";
 		case(202): return "HTTP/1.1 202 Accepted\r\nContent-Length: 31\r\nContent-Type: text/plain\r\n\r\nPOST valide recu : 202 Accepted";
 		case(400):
-			strcpy(toSend, "HTTP/1.1 400 Bad Request\r\nConnection: close\r\nContent-Type: text/plain\r\n\r\n");
-			toSendSize+=strlen("HTTP/1.1 400 Bad Request\r\nConnection: close\r\nContent-Type: text/plain\r\n\r\n");
+			strcpy(toSend, "HTTP/1.1 400 Bad Request\r\nConnection: close\r\nContent-Type: text/html\r\n\r\n");
+			toSendSize+=strlen("HTTP/1.1 400 Bad Request\r\nConnection: close\r\nContent-Type: text/html\r\n\r\n");
 			break;
 		case(404):
-			strcpy(toSend, "HTTP/1.1 404 Not Found\r\nConnection: close\r\nContent-Type: text/plain\r\n\r\n");
-			toSendSize+=strlen("HTTP/1.1 404 Not Found\r\nConnection: close\r\nContent-Type: text/plain\r\n\r\n");
+			strcpy(toSend, "HTTP/1.1 404 Not Found\r\nConnection: close\r\nContent-Type: text/html\r\n\r\n");
+			toSendSize+=strlen("HTTP/1.1 404 Not Found\r\nConnection: close\r\nContent-Type: text/html\r\n\r\n");
 			break;
 		case(408):
-			strcpy(toSend, "HTTP/1.1 408 Request Timeout\r\nConnection: close\r\nContent-Type: text/plain\r\n\r\n");
-			toSendSize+=strlen("HTTP/1.1 408 Request Timeout\r\nConnection: close\r\nContent-Type: text/plain\r\n\r\n");
+			strcpy(toSend, "HTTP/1.1 408 Request Timeout\r\nConnection: close\r\nContent-Type: text/html\r\n\r\n");
+			toSendSize+=strlen("HTTP/1.1 408 Request Timeout\r\nConnection: close\r\nContent-Type: text/html\r\n\r\n");
 			break;
 		case(411):
-			strcpy(toSend, "HTTP/1.1 411 Length Required\r\nConnection: close\r\nContent-Type: text/plain\r\n\r\n");
-			toSendSize+=strlen("HTTP/1.1 411 Length Required\r\nConnection: close\r\nContent-Type: text/plain\r\n\r\n");
+			strcpy(toSend, "HTTP/1.1 411 Length Required\r\nConnection: close\r\nContent-Type: text/html\r\n\r\n");
+			toSendSize+=strlen("HTTP/1.1 411 Length Required\r\nConnection: close\r\nContent-Type: text/html\r\n\r\n");
 			break;
 		case(418):
-			strcpy(toSend, "HTTP/1.1 418 I m a teapot\r\nConnection: close\r\nContent-Type: text/plain\r\n\r\n");
-			toSendSize+=strlen("HTTP/1.1 418 I m a teapot\r\nConnection: close\r\nContent-Type: text/plain\r\n\r\n");
+			strcpy(toSend, "HTTP/1.1 418 I m a teapot\r\nConnection: close\r\nContent-Type: text/html\r\n\r\n");
+			toSendSize+=strlen("HTTP/1.1 418 I m a teapot\r\nConnection: close\r\nContent-Type: text/html\r\n\r\n");
 			break;
 		case(501):
-			strcpy(toSend, "HTTP/1.1 501 Not Implemented\r\nConnection: close\r\nContent-Type: text/plain\r\n\r\n");
-			toSendSize+=strlen("HTTP/1.1 501 Not Implemented\r\nConnection: close\r\nContent-Type: text/plain\r\n\r\n");
+			strcpy(toSend, "HTTP/1.1 501 Not Implemented\r\nConnection: close\r\nContent-Type: text/html\r\n\r\n");
+			toSendSize+=strlen("HTTP/1.1 501 Not Implemented\r\nConnection: close\r\nContent-Type: text/html\r\n\r\n");
 			break;
 		case(505):
-			strcpy(toSend, "HTTP/1.1 505 HTTP Version Not Supported\r\nConnection: close\r\nContent-Type: text/plain\r\n\r\n");
-			toSendSize+=strlen("HTTP/1.1 505 HTTP Version Not Supported\r\nConnection: close\r\nContent-Type: text/plain\r\n\r\n");
+			strcpy(toSend, "HTTP/1.1 505 HTTP Version Not Supported\r\nConnection: close\r\nContent-Type: text/html\r\n\r\n");
+			toSendSize+=strlen("HTTP/1.1 505 HTTP Version Not Supported\r\nConnection: close\r\nContent-Type: text/html\r\n\r\n");
 			break;
 		default:
-			strcpy(toSend, "HTTP/1.1 500 Internal Server Error\r\nConnection: close\r\nContent-Type: text/plain\r\n\r\n");
-			toSendSize+=strlen("HTTP/1.1 500 Internal Server Error\r\nConnection: close\r\nContent-Type: text/plain\r\n\r\n");
+			strcpy(toSend, "HTTP/1.1 500 Internal Server Error\r\nConnection: close\r\nContent-Type: text/html\r\n\r\n");
+			toSendSize+=strlen("HTTP/1.1 500 Internal Server Error\r\nConnection: close\r\nContent-Type: text/html\r\n\r\n");
 	}
 
 	_Token *root;
@@ -244,52 +244,53 @@ char* codeMessage(int code)
 		ptr2 = strtok(el, ":");
 
 		Site* s = multisitesConf;
-		int sizeCustomFile;
-		char* customFile;
+
 		int ignored;
+		int ignored2;
+
 		while (s != NULL) {
 			if (!strcmp(s->fqdn, ptr2)) { // Si on a trouvé la conf du bon site
 				switch(code) { // Si un fichier est présent, on recopie la valeur à la fin de toSend
 					case(400):
 						if (strcmp(s->e400, "")) {
 							trouve = 1;
-							strcpy(toSend+toSendSize, s->e400);
+							strcpy(toSend+toSendSize, writeRessource(s->e400, &ignored, &ignored2));
 						}
 						break;
 					case(404):
 						if (strcmp(s->e404, "")) {
 							trouve = 1;
-							strcpy(toSend+toSendSize, s->e404);
+							strcpy(toSend+toSendSize, writeRessource(s->e404, &ignored, &ignored2));
 						}
 						break;
 					case(408):
 						if (strcmp(s->e408, "")) {
 							trouve = 1;
-							strcpy(toSend+toSendSize, s->e408);
+							strcpy(toSend+toSendSize, writeRessource(s->e408, &ignored, &ignored2));
 						}
 						break;
 					case(411):
 						if (strcmp(s->e411, "")) {
 							trouve = 1;
-							strcpy(toSend+toSendSize, s->e411);
+							strcpy(toSend+toSendSize, writeRessource(s->e411, &ignored, &ignored2));
 						}
 						break;
 					case(418):
 						if (strcmp(s->e418, "")) {
 							trouve = 1;
-							strcpy(toSend+toSendSize, s->e418);
+							strcpy(toSend+toSendSize, writeRessource(s->e418, &ignored, &ignored2));
 						}
 						break;
 					case(501):
 						if (strcmp(s->e501, "")) {
 							trouve = 1;
-							strcpy(toSend+toSendSize, s->e501);
+							strcpy(toSend+toSendSize, writeRessource(s->e501, &ignored, &ignored2));
 						}
 						break;
 					case(505):
 						if (strcmp(s->e505, "")) {
 							trouve = 1;
-							strcpy(toSend+toSendSize, s->e505);
+							strcpy(toSend+toSendSize, writeRessource(s->e505, &ignored, &ignored2));
 						}
 						break;
 				}
