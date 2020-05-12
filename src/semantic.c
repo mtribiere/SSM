@@ -202,9 +202,6 @@ char* codeMessage(int code)
 		case(404):
 			strcpy(toSend, "HTTP/1.1 404 Not Found\r\nConnection: close\r\nContent-Type: text/html\r\n\r\n");
 			break;
-		case(408):
-			strcpy(toSend, "HTTP/1.1 408 Request Timeout\r\nConnection: close\r\nContent-Type: text/html\r\n\r\n");
-			break;
 		case(411):
 			strcpy(toSend, "HTTP/1.1 411 Length Required\r\nConnection: close\r\nContent-Type: text/html\r\n\r\n");
 			break;
@@ -261,13 +258,6 @@ char* codeMessage(int code)
 							strcpy(toSend+toSendSize, ressource);
 						}
 						break;
-					case(408):
-						if (strcmp(s->e408, "")) {
-							trouve = 1;
-							ressource = writeRessource(s->e408, &ignored, &ignored2);
-							strcpy(toSend+toSendSize, ressource);
-						}
-						break;
 					case(411):
 						if (strcmp(s->e411, "")) {
 							trouve = 1;
@@ -310,9 +300,6 @@ char* codeMessage(int code)
 				break;
 			case(404):
 				strcpy(toSend+toSendSize, "404 Not Found");
-				break;
-			case(408):
-				strcpy(toSend+toSendSize, "408 Request Timeout");
 				break;
 			case(411):
 				strcpy(toSend+toSendSize, "411 Length Required");
@@ -444,14 +431,12 @@ void loadMultisitesConf()
 			//
 			char* e400 = calloc(sizeof(char),50);
 			char* e404 = calloc(sizeof(char),50);
-			char* e408 = calloc(sizeof(char),50);
 			char* e411 = calloc(sizeof(char),50);
 			char* e418 = calloc(sizeof(char),50);
 			char* e501 = calloc(sizeof(char),50);
 			char* e505 = calloc(sizeof(char),50);
 			site->e400 = e400;
 			site->e404 = e404;
-			site->e408 = e408;
 			site->e411 = e411;
 			site->e418 = e418;
 			site->e501 = e501;
@@ -515,7 +500,6 @@ void loadMultisitesConf()
 			// On enregistre les données parsées
 			if      (!strcmp(code, "400")) strcpy(multisitesConf->e400, fichier);
 			else if (!strcmp(code, "404")) strcpy(multisitesConf->e404, fichier);
-			else if (!strcmp(code, "408")) strcpy(multisitesConf->e408, fichier);
 			else if (!strcmp(code, "411")) strcpy(multisitesConf->e411, fichier);
 			else if (!strcmp(code, "418")) strcpy(multisitesConf->e418, fichier);
 			else if (!strcmp(code, "501")) strcpy(multisitesConf->e501, fichier);
@@ -536,7 +520,6 @@ void unloadMultiSitesConf()
 	{
 		free(s->e400);
 		free(s->e404);
-		free(s->e408);
 		free(s->e411);
 		free(s->e418);
 		free(s->e501);
