@@ -7,10 +7,10 @@ OBJ_DIR = obj
 SRC = $(wildcard $(SRC_DIR)/*.c)
 OBJ = $(SRC:$(SRC_DIR)/%.c=$(OBJ_DIR)/%.o)
 
-CPPFLAGS += -Iinclude -I$(SRC_DIR) -I src/librequest-0.4/api -I src/libparseur
+CPPFLAGS += -Iinclude -I$(SRC_DIR) -I src/librequest-0.5/api -I src/libparseur
 CFLAGS += -Wall -g
 LDFLAGS += -Llib
-LDLIBS += -lm -L src/libparser -lparser -Lsrc/librequest-0.4 -lrequest -lmagic
+LDLIBS += -lm -L src/libparser -lparser -Lsrc/librequest-0.5 -lrequest -lmagic
 
 .PHONY: all clean
 
