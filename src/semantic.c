@@ -133,7 +133,7 @@ int code(_Token* root, char* reponse, int* taille, int* erreur)
 		*erreur = 1;
 		code = 501;
 	}
-	
+
 	else if(searchTree(root, "Content_Length") != NULL && searchTree(root, "Transfer_Encoding") != NULL)
 	//Content-Length ET Transfer-Encoding
 	{
@@ -297,7 +297,6 @@ char* codeMessage(int code)
 						}
 						break;
 				}
-				free(ressource);
 			}
 			s = s->next;
 		}
