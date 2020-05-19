@@ -30,6 +30,7 @@ void end(int sig)
 	exit(0);
 }
 
+
 int main(int argc, char *argv[])
 {
 	system("cat src/accueil");

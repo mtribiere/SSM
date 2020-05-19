@@ -317,7 +317,7 @@ char* codeMessage(int code)
 				break;
 		}
 	}
-	printf("%s\n", toSend);
+	//printf("%s\n", toSend);
 	return(toSend);
 }
 
