@@ -13,6 +13,7 @@
 // this will declare internal type used by the parser
 #include "httpparser.h"
 #include "libparser/api.h"
+#include "site.h"
 
 #include "semantic.h"
 
