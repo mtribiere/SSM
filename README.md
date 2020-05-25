@@ -20,7 +20,7 @@ Puis accès aux sites via les adresses 127.0.0.0/24:8080 par un navigateur ou au
 Dans le fichier sites.conf :
 
 Pour rajouter un site sur le serveur :
-  - Ajouter l'adresse à laquelle il doit être accessible suivie du nom de la racine du site
+  - Ajouter le contenu du champ Host désiré suivi du nom de la racine du site
 Pour ajouter un message d'erreur particulier à un site :
   - Sous le site : rajouter une tabulation, le code de l'erreur puis la page souhaitée
 
