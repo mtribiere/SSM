@@ -1,5 +1,8 @@
 # SSM
-SSM pour les intimes (Projet NE Avec ben et thibaut)
+Projet NE302 - Etape 3
+RIBIERE Matthieu
+MANCEAU Thibaut
+LECOMTE Benjamin
 
 # Compiler
 ```
@@ -10,21 +13,15 @@ SSM pour les intimes (Projet NE Avec ben et thibaut)
 ```
 > make test
 ```
-      
-            _,--*dSS|""I$$$SS%cccc,_
-          <$$$b |$$$l  j$$$$$$$$$$$$$Sbp
-          ?$$$b|$$$$  d$$$$$$$$$$$$$$P
-           ?$$$$$$$$; $$$$$$$$$$$$$$P
-            ?$$$$$$$| $$$$$$$$$$$$$P
-              )$$$$$$$_$SSSSS$$$$$$(
-             Y"'               """P
-              (                    )
-     _.,cccccd%S$$$$$$$$$$$$$$$SS%dcccc,._
-    ($$$$$$$$$$SSSSSSSSSSSSSSS$$$$$$$$$$$$$$$)
-      `"""""Y"'                  `"$$$$$$$P"'
-           ███████╗███████╗███╗   ███╗
-           ██╔════╝██╔════╝████╗ ████║
-           ███████╗███████╗██╔████╔██║
-           ╚════██║╚════██║██║╚██╔╝██║
-           ███████║███████║██║ ╚═╝ ██║
-           ╚══════╝╚══════╝╚═╝     ╚═╝
+Puis accès aux sites via les adresses 127.0.0.0/24:8080 par un navigateur ou autre
+
+
+# Configuration
+Dans le fichier sites.conf :
+
+Pour rajouter un site sur le serveur :
+  - Ajouter l'adresse à laquelle il doit être accessible suivie du nom de la racine du site
+Pour ajouter un message d'erreur particulier à un site :
+  - Sous le site : rajouter une tabulation, le code de l'erreur puis la page souhaitée
+
+Pour tester, il y a déjà 5 sites (127.0.0.1 à 127.0.0.5) disponibles sur le serveur
