@@ -26,6 +26,6 @@ clean:
 	$(RM) $(OBJ)
 	$(RM) $(EXE)
 
-test: $(EXE)
+start: $(EXE)
 	export LD_LIBRARY_PATH=. && ./$(EXE) 
 

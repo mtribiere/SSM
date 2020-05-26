@@ -11,7 +11,7 @@ LECOMTE Benjamin
 
 # Lancer
 ```
-> make test
+> make start
 ```
 Puis accès aux sites via les adresses 127.0.0.0/24:8080 par un navigateur ou autre
 
